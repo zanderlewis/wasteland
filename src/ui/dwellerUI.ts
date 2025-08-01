@@ -2,6 +2,7 @@
 import { SaveEditor } from '../core/SaveEditor';
 import type { Dweller } from '../types/saveFile';
 import { WEAPON_LIST, OUTFIT_LIST } from '../constants/gameConstants';
+import { hexToFOSColor, fosColorToHex, DEFAULT_SKIN_COLORS, DEFAULT_HAIR_COLORS } from '../utils/colorUtils';
 
 export class DwellerUI {
   private saveEditor: SaveEditor;
@@ -9,6 +10,17 @@ export class DwellerUI {
 
   constructor(saveEditor: SaveEditor) {
     this.saveEditor = saveEditor;
+  }
+
+  // Color converter utility using imported utilities
+  private colorConverter(colorhex: string | number, mode?: boolean): string | number {
+    if (mode) {
+      // Convert from FOS color format to hex
+      return fosColorToHex(colorhex as number);
+    } else {
+      // Convert from hex to FOS color format
+      return hexToFOSColor(colorhex as string);
+    }
   }
 
   bindEvents(): void {
@@ -22,6 +34,28 @@ export class DwellerUI {
     const resetDwellerForm = document.getElementById('resetDwellerForm');
     resetDwellerForm?.addEventListener('click', () => {
       this.resetDwellerForm();
+    });
+
+    // Batch operations
+    const maxHappinessAll = document.getElementById('maxHappinessAll');
+    maxHappinessAll?.addEventListener('click', () => {
+      this.maxHappinessAll();
+    });
+
+    const healAll = document.getElementById('healAll');
+    healAll?.addEventListener('click', () => {
+      this.healAll();
+    });
+
+    const maxSpecialAll = document.getElementById('maxSpecialAll');
+    maxSpecialAll?.addEventListener('click', () => {
+      this.maxSpecialAll();
+    });
+
+    // Individual dweller operations
+    const maxSpecial = document.getElementById('maxSpecial');
+    maxSpecial?.addEventListener('click', () => {
+      this.maxSpecial();
     });
 
     // Bind form field events
@@ -48,15 +82,32 @@ export class DwellerUI {
       'dwellerLuck',
       'dwellerWeapon',
       'dwellerOutfit',
+      'dwellerSkinColor',
+      'dwellerHairColor',
+      'dwellerHairType',
+      'dwellerFacialHair',
+      'dwellerPregnant',
+      'dwellerBabyReadyTime',
       'dwellerPet'
     ];
 
     formFields.forEach(fieldId => {
       const field = document.getElementById(fieldId);
-      field?.addEventListener('blur', () => {
-        this.updateDwellerFromForm();
-      });
+      if (field) {
+        field.addEventListener('input', () => {
+          // Handle real-time updates if needed
+        });
+      }
     });
+
+    // Special handler for gender changes to toggle pregnancy fields
+    const genderField = document.getElementById('dwellerGender');
+    if (genderField) {
+      genderField.addEventListener('change', () => {
+        const isFemale = (genderField as HTMLSelectElement).value === '1';
+        this.togglePregnancyFields(isFemale);
+      });
+    }
   }
 
   loadDwellersList(): void {
@@ -117,6 +168,28 @@ export class DwellerUI {
     this.setFormValue('dwellerHealth', (dweller.health?.healthValue || 100).toString());
     this.setFormValue('dwellerMaxHealth', (dweller.health?.maxHealth || 100).toString());
     this.setFormValue('dwellerRadiation', (dweller.health?.radiationValue || 0).toString());
+
+    // Appearance
+    this.setFormValue('dwellerSkinColor', dweller.skinColor ? '#' + this.colorConverter(dweller.skinColor, true).toString() : DEFAULT_SKIN_COLORS.LIGHT);
+    this.setFormValue('dwellerHairColor', dweller.hairColor ? '#' + this.colorConverter(dweller.hairColor, true).toString() : DEFAULT_HAIR_COLORS.BROWN);
+    
+    // Hair type and facial hair - ensure valid values
+    const hairType = Math.max(1, Math.min(15, dweller.hairType || 1));
+    const facialHair = Math.max(1, Math.min(10, dweller.facialHair || 1));
+    this.setFormValue('dwellerHairType', hairType.toString());
+    this.setFormValue('dwellerFacialHair', facialHair.toString());
+
+    // Pregnancy (only for females)
+    if (dweller.gender === 1) { // Female
+      this.setFormValue('dwellerPregnant', dweller.pregnant ? 'true' : 'false');
+      this.setFormValue('dwellerBabyReadyTime', (dweller.babyReadyTime || 0).toString());
+      
+      // Show pregnancy fields
+      this.togglePregnancyFields(true);
+    } else {
+      // Hide pregnancy fields for males
+      this.togglePregnancyFields(false);
+    }
 
     // SPECIAL stats
     if (dweller.stats && dweller.stats.stats) {
@@ -180,53 +253,21 @@ export class DwellerUI {
     }
   }
 
+  private togglePregnancyFields(show: boolean): void {
+    const pregnancyFields = document.querySelectorAll('.pregnancy-field');
+    pregnancyFields.forEach(field => {
+      const element = field as HTMLElement;
+      if (show) {
+        element.style.display = '';
+      } else {
+        element.style.display = 'none';
+      }
+    });
+  }
+
   private getFormValue(fieldId: string): string {
     const field = document.getElementById(fieldId) as HTMLInputElement | HTMLSelectElement;
     return field?.value || '';
-  }
-
-  private updateDwellerFromForm(): void {
-    if (!this.selectedDweller) return;
-
-    // Basic info
-    this.selectedDweller.name = this.getFormValue('dwellerName');
-    this.selectedDweller.lastName = this.getFormValue('dwellerLastName');
-    this.selectedDweller.gender = parseInt(this.getFormValue('dwellerGender')) || 1;
-    
-    // Initialize objects if they don't exist
-    if (!this.selectedDweller.experience) {
-      this.selectedDweller.experience = {};
-    }
-    if (!this.selectedDweller.happiness) {
-      this.selectedDweller.happiness = {};
-    }
-    if (!this.selectedDweller.health) {
-      this.selectedDweller.health = {};
-    }
-    
-    // Experience and level
-    this.selectedDweller.experience.currentLevel = parseInt(this.getFormValue('dwellerLevel')) || 1;
-    this.selectedDweller.experience.experienceValue = parseInt(this.getFormValue('dwellerExperience')) || 0;
-    
-    // Happiness
-    this.selectedDweller.happiness.happinessValue = parseInt(this.getFormValue('dwellerHappiness')) || 50;
-
-    // Health
-    this.selectedDweller.health.healthValue = parseInt(this.getFormValue('dwellerHealth')) || 100;
-    this.selectedDweller.health.maxHealth = parseInt(this.getFormValue('dwellerMaxHealth')) || 100;
-    this.selectedDweller.health.radiationValue = parseInt(this.getFormValue('dwellerRadiation')) || 0;
-
-    // SPECIAL stats
-    if (this.selectedDweller.stats && this.selectedDweller.stats.stats) {
-      const stats = this.selectedDweller.stats.stats;
-      if (stats[1]) stats[1].value = parseInt(this.getFormValue('dwellerStrength')) || 1;
-      if (stats[2]) stats[2].value = parseInt(this.getFormValue('dwellerPerception')) || 1;
-      if (stats[3]) stats[3].value = parseInt(this.getFormValue('dwellerEndurance')) || 1;
-      if (stats[4]) stats[4].value = parseInt(this.getFormValue('dwellerCharisma')) || 1;
-      if (stats[5]) stats[5].value = parseInt(this.getFormValue('dwellerIntelligence')) || 1;
-      if (stats[6]) stats[6].value = parseInt(this.getFormValue('dwellerAgility')) || 1;
-      if (stats[7]) stats[7].value = parseInt(this.getFormValue('dwellerLuck')) || 1;
-    }
   }
 
   private saveDwellerChanges(): void {
@@ -236,7 +277,36 @@ export class DwellerUI {
       // Update basic info directly on the dweller object
       this.selectedDweller.name = this.getFormValue('dwellerName');
       this.selectedDweller.lastName = this.getFormValue('dwellerLastName');
-      this.selectedDweller.gender = parseInt(this.getFormValue('dwellerGender')) || 1;
+      const newGender = parseInt(this.getFormValue('dwellerGender')) || 1;
+      this.selectedDweller.gender = newGender;
+
+      // Update appearance
+      const skinColorHex = this.getFormValue('dwellerSkinColor');
+      if (skinColorHex) {
+        this.selectedDweller.skinColor = this.colorConverter(skinColorHex.replace('#', '')) as number;
+      }
+
+      const hairColorHex = this.getFormValue('dwellerHairColor');
+      if (hairColorHex) {
+        this.selectedDweller.hairColor = this.colorConverter(hairColorHex.replace('#', '')) as number;
+      }
+
+      this.selectedDweller.hairType = parseInt(this.getFormValue('dwellerHairType')) || 1;
+      this.selectedDweller.facialHair = parseInt(this.getFormValue('dwellerFacialHair')) || 1;
+
+      // Validate hair type and facial hair ranges
+      this.selectedDweller.hairType = Math.max(1, Math.min(15, this.selectedDweller.hairType));
+      this.selectedDweller.facialHair = Math.max(1, Math.min(10, this.selectedDweller.facialHair));
+
+      // Update pregnancy (only for females)
+      if (newGender === 1) { // Female
+        this.selectedDweller.pregnant = this.getFormValue('dwellerPregnant') === 'true';
+        this.selectedDweller.babyReadyTime = parseInt(this.getFormValue('dwellerBabyReadyTime')) || 0;
+      } else {
+        // Clear pregnancy for males
+        this.selectedDweller.pregnant = false;
+        this.selectedDweller.babyReadyTime = 0;
+      }
 
       // Use SaveEditor methods for validated updates
       const level = parseInt(this.getFormValue('dwellerLevel')) || 1;
@@ -371,5 +441,59 @@ export class DwellerUI {
       // Fallback to console if status elements don't exist
       console.log(`[${type.toUpperCase()}] ${message}`);
     }
+  }
+
+  // Batch operations (from shelter.js)
+  private maxHappinessAll(): void {
+    if (!this.saveEditor.isLoaded()) return;
+    
+    const dwellers = this.saveEditor.getDwellers();
+    dwellers.forEach(dweller => {
+      this.saveEditor.setDwellerHappiness(dweller, 100);
+    });
+    
+    this.loadDwellersList();
+    this.showMessage('Maxed all dwellers happiness!', 'success');
+  }
+
+  private healAll(): void {
+    if (!this.saveEditor.isLoaded()) return;
+    
+    const dwellers = this.saveEditor.getDwellers();
+    dwellers.forEach(dweller => {
+      if (dweller.health) {
+        this.saveEditor.setDwellerRadiation(dweller, 0);
+        this.saveEditor.setDwellerHealth(dweller, dweller.health.maxHealth || 100, dweller.health.maxHealth || 100);
+      }
+    });
+    
+    this.loadDwellersList();
+    this.showMessage('Healed all dwellers!', 'success');
+  }
+
+  private maxSpecialAll(): void {
+    if (!this.saveEditor.isLoaded()) return;
+    
+    const dwellers = this.saveEditor.getDwellers();
+    dwellers.forEach(dweller => {
+      for (let i = 1; i <= 7; i++) {
+        this.saveEditor.setDwellerSpecial(dweller, i as any, 10);
+      }
+    });
+    
+    this.loadDwellersList();
+    this.showMessage('Maxed all dwellers SPECIAL stats!', 'success');
+  }
+
+  private maxSpecial(): void {
+    if (!this.selectedDweller) return;
+    
+    for (let i = 1; i <= 7; i++) {
+      this.saveEditor.setDwellerSpecial(this.selectedDweller, i as any, 10);
+    }
+    
+    // Update form to reflect changes
+    this.loadDwellerToForm(this.selectedDweller);
+    this.showMessage('Maxed dweller SPECIAL stats!', 'success');
   }
 }
