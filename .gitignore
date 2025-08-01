@@ -5,3 +5,8 @@ node_modules/
 # IDE
 .idea/
 .vscode/
+
+# Vault Data
+Vault*.json
+Vault*.sav
+Vault*.sav.bkp

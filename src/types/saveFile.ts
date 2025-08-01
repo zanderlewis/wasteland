@@ -85,11 +85,21 @@ export interface Dweller {
     hasBeenAssigned?: boolean;
     hasRandonWeaponBeenAssigned?: boolean;
   };
-  pet?: {
-    id?: number;
+  equippedPet?: {
+    id?: string;
     type?: string;
     hasBeenAssigned?: boolean;
+    hasRandonWeaponBeenAssigned?: boolean;
+    extraData?: {
+      uniqueName?: string;
+      bonus?: string;
+      bonusValue?: number;
+    };
   };
+  // Hair properties from actual save file
+  hair?: string; // Hair style as string like "01", "14", "18", etc.
+  faceMask?: string; // Facial hair as string like "f_hair_02", "f_hair_05", etc.
+  // Legacy properties for compatibility
   hairType?: number;
   facialHair?: number;
   pregnant?: boolean;

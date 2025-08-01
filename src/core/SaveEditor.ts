@@ -291,6 +291,14 @@ export class SaveEditor {
     this.dwellerManager.setDwellerOutfit(dweller, outfitId, outfitType);
   }
 
+  setDwellerPet(dweller: Dweller, petId: string, petType?: string): void {
+    this.dwellerManager.setDwellerPet(dweller, petId, petType);
+  }
+
+  removeDwellerPet(dweller: Dweller): void {
+    this.dwellerManager.removeDwellerPet(dweller);
+  }
+
   /**
    * Set all dwellers to super health
    */

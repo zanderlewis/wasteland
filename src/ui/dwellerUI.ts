@@ -1,7 +1,7 @@
 // Dweller-specific UI management
 import { SaveEditor } from '../core/SaveEditor';
 import type { Dweller } from '../types/saveFile';
-import { WEAPON_LIST, OUTFIT_LIST } from '../constants/gameConstants';
+import { WEAPON_LIST, OUTFIT_LIST, PET_LIST } from '../constants/gameConstants';
 import { hexToFOSColor, fosColorToHex, DEFAULT_SKIN_COLORS, DEFAULT_HAIR_COLORS } from '../utils/colorUtils';
 
 export class DwellerUI {
@@ -84,8 +84,6 @@ export class DwellerUI {
       'dwellerOutfit',
       'dwellerSkinColor',
       'dwellerHairColor',
-      'dwellerHairType',
-      'dwellerFacialHair',
       'dwellerPregnant',
       'dwellerBabyReadyTime',
       'dwellerPet'
@@ -172,12 +170,6 @@ export class DwellerUI {
     // Appearance
     this.setFormValue('dwellerSkinColor', dweller.skinColor ? '#' + this.colorConverter(dweller.skinColor, true).toString() : DEFAULT_SKIN_COLORS.LIGHT);
     this.setFormValue('dwellerHairColor', dweller.hairColor ? '#' + this.colorConverter(dweller.hairColor, true).toString() : DEFAULT_HAIR_COLORS.BROWN);
-    
-    // Hair type and facial hair - ensure valid values
-    const hairType = Math.max(1, Math.min(15, dweller.hairType || 1));
-    const facialHair = Math.max(1, Math.min(10, dweller.facialHair || 1));
-    this.setFormValue('dwellerHairType', hairType.toString());
-    this.setFormValue('dwellerFacialHair', facialHair.toString());
 
     // Pregnancy (only for females)
     if (dweller.gender === 1) { // Female
@@ -203,17 +195,33 @@ export class DwellerUI {
       this.setFormValue('dwellerLuck', stats[7]?.value?.toString() || '1');
     }
 
-    // Equipment
+    // Equipment - load selectors first, then set values
     this.loadEquipmentSelectors();
-    this.setFormValue('dwellerWeapon', (dweller.equipedWeapon?.id || dweller.weapon?.id || '').toString());
-    this.setFormValue('dwellerOutfit', (dweller.equipedOutfit?.id || dweller.outfit?.id || '').toString());
-    this.setFormValue('dwellerPet', dweller.pet?.id?.toString() || '');
+    
+    // Set equipment values after a brief delay to ensure DOM is updated
+    setTimeout(() => {
+      this.setFormValue('dwellerWeapon', (dweller.equipedWeapon?.id || dweller.weapon?.id || '').toString());
+      this.setFormValue('dwellerOutfit', (dweller.equipedOutfit?.id || dweller.outfit?.id || '').toString());
+      
+      // Set pet value - check both pet and equippedPet properties for compatibility
+      const petId = dweller.equippedPet?.id || dweller.pet?.id || '';
+      console.log('Setting pet ID:', petId, 'for dweller:', dweller.name); // Debug logging
+      console.log('Pet data:', { pet: dweller.pet, equippedPet: dweller.equippedPet }); // Debug logging
+      this.setFormValue('dwellerPet', petId);
+      
+      // Verify the pet was set correctly
+      const petSelect = document.getElementById('dwellerPet') as HTMLSelectElement;
+      if (petSelect && petId) {
+        console.log('Pet select value after setting:', petSelect.value); // Debug logging
+        console.log('Available pet options:', Array.from(petSelect.options).map(opt => opt.value)); // Debug logging
+      }
+    }, 10);
   }
 
   private loadEquipmentSelectors(): void {
     this.loadWeaponSelector();
     this.loadOutfitSelector();
-    // Note: Pet selector would need pet data from game constants
+    this.loadPetSelector();
   }
 
   private loadWeaponSelector(): void {
@@ -243,6 +251,21 @@ export class DwellerUI {
       option.value = outfitId;
       option.textContent = outfitName;
       outfitSelect.appendChild(option);
+    });
+  }
+
+  private loadPetSelector(): void {
+    const petSelect = document.getElementById('dwellerPet') as HTMLSelectElement;
+    if (!petSelect) return;
+
+    petSelect.innerHTML = '<option value="">No Pet</option>';
+    
+    // PET_LIST is an object, not array
+    Object.entries(PET_LIST).forEach(([petId, petName]) => {
+      const option = document.createElement('option');
+      option.value = petId;
+      option.textContent = petName;
+      petSelect.appendChild(option);
     });
   }
 
@@ -290,13 +313,6 @@ export class DwellerUI {
       if (hairColorHex) {
         this.selectedDweller.hairColor = this.colorConverter(hairColorHex.replace('#', '')) as number;
       }
-
-      this.selectedDweller.hairType = parseInt(this.getFormValue('dwellerHairType')) || 1;
-      this.selectedDweller.facialHair = parseInt(this.getFormValue('dwellerFacialHair')) || 1;
-
-      // Validate hair type and facial hair ranges
-      this.selectedDweller.hairType = Math.max(1, Math.min(15, this.selectedDweller.hairType));
-      this.selectedDweller.facialHair = Math.max(1, Math.min(10, this.selectedDweller.facialHair));
 
       // Update pregnancy (only for females)
       if (newGender === 1) { // Female
@@ -357,7 +373,14 @@ export class DwellerUI {
         this.selectedDweller.equipedOutfit = undefined;
       }
 
-      // TODO: Handle pet updates when pet methods are available
+      // Handle pet updates
+      const petId = this.getFormValue('dwellerPet');
+      if (petId) {
+        this.saveEditor.setDwellerPet(this.selectedDweller, petId);
+      } else {
+        // Remove pet if empty
+        this.saveEditor.removeDwellerPet(this.selectedDweller);
+      }
       
       // Refresh the dweller list to show updated info
       this.loadDwellersList();

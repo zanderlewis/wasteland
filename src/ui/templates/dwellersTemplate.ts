@@ -88,7 +88,7 @@ export const createDwellersSectionTemplate = (): string => `
 
             <!-- Appearance Section -->
             <h4 class="text-md font-semibold mb-4">Appearance</h4>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               <div class="form-group">
                 <label class="form-label">Skin Color</label>
                 <input type="color" id="dwellerSkinColor" class="form-input" value="#FFDBAC" title="Skin Color">
@@ -96,41 +96,6 @@ export const createDwellersSectionTemplate = (): string => `
               <div class="form-group">
                 <label class="form-label">Hair Color</label>
                 <input type="color" id="dwellerHairColor" class="form-input" value="#8B4513" title="Hair Color">
-              </div>
-              <div class="form-group">
-                <label class="form-label">Hair Type</label>
-                <select id="dwellerHairType" class="form-input" title="Hair style">
-                  <option value="1">Short</option>
-                  <option value="2">Long</option>
-                  <option value="3">Wavy</option>
-                  <option value="4">Curly</option>
-                  <option value="5">Bald</option>
-                  <option value="6">Ponytail</option>
-                  <option value="7">Buzz Cut</option>
-                  <option value="8">Mohawk</option>
-                  <option value="9">Afro</option>
-                  <option value="10">Dreadlocks</option>
-                  <option value="11">Pigtails</option>
-                  <option value="12">Braids</option>
-                  <option value="13">Side Part</option>
-                  <option value="14">Slicked Back</option>
-                  <option value="15">Messy</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label class="form-label">Facial Hair</label>
-                <select id="dwellerFacialHair" class="form-input" title="Facial hair style">
-                  <option value="1">None</option>
-                  <option value="2">Mustache</option>
-                  <option value="3">Goatee</option>
-                  <option value="4">Full Beard</option>
-                  <option value="5">Stubble</option>
-                  <option value="6">Soul Patch</option>
-                  <option value="7">Handlebar</option>
-                  <option value="8">Van Dyke</option>
-                  <option value="9">Mutton Chops</option>
-                  <option value="10">Chin Strap</option>
-                </select>
               </div>
             </div>
 
