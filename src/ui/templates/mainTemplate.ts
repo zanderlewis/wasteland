@@ -28,6 +28,8 @@ export const createMainTemplate = (): string => `
       </div>
     </div>
 
+    ${createStatusTemplate()}
+
     <!-- Save Editor Tabs -->
     <div id="editorSection" class="hidden">
       <div class="tab-container">
@@ -39,7 +41,6 @@ export const createMainTemplate = (): string => `
       ${createVaultSectionTemplate()}
       ${createDwellersSectionTemplate()}
       ${createToolsSectionTemplate()}
-      ${createStatusTemplate()}
     </div>
   </div>
 `;
