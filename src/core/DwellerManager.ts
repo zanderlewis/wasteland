@@ -135,7 +135,7 @@ export class DwellerManager {
    */
   setDwellerLevel(dweller: Dweller, level: number, experience?: number): void {
     if (!dweller.experience) {
-      dweller.experience = { currentLevel: 1, experienceValue: 0 };
+      dweller.experience = { currentLevel: 1, experienceValue: 0, wastelandExperience: 0 };
     }
     
     const clampedLevel = Math.max(1, Math.min(50, level));
@@ -166,10 +166,10 @@ export class DwellerManager {
   setDwellerPregnancy(dweller: Dweller, isPregnant: boolean): void {
     dweller.pregnant = isPregnant;
     if (isPregnant) {
-      dweller.babyReadyTime = Date.now() + (3600000); // 1 hour from now
+      dweller.babyReady = false; // Will be true when baby is ready
     } else {
-      dweller.partner = undefined;
-      dweller.babyReadyTime = undefined;
+      dweller.relations.partner = -1;
+      dweller.babyReady = false;
     }
   }
 
@@ -180,7 +180,7 @@ export class DwellerManager {
    * @param outfitType - Outfit type string
    */
   setDwellerOutfit(dweller: Dweller, outfitId: number | string, outfitType?: string): void {
-    // Handle both 'outfit' and 'equipedOutfit' properties
+    // Handle only 'equipedOutfit' property as per Vault3.json structure
     const outfitData = {
       id: String(outfitType || outfitId), // Convert to string for actual save format
       type: "Outfit",
@@ -188,7 +188,6 @@ export class DwellerManager {
       hasRandonWeaponBeenAssigned: false
     };
     
-    dweller.outfit = outfitData;
     dweller.equipedOutfit = outfitData;
   }
 
@@ -199,7 +198,7 @@ export class DwellerManager {
    * @param weaponType - Weapon type string
    */
   setDwellerWeapon(dweller: Dweller, weaponId: number | string, weaponType?: string): void {
-    // Handle both 'weapon' and 'equipedWeapon' properties
+    // Handle only 'equipedWeapon' property as per Vault3.json structure
     const weaponData = {
       id: String(weaponType || weaponId), // Convert to string for actual save format
       type: "Weapon",
@@ -207,7 +206,6 @@ export class DwellerManager {
       hasRandonWeaponBeenAssigned: false
     };
     
-    dweller.weapon = weaponData;
     dweller.equipedWeapon = weaponData;
   }
 

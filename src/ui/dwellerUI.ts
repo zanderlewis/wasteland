@@ -174,7 +174,7 @@ export class DwellerUI {
     // Pregnancy (only for females)
     if (dweller.gender === 1) { // Female
       this.setFormValue('dwellerPregnant', dweller.pregnant ? 'true' : 'false');
-      this.setFormValue('dwellerBabyReadyTime', (dweller.babyReadyTime || 0).toString());
+      this.setFormValue('dwellerBabyReadyTime', dweller.babyReady ? 'true' : 'false');
       
       // Show pregnancy fields
       this.togglePregnancyFields(true);
@@ -200,20 +200,20 @@ export class DwellerUI {
     
     // Set equipment values after a brief delay to ensure DOM is updated
     setTimeout(() => {
-      this.setFormValue('dwellerWeapon', (dweller.equipedWeapon?.id || dweller.weapon?.id || '').toString());
-      this.setFormValue('dwellerOutfit', (dweller.equipedOutfit?.id || dweller.outfit?.id || '').toString());
+      this.setFormValue('dwellerWeapon', (dweller.equipedWeapon?.id || '').toString());
+      this.setFormValue('dwellerOutfit', (dweller.equipedOutfit?.id || '').toString());
       
-      // Set pet value - check both pet and equippedPet properties for compatibility
+      // Set pet value
       const petId = dweller.equippedPet?.id || dweller.pet?.id || '';
-      console.log('Setting pet ID:', petId, 'for dweller:', dweller.name); // Debug logging
-      console.log('Pet data:', { pet: dweller.pet, equippedPet: dweller.equippedPet }); // Debug logging
       this.setFormValue('dwellerPet', petId);
       
       // Verify the pet was set correctly
       const petSelect = document.getElementById('dwellerPet') as HTMLSelectElement;
       if (petSelect && petId) {
-        console.log('Pet select value after setting:', petSelect.value); // Debug logging
-        console.log('Available pet options:', Array.from(petSelect.options).map(opt => opt.value)); // Debug logging
+        const selectedOption = Array.from(petSelect.options).find(opt => opt.value === petId);
+        if (selectedOption) {
+          console.log('Pet select value after setting:', petSelect.value);
+        }
       }
     }, 10);
   }
@@ -314,14 +314,14 @@ export class DwellerUI {
         this.selectedDweller.hairColor = this.colorConverter(hairColorHex.replace('#', '')) as number;
       }
 
-      // Update pregnancy (only for females)
+      // Update pregnancy
       if (newGender === 1) { // Female
         this.selectedDweller.pregnant = this.getFormValue('dwellerPregnant') === 'true';
-        this.selectedDweller.babyReadyTime = parseInt(this.getFormValue('dwellerBabyReadyTime')) || 0;
+        this.selectedDweller.babyReady = this.getFormValue('dwellerBabyReadyTime') === 'true';
       } else {
         // Clear pregnancy for males
         this.selectedDweller.pregnant = false;
-        this.selectedDweller.babyReadyTime = 0;
+        this.selectedDweller.babyReady = false;
       }
 
       // Use SaveEditor methods for validated updates
@@ -360,7 +360,6 @@ export class DwellerUI {
         this.saveEditor.setDwellerWeapon(this.selectedDweller, weaponId);
       } else {
         // Clear weapon if empty
-        this.selectedDweller.weapon = undefined;
         this.selectedDweller.equipedWeapon = undefined;
       }
 
@@ -369,7 +368,6 @@ export class DwellerUI {
         this.saveEditor.setDwellerOutfit(this.selectedDweller, outfitId);
       } else {
         // Clear outfit if empty
-        this.selectedDweller.outfit = undefined;
         this.selectedDweller.equipedOutfit = undefined;
       }
 

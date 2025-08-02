@@ -112,7 +112,10 @@ export const createDwellersSectionTemplate = (): string => `
                 </div>
                 <div class="form-group">
                   <label class="form-label">Baby Ready Time</label>
-                  <input type="number" id="dwellerBabyReadyTime" class="form-input" min="0" title="Time until baby is ready (seconds)">
+                  <select id="dwellerBabyReadyTime" class="form-input" title="Whether baby is ready to be born">
+                    <option value="false">Not Ready</option>
+                    <option value="true">Ready</option>
+                  </select>
                 </div>
               </div>
             </div>

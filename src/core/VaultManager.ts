@@ -46,7 +46,7 @@ export class VaultManager {
   setResource(resourceType: ResourceTypeValue, amount: number): void {
     if (!this.save) throw new Error('No save loaded');
     if (!this.save.vault.storage) {
-      this.save.vault.storage = { resources: {} };
+      this.save.vault.storage = { resources: {}, bonus: {} };
     }
     if (!this.save.vault.storage.resources) {
       this.save.vault.storage.resources = {};

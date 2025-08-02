@@ -1,0 +1,23 @@
+export const RECIPE_UNLOCKS = [
+  "Shotgun_Rusty", "Railgun", "LaserPistol_Focused", "PlasmaThrower_Boosted",
+  "PlasmaThrower_Overcharged", "PipePistol_LittleBrother", "CombatShotgun_Hardened",
+  "Flamer_Rusty", "LaserRifle_Tuned", "HuntingRifle_OlPainless", "PlasmaRifle_Focused",
+  "PipeRifle", "JunkJet_Tactical", "InstitutePistol_Improved", "BBGun_RedRocket",
+  "032Pistol_Hardened", "InstitutePistol_Apotheosis", "InstitutePistol_Scattered",
+  "InstituteRifle_Excited", "PipeRifle_Long", "GatlingLaser", "PlasmaThrower_DragonsMaw",
+  "PlasmaRifle", "AssaultRifle_Rusty", "AlienBlaster_Destabilizer", "Fatman_Guided",
+  "Melee_RaiderSword", "SniperRifle_Hardened", "Melee_BaseballBat", "PlasmaRifle_MeanGreenMonster",
+  "032Pistol_WildBillsSidearm", "GaussRifle", "LaserRifle_WaserWifle", "InstitutePistol_Scoped",
+  "Flamer_Pressurized", "AssaultRifle_ArmorPiercing", "Railgun_Rusty", "Minigun_Hardened",
+  "InstituteRifle_VirgilsRifle", "JunkJet_Electrified", "Flamer_Hardened", "GatlingLaser_Focused",
+  "Magnum_Hardened", "Railgun_Railmaster", "Melee_PoolCue", "Minigun_Enhanced",
+  "GaussRifle_Rusty", "JunkJet_RecoilCompensated", "Pistol_LoneWanderer", "MissilLauncher",
+  "LaserPistol", "InstitutePistol_Incendiary", "BBGun_ArmorPiercing", "Rifle_ArmorPiercing",
+  "AssaultRifle_Enhanced", "LaserRifle_Rusty", "CombatShotgun", "GatlingLaser_Tuned",
+  "SawedOffShotgun_Hardened", "PlasmaThrower_Agitated", "Magnum_Blackhawk", "AssaultRifle_Infiltrator",
+  "PlasmaPistol_MPLXNovasurge", "HuntingRifle_ArmorPiercing", "Railgun_Enhanced", "SniperRifle_Enhanced",
+  "GaussRifle_Accelerated", "PlasmaThrower_Tactical", "CombatShotgun_Rusty", "PipeRifle_Bayoneted",
+  "GaussRifle_Hardened", "PlasmaThrower", "AlienBlaster_Focused", "SawedOffShotgun_Kneecapper",
+  "Flamer_Enhanced", "Railgun_Hardened", "GaussRifle_Magnetro4000", "PipePistol_Auto",
+  "SawedOffShotgun_Enhanced", "SawedOffShotgun_Rusty", "Shotgun"
+] as const;
