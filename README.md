@@ -11,6 +11,7 @@ Wasteland is a modern save editor for Fallout Shelter, designed to provide a use
   - SPECIAL stats
   - Equipment (weapons, outfits, pets)
   - Appearance
+  - Pregnancy
 - Manage vault resources
   - Caps
   - Nuka Cola
@@ -28,4 +29,13 @@ Wasteland is a modern save editor for Fallout Shelter, designed to provide a use
   - Unlock all recipes
   - Revive all dead dwellers
 - Import and export vault saves
+  - Import .sav and .json files
+  - Export to .sav and .json formats
+- Backup and restore saves
 - User-friendly interface with tabs for different sections
+
+## How to Find Your Save File
+- Windows: `Documents\My Games\Fallout Shelter`
+- Windows Store: `%LOCALAPPDATA%\FalloutShelter`
+- Steam: `C:\Users\YOURUSERNAME\AppData\Local\FalloutShelter`
+- Android: `storage/sdcard/Android/data/com.bethsoft.falloutshelter/files`

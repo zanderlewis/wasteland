@@ -5,12 +5,12 @@ import { createToolsSectionTemplate } from './toolsTemplate';
 import { createStatusTemplate } from './statusTemplate';
 
 export const createMainTemplate = (): string => `
-  <div class="container">
+  <div class="container p-6">
     <h1 class="text-4xl font-bold text-center mb-8 text-gray-100">Fallout Shelter Save Editor</h1>
     
     <!-- File Upload Section -->
     <div class="card mb-6">
-      <div class="card-header">
+      <div class="card-header mb-2">
         <h2 class="text-xl font-semibold">Upload Save File</h2>
       </div>
       <div class="card-body">
@@ -21,6 +21,16 @@ export const createMainTemplate = (): string => `
           <p class="text-sm text-gray-500">
             Supported formats: .sav (encrypted), .json (decrypted)
           </p>
+          <!-- How to Find Your Save File -->
+          <div class="text-sm text-gray-500 mt-2">
+            <strong>How to Find Your Save File:</strong>
+            <div class="pl-2 mt-2 space-y-1">
+              <div><strong>Windows:</strong> <code class="file-path">Documents\\My Games\\Fallout Shelter</code></div>
+              <div><strong>Windows Store:</strong> <code class="file-path">%LOCALAPPDATA%\\FalloutShelter</code></div>
+              <div><strong>Steam:</strong> <code class="file-path">C:\\Users\\YOURUSERNAME\\AppData\\Local\\FalloutShelter</code></div>
+              <div><strong>Android:</strong> <code class="file-path">storage/sdcard/Android/data/com.bethsoft.falloutshelter/files</code></div>
+            </div>
+          </div>
         </div>
         <div id="fileStatus" class="mt-4 hidden">
           <p class="text-sm text-gray-400">File: <span id="fileName" class="font-medium text-gray-200"></span></p>
@@ -32,7 +42,7 @@ export const createMainTemplate = (): string => `
 
     <!-- Save Editor Tabs -->
     <div id="editorSection" class="hidden">
-      <div class="tab-container">
+      <div class="tab-container mb-4">
         <button class="tab active" data-section="vault">Vault</button>
         <button class="tab" data-section="dwellers">Dwellers</button>
         <button class="tab" data-section="tools">Tools</button>

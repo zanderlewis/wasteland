@@ -155,6 +155,32 @@
   animation: fadeIn 0.3s ease-out;
 }
 
+/* Code block styling */
+code {
+  @apply inline bg-gray-800 text-green-400 font-mono px-1 rounded-sm;
+}
+
+pre {
+  @apply block bg-gray-800 text-green-400 font-mono text-sm overflow-x-auto;
+}
+
+pre code {
+  @apply bg-transparent text-inherit;
+}
+
+.code-block {
+  @apply bg-gray-800 font-mono text-sm text-green-400 overflow-x-auto;
+}
+
+.inline-code {
+  @apply inline bg-gray-800 text-green-400 font-mono text-sm;
+}
+
+/* File path specific styling */
+.file-path {
+  @apply inline bg-gray-800 text-yellow-400 font-mono text-sm px-1 rounded-sm;
+}
+
 /* Custom gray-750 utility and max-height utility */
 @layer utilities {
   .bg-gray-750 {
