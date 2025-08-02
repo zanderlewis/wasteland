@@ -103,30 +103,27 @@ export const validateValue = {
   starterPacks: (value: number): number => Math.max(0, Math.min(GAME_LIMITS.STARTER_PACKS_MAX, value))
 } as const;
 
-// Room unlock list
+// Room unlock list - matches original shelter editor
 export const ROOM_UNLOCKS = [
-  "RestQuartersUnlock",
-  "DinerUnlock", 
-  "PowerPlantUnlock",
-  "WaterroomUnlock",
-  "MedbayUnlock",
   "StorageUnlock",
+  "MedbayUnlock", 
+  "SciencelabUnlock",
+  "OverseerUnlock",
   "RadioStationUnlock",
   "WeaponFactoryUnlock",
-  "OutfitFactoryUnlock",
+  "GymUnlock",
   "DojoUnlock",
-  "ClassUnlock",
   "ArmoryUnlock",
-  "FitnessUnlock",
+  "ClassUnlock",
+  "OutfitFactoryUnlock",
+  "CardioUnlock",
   "BarUnlock",
   "GameRoomUnlock",
   "BarberShopUnlock",
+  "PowerPlantUnlock",
+  "WaterroomUnlock",
   "HydroponicUnlock",
   "NukacolaUnlock",
-  "GymUnlock",
-  "SciencelabUnlock",
-  "OverseerUnlock",
-  "CardioUnlock",
   "DesignFactoryUnlock"
 ] as const;
 

@@ -379,4 +379,11 @@ export class SaveEditor {
   unlockEverything(): void {
     this.quickActions.unlockEverything();
   }
+
+  /**
+   * Remove all rocks from the vault
+   */
+  removeAllRocks(): void {
+    this.quickActions.removeAllRocks();
+  }
 }

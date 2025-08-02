@@ -52,15 +52,19 @@ export class QuickActions {
   unlockAllRooms(): void {
     if (!this.save) throw new Error('No save loaded');
     
-    if (!this.save.vault.unlockedRooms) {
-      this.save.vault.unlockedRooms = [];
+    // Initialize unlockableMgr if it doesn't exist
+    if (!this.save.unlockableMgr) {
+      (this.save as any).unlockableMgr = {
+        objectivesInProgress: [],
+        completed: [],
+        claimed: []
+      };
     }
 
-    ROOM_UNLOCKS.forEach(room => {
-      if (!this.save!.vault.unlockedRooms!.includes(room)) {
-        this.save!.vault.unlockedRooms!.push(room);
-      }
-    });
+    // Clear existing objectives and set all rooms as claimed
+    (this.save as any).unlockableMgr.objectivesInProgress = [];
+    (this.save as any).unlockableMgr.completed = [];
+    (this.save as any).unlockableMgr.claimed = [...ROOM_UNLOCKS];
   }
 
   /**
@@ -108,6 +112,17 @@ export class QuickActions {
     this.unlockAllRooms();
     this.unlockAllRecipes();
     this.unlockAllThemes();
+  }
+
+  /**
+   * Remove all rocks from the vault
+   */
+  removeAllRocks(): void {
+    if (!this.save) throw new Error('No save loaded');
+    
+    if (this.save.vault.rocks) {
+      this.save.vault.rocks = [];
+    }
   }
 
   // Helper methods that delegate to other managers

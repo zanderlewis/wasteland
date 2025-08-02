@@ -1,11 +1,24 @@
 // Tools-specific UI management
 import { SaveEditor } from '../core/SaveEditor';
+import type { VaultUI } from './vaultUI';
+import type { DwellerUI } from './dwellerUI';
 
 export class ToolsUI {
   private saveEditor: SaveEditor;
+  private vaultUI: VaultUI | null = null;
+  private dwellerUI: DwellerUI | null = null;
+  private showStatusCallback: ((message: string, type: 'success' | 'error' | 'info') => void) | null = null;
 
-  constructor(saveEditor: SaveEditor) {
+  constructor(
+    saveEditor: SaveEditor, 
+    vaultUI?: VaultUI, 
+    dwellerUI?: DwellerUI,
+    showStatusCallback?: (message: string, type: 'success' | 'error' | 'info') => void
+  ) {
     this.saveEditor = saveEditor;
+    this.vaultUI = vaultUI || null;
+    this.dwellerUI = dwellerUI || null;
+    this.showStatusCallback = showStatusCallback || null;
   }
 
   bindEvents(): void {
@@ -56,7 +69,9 @@ export class ToolsUI {
     const maxAllDwellersBtn = document.getElementById('maxAllDwellers');
     maxAllDwellersBtn?.addEventListener('click', () => {
       this.saveEditor.healAllDwellers();
-      this.showMessage('All dwellers healed!', 'success');
+      this.saveEditor.maxAllDwellersSpecial();
+      this.saveEditor.maxAllHappiness();
+      this.showMessage('All dwellers maxed out (health, SPECIAL, and happiness)!', 'success');
       this.refreshDwellersUI();
     });
 
@@ -65,6 +80,7 @@ export class ToolsUI {
     unlockAllRoomsBtn?.addEventListener('click', () => {
       this.saveEditor.unlockAllRooms();
       this.showMessage('All rooms unlocked!', 'success');
+      this.refreshVaultUI();
     });
 
     // Unlock all recipes
@@ -72,6 +88,13 @@ export class ToolsUI {
     unlockAllRecipesBtn?.addEventListener('click', () => {
       this.saveEditor.unlockAllRecipes();
       this.showMessage('All recipes unlocked!', 'success');
+    });
+
+    // Remove all rocks
+    const removeAllRocksBtn = document.getElementById('removeAllRocks');
+    removeAllRocksBtn?.addEventListener('click', () => {
+      this.saveEditor.removeAllRocks();
+      this.showMessage('All rocks removed!', 'success');
     });
   }
 
@@ -176,19 +199,25 @@ export class ToolsUI {
   }
 
   private refreshVaultUI(): void {
-    // Trigger vault UI refresh
-    const event = new CustomEvent('refreshVaultUI');
-    document.dispatchEvent(event);
+    // Directly call the vault UI load method if available
+    if (this.vaultUI) {
+      this.vaultUI.loadVaultData();
+    }
   }
 
   private refreshDwellersUI(): void {
-    // Trigger dwellers UI refresh
-    const event = new CustomEvent('refreshDwellersUI');
-    document.dispatchEvent(event);
+    // Directly call the dwellers UI load method if available
+    if (this.dwellerUI) {
+      this.dwellerUI.loadDwellersList();
+    }
   }
 
   private showMessage(message: string, type: 'success' | 'error' | 'info'): void {
-    // This could dispatch an event or call a global message handler
-    console.log(`${type.toUpperCase()}: ${message}`);
+    if (this.showStatusCallback) {
+      this.showStatusCallback(message, type);
+    } else {
+      // Fallback to console logging
+      console.log(`${type.toUpperCase()}: ${message}`);
+    }
   }
 }

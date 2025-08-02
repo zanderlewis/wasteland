@@ -18,6 +18,7 @@ export const createToolsSectionTemplate = (): string => `
             <button id="maxAllDwellers" class="btn btn-primary w-full">Max All Dwellers</button>
             <button id="unlockAllRooms" class="btn btn-primary w-full">Unlock All Rooms</button>
             <button id="unlockAllRecipes" class="btn btn-primary w-full">Unlock All Recipes</button>
+            <button id="removeAllRocks" class="btn btn-primary w-full">Remove All Rocks</button>
           </div>
         </div>
       </div>

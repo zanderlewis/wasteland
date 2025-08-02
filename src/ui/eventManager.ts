@@ -14,7 +14,12 @@ export class EventManager {
     this.saveEditor = saveEditor;
     this.dwellerUI = new DwellerUI(saveEditor);
     this.vaultUI = new VaultUI(saveEditor);
-    this.toolsUI = new ToolsUI(saveEditor);
+    this.toolsUI = new ToolsUI(
+      saveEditor, 
+      this.vaultUI, 
+      this.dwellerUI,
+      (message: string, type: 'success' | 'error' | 'info') => this.showStatus(message, type)
+    );
   }
 
   bindEvents(): void {
