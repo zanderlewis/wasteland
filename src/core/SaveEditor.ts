@@ -5,11 +5,15 @@ import type {
   SpecialStatType,
   ResourceTypeValue 
 } from '../types/saveFile';
+import type { ISaveEditor } from './interfaces/ISaveEditor';
 import { VaultManager } from './VaultManager';
 import { DwellerManager } from './DwellerManager';
 import { QuickActions } from './QuickActions';
+import { SaveEditorVaultMixin } from './mixins/SaveEditorVaultMixin';
+import { SaveEditorDwellerMixin } from './mixins/SaveEditorDwellerMixin';
+import { SaveEditorQuickActionsMixin } from './mixins/SaveEditorQuickActionsMixin';
 
-export class SaveEditor {
+export class SaveEditor implements ISaveEditor {
   private save: FalloutShelterSave | null = null;
   private fileName: string = '';
   
@@ -18,10 +22,20 @@ export class SaveEditor {
   private dwellerManager: DwellerManager;
   private quickActions: QuickActions;
 
+  // Mixins for organized functionality
+  private vaultMixin: SaveEditorVaultMixin;
+  private dwellerMixin: SaveEditorDwellerMixin;
+  private quickActionsMixin: SaveEditorQuickActionsMixin;
+
   constructor() {
     this.vaultManager = new VaultManager(null);
     this.dwellerManager = new DwellerManager(null);
     this.quickActions = new QuickActions(null);
+
+    // Initialize mixins
+    this.vaultMixin = new SaveEditorVaultMixin(this.vaultManager);
+    this.dwellerMixin = new SaveEditorDwellerMixin(this.dwellerManager);
+    this.quickActionsMixin = new SaveEditorQuickActionsMixin(this.quickActions);
   }
 
   /**
@@ -61,329 +75,186 @@ export class SaveEditor {
   }
 
   // ============================================================================
-  // VAULT OPERATIONS (delegated to VaultManager)
+  // VAULT OPERATIONS (delegated to VaultMixin)
   // ============================================================================
 
-  /**
-   * Set vault name
-   * @param name - New vault name
-   */
   setVaultName(name: string): void {
-    this.vaultManager.setVaultName(name);
+    this.vaultMixin.setVaultName(name);
   }
 
-  /**
-   * Get vault name
-   */
   getVaultName(): string {
-    return this.vaultManager.getVaultName();
+    return this.vaultMixin.getVaultName();
   }
 
-  /**
-   * Set resource amount
-   * @param resourceType - Type of resource
-   * @param amount - Amount to set
-   */
   setResource(resourceType: ResourceTypeValue, amount: number): void {
-    this.vaultManager.setResource(resourceType, amount);
+    this.vaultMixin.setResource(resourceType, amount);
   }
 
-  /**
-   * Get resource amount
-   * @param resourceType - Type of resource
-   */
   getResource(resourceType: ResourceTypeValue): number {
-    return this.vaultManager.getResource(resourceType);
+    return this.vaultMixin.getResource(resourceType);
   }
 
-  /**
-   * Set lunchbox count
-   * @param count - Number of lunchboxes
-   */
   setLunchboxCount(count: number): void {
-    this.vaultManager.setLunchboxCount(count);
+    this.vaultMixin.setLunchboxCount(count);
   }
 
-  /**
-   * Get lunchbox count
-   */
   getLunchboxCount(): number {
-    return this.vaultManager.getLunchboxCount();
+    return this.vaultMixin.getLunchboxCount();
   }
 
-  /**
-   * Set Mr. Handy count
-   * @param count - Number of Mr. Handies
-   */
   setMrHandyCount(count: number): void {
-    this.vaultManager.setMrHandyCount(count);
+    this.vaultMixin.setMrHandyCount(count);
   }
 
-  /**
-   * Get Mr. Handy count
-   */
   getMrHandyCount(): number {
-    return this.vaultManager.getMrHandyCount();
+    return this.vaultMixin.getMrHandyCount();
   }
 
-  /**
-   * Set Pet Carrier count
-   * @param count - Number of Pet Carriers
-   */
   setPetCarrierCount(count: number): void {
-    this.vaultManager.setPetCarrierCount(count);
+    this.vaultMixin.setPetCarrierCount(count);
   }
 
-  /**
-   * Get Pet Carrier count
-   */
   getPetCarrierCount(): number {
-    return this.vaultManager.getPetCarrierCount();
+    return this.vaultMixin.getPetCarrierCount();
   }
 
-  /**
-   * Set Starter Pack count
-   * @param count - Number of Starter Packs
-   */
   setStarterPackCount(count: number): void {
-    this.vaultManager.setStarterPackCount(count);
+    this.vaultMixin.setStarterPackCount(count);
   }
 
-  /**
-   * Get Starter Pack count
-   */
   getStarterPackCount(): number {
-    return this.vaultManager.getStarterPackCount();
+    return this.vaultMixin.getStarterPackCount();
   }
 
-  /**
-   * Set vault theme
-   * @param themeId - Theme ID to set
-   */
   setVaultTheme(themeId: number): void {
-    this.vaultManager.setVaultTheme(themeId);
+    this.vaultMixin.setVaultTheme(themeId);
   }
 
-  /**
-   * Get vault theme
-   */
   getVaultTheme(): number {
-    return this.vaultManager.getVaultTheme();
+    return this.vaultMixin.getVaultTheme();
   }
 
-  /**
-   * Set vault mode
-   * @param mode - Vault mode ('Normal' or 'Survival')
-   */
   setVaultMode(mode: string): void {
-    this.vaultManager.setVaultMode(mode);
+    this.vaultMixin.setVaultMode(mode);
   }
 
-  /**
-   * Get vault mode
-   */
   getVaultMode(): string {
-    return this.vaultManager.getVaultMode();
+    return this.vaultMixin.getVaultMode();
   }
 
-  /**
-   * Unlock all vault themes
-   */
   unlockAllThemes(): void {
-    this.vaultManager.unlockAllThemes();
+    this.vaultMixin.unlockAllThemes();
   }
 
   // ============================================================================
-  // DWELLER OPERATIONS (delegated to DwellerManager)
+  // DWELLER OPERATIONS (delegated to DwellerMixin)
   // ============================================================================
 
-  /**
-   * Get all dwellers
-   */
   getDwellers(): Dweller[] {
-    return this.dwellerManager.getDwellers();
+    return this.dwellerMixin.getDwellers();
   }
 
-  /**
-   * Get all actors (NPCs)
-   */
   getActors(): Actor[] {
-    return this.dwellerManager.getActors();
+    return this.dwellerMixin.getActors();
   }
 
-  /**
-   * Set dweller's SPECIAL stat
-   * @param dweller - The dweller to modify
-   * @param statType - The SPECIAL stat type
-   * @param value - The value to set (0-10)
-   */
   setDwellerSpecial(dweller: Dweller, statType: SpecialStatType, value: number): void {
-    this.dwellerManager.setDwellerSpecial(dweller, statType, value);
+    this.dwellerMixin.setDwellerSpecial(dweller, statType, value);
   }
 
-  /**
-   * Get dweller's SPECIAL stat
-   * @param dweller - The dweller
-   * @param statType - The SPECIAL stat type
-   */
   getDwellerSpecial(dweller: Dweller, statType: SpecialStatType): number {
-    return this.dwellerManager.getDwellerSpecial(dweller, statType);
+    return this.dwellerMixin.getDwellerSpecial(dweller, statType);
   }
 
-  /**
-   * Max out all SPECIAL stats for a dweller
-   * @param dweller - The dweller to modify
-   */
   maxDwellerSpecial(dweller: Dweller): void {
-    this.dwellerManager.maxDwellerSpecial(dweller);
+    this.dwellerMixin.maxDwellerSpecial(dweller);
   }
 
-  /**
-   * Max out all SPECIAL stats for all dwellers
-   */
   maxAllDwellersSpecial(): void {
-    this.dwellerManager.maxAllDwellersSpecial();
+    this.dwellerMixin.maxAllDwellersSpecial();
   }
 
-  /**
-   * Set dweller health
-   * @param dweller - The dweller to modify
-   * @param health - Health value
-   * @param maxHealth - Maximum health value (optional)
-   */
   setDwellerHealth(dweller: Dweller, health: number, maxHealth?: number): void {
-    this.dwellerManager.setDwellerHealth(dweller, health, maxHealth);
+    this.dwellerMixin.setDwellerHealth(dweller, health, maxHealth);
   }
 
-  /**
-   * Set dweller level and experience
-   * @param dweller - The dweller to modify
-   * @param level - Level to set (1-50)
-   * @param experience - Experience value (optional)
-   */
   setDwellerLevel(dweller: Dweller, level: number, experience?: number): void {
-    this.dwellerManager.setDwellerLevel(dweller, level, experience);
+    this.dwellerMixin.setDwellerLevel(dweller, level, experience);
   }
 
-  /**
-   * Set dweller happiness
-   * @param dweller - The dweller to modify 
-   * @param happiness - Happiness value (0-100)
-   */
   setDwellerHappiness(dweller: Dweller, happiness: number): void {
-    this.dwellerManager.setDwellerHappiness(dweller, happiness);
+    this.dwellerMixin.setDwellerHappiness(dweller, happiness);
   }
 
-  /**
-   * Set dweller radiation
-   * @param dweller - The dweller to modify
-   * @param radiation - Radiation value (0-100)
-   */
   setDwellerRadiation(dweller: Dweller, radiation: number): void {
-    this.dwellerManager.setDwellerRadiation(dweller, radiation);
+    this.dwellerMixin.setDwellerRadiation(dweller, radiation);
   }
 
   setDwellerWeapon(dweller: Dweller, weaponId: number | string, weaponType?: string): void {
-    this.dwellerManager.setDwellerWeapon(dweller, weaponId, weaponType);
+    this.dwellerMixin.setDwellerWeapon(dweller, weaponId, weaponType);
   }
 
   setDwellerOutfit(dweller: Dweller, outfitId: number | string, outfitType?: string): void {
-    this.dwellerManager.setDwellerOutfit(dweller, outfitId, outfitType);
+    this.dwellerMixin.setDwellerOutfit(dweller, outfitId, outfitType);
   }
 
   setDwellerPet(dweller: Dweller, petId: string, petType?: string): void {
-    this.dwellerManager.setDwellerPet(dweller, petId, petType);
+    this.dwellerMixin.setDwellerPet(dweller, petId, petType);
   }
 
   removeDwellerPet(dweller: Dweller): void {
-    this.dwellerManager.removeDwellerPet(dweller);
+    this.dwellerMixin.removeDwellerPet(dweller);
   }
 
-  /**
-   * Set all dwellers to super health
-   */
   setAllDwellersSuperHealth(): void {
-    this.dwellerManager.setAllDwellersSuperHealth();
+    this.dwellerMixin.setAllDwellersSuperHealth();
   }
 
-  /**
-   * Max happiness for all dwellers
-   */
   maxAllHappiness(): void {
-    this.dwellerManager.maxAllHappiness();
+    this.dwellerMixin.maxAllHappiness();
   }
 
-  /**
-   * Heal all dwellers to full health
-   */
   healAllDwellers(): void {
-    this.dwellerManager.healAllDwellers();
+    this.dwellerMixin.healAllDwellers();
   }
 
-  /**
-   * Remove radiation from all dwellers
-   */
   removeAllRadiation(): void {
-    this.dwellerManager.removeAllRadiation();
+    this.dwellerMixin.removeAllRadiation();
   }
 
   // ============================================================================
-  // QUICK ACTIONS (delegated to QuickActions)
+  // QUICK ACTIONS (delegated to QuickActionsMixin)
   // ============================================================================
 
-  /**
-   * Max caps
-   */
   maxCaps(): void {
-    this.quickActions.maxCaps();
+    this.quickActionsMixin.maxCaps();
   }
 
-  /**
-   * Max Nuka Cola Quantum
-   */
   maxNukaCola(): void {
-    this.quickActions.maxNukaCola();
+    this.quickActionsMixin.maxNukaCola();
   }
 
-  /**
-   * Max lunchboxes
-   */
   maxLunchboxes(): void {
-    this.quickActions.maxLunchboxes();
+    this.quickActionsMixin.maxLunchboxes();
   }
 
-  /**
-   * Max all resources
-   */
   maxAllResources(): void {
-    this.quickActions.maxAllResources();
+    this.quickActionsMixin.maxAllResources();
   }
 
-  /**
-   * Unlock all rooms
-   */
   unlockAllRooms(): void {
-    this.quickActions.unlockAllRooms();
+    this.quickActionsMixin.unlockAllRooms();
   }
 
-  /**
-   * Unlock all recipes
-   */
   unlockAllRecipes(): void {
-    this.quickActions.unlockAllRecipes();
+    this.quickActionsMixin.unlockAllRecipes();
   }
 
-  /**
-   * Unlock everything (rooms, recipes, themes)
-   */
   unlockEverything(): void {
-    this.quickActions.unlockEverything();
+    this.quickActionsMixin.unlockEverything();
   }
 
-  /**
-   * Remove all rocks from the vault
-   */
   removeAllRocks(): void {
-    this.quickActions.removeAllRocks();
+    this.quickActionsMixin.removeAllRocks();
   }
 }

@@ -51,11 +51,9 @@ export class VaultManager {
     if (!this.save.vault.storage.resources) {
       this.save.vault.storage.resources = {};
     }
-    
-    // Map our internal resource names to save file names
+
     const saveFileResourceName = resourceType === 'Caps' ? 'Nuka' : resourceType;
-    
-    // Get the max value for this resource type
+
     const maxValue = resourceType === 'Caps' ? GAME_LIMITS.CAPS_MAX :
                     resourceType === 'NukaColaQuantum' ? GAME_LIMITS.NUKA_COLA_MAX :
                     resourceType === 'Food' ? GAME_LIMITS.FOOD_MAX :
@@ -74,8 +72,7 @@ export class VaultManager {
    */
   getResource(resourceType: ResourceTypeValue): number {
     if (!this.save?.vault?.storage?.resources) return 0;
-    
-    // Map our internal resource names to save file names
+
     const saveFileResourceName = resourceType === 'Caps' ? 'Nuka' : resourceType;
 
     return (this.save.vault.storage.resources as Record<string, number>)[saveFileResourceName] || 0;
@@ -218,7 +215,6 @@ export class VaultManager {
       this.save.vault.unlockedThemes = [];
     }
 
-    // Unlock themes 1-20 (0 is default)
     for (let i = 1; i <= 20; i++) {
       if (!this.save.vault.unlockedThemes.includes(i)) {
         this.save.vault.unlockedThemes.push(i);
@@ -297,8 +293,7 @@ export class VaultManager {
     for (let i = 0; i < starterPackCount; i++) {
       newLunchBoxesByType.push(3);
     }
-    
-    // Update the save
+
     (this.save.vault as any).LunchBoxesByType = newLunchBoxesByType;
   }
 }
