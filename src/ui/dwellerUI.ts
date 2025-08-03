@@ -55,6 +55,8 @@ export class DwellerUI {
   closeDwellerEditor(): void {
     this.uiManager.closeDwellerEditor();
     this.clearSelection();
+    // Reset eviction button to default state
+    this.updateEvictionButton(false);
   }
 
   /**
@@ -80,7 +82,15 @@ export class DwellerUI {
   selectDweller(dweller: Dweller): void {
     this.selectedDweller = dweller;
     this.formManager.loadDwellerToForm(dweller);
-    this.uiManager.showDwellerEditor();
+    
+    // Update UI based on eviction status
+    if (dweller.WillBeEvicted) {
+      this.uiManager.showEvictedDwellerEditor();
+      this.updateEvictionButton(true);
+    } else {
+      this.uiManager.showDwellerEditor();
+      this.updateEvictionButton(false);
+    }
   }
 
   /**
@@ -122,6 +132,25 @@ export class DwellerUI {
       const dweller = e.detail.dweller;
       this.selectDweller(dweller);
     });
+
+    // Eviction button
+    const evictButton = document.getElementById('evictDweller');
+    if (evictButton) {
+      evictButton.addEventListener('click', () => {
+        if (this.selectedDweller) {
+          if (this.selectedDweller.WillBeEvicted) {
+            // Undo eviction
+            this.undoEviction(this.selectedDweller);
+          } else {
+            // Show eviction modal
+            this.showEvictionModal(this.selectedDweller);
+          }
+        }
+      });
+    }
+
+    // Eviction modal events
+    this.setupEvictionModalEvents();
 
     // Batch operation buttons
     this.setupBatchOperationListeners();
@@ -261,6 +290,126 @@ export class DwellerUI {
     this.loadDwellerList();
     if (this.selectedDweller) {
       this.formManager.loadDwellerToForm(this.selectedDweller);
+    }
+  }
+
+  /**
+   * Update the eviction button text and behavior based on dweller state
+   */
+  private updateEvictionButton(isEvicted: boolean): void {
+    const evictButton = document.getElementById('evictDweller') as HTMLButtonElement;
+    if (evictButton) {
+      if (isEvicted) {
+        evictButton.textContent = 'Undo Eviction';
+        evictButton.className = 'btn btn-warning';
+      } else {
+        evictButton.textContent = 'Evict Dweller';
+        evictButton.className = 'btn btn-danger';
+      }
+    }
+  }
+
+  /**
+   * Show the eviction confirmation modal
+   */
+  private showEvictionModal(dweller: Dweller): void {
+    const modal = document.getElementById('evictionModal');
+    const dwellerNameSpan = document.getElementById('evictionDwellerName');
+    
+    if (modal && dwellerNameSpan) {
+      dwellerNameSpan.textContent = `${dweller.name} ${dweller.lastName}`;
+      modal.classList.remove('modal-hidden');
+    }
+  }
+
+  /**
+   * Hide the eviction confirmation modal
+   */
+  private hideEvictionModal(): void {
+    const modal = document.getElementById('evictionModal');
+    if (modal) {
+      modal.classList.add('modal-hidden');
+    }
+  }
+
+  /**
+   * Setup eviction modal event listeners
+   */
+  private setupEvictionModalEvents(): void {
+    const cancelButton = document.getElementById('cancelEviction');
+    const confirmButton = document.getElementById('confirmEviction');
+    const modal = document.getElementById('evictionModal');
+
+    // Cancel eviction
+    if (cancelButton) {
+      cancelButton.addEventListener('click', () => {
+        this.hideEvictionModal();
+      });
+    }
+
+    // Confirm eviction
+    if (confirmButton) {
+      confirmButton.addEventListener('click', () => {
+        if (this.selectedDweller) {
+          this.confirmEviction(this.selectedDweller);
+        }
+        this.hideEvictionModal();
+      });
+    }
+
+    // Close modal when clicking outside
+    if (modal) {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          this.hideEvictionModal();
+        }
+      });
+    }
+  }
+
+  /**
+   * Confirm and execute dweller eviction
+   */
+  private confirmEviction(dweller: Dweller): void {
+    try {
+      // Execute the eviction
+      this.saveEditor.evictDweller(dweller);
+      
+      // Show success message
+      this.uiManager.showMessage(`${dweller.name} ${dweller.lastName} has been evicted from the vault.`, 'success');
+      
+      // Refresh the dweller list and update UI state
+      this.loadDwellerList();
+      this.updateEvictionButton(true);
+      this.uiManager.showEvictedDwellerEditor();
+      
+      console.log(`Dweller ${dweller.name} ${dweller.lastName} evicted successfully`);
+    } catch (error) {
+      console.error('Error evicting dweller:', error);
+      this.uiManager.showMessage('Failed to evict dweller. Please try again.', 'error');
+    }
+  }
+
+  /**
+   * Undo dweller eviction
+   */
+  private undoEviction(dweller: Dweller): void {
+    try {
+      // Execute the undo eviction
+      this.saveEditor.unevictDweller(dweller);
+      
+      // Show success message
+      this.uiManager.showMessage(`${dweller.name} ${dweller.lastName} eviction has been undone.`, 'success');
+      
+      // Refresh the dweller list and update UI state
+      this.loadDwellerList();
+      this.updateEvictionButton(false);
+      this.uiManager.showDwellerEditor();
+      
+      console.log(`Dweller ${dweller.name} ${dweller.lastName} eviction undone successfully`);
+    } catch (error) {
+      console.error('Error undoing dweller eviction:', error);
+      this.uiManager.showMessage('Failed to undo eviction. Please try again.', 'error');
     }
   }
 }

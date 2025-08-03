@@ -189,10 +189,43 @@ export const createDwellersSectionTemplate = (): string => `
                 <button type="submit" id="saveDwellerChanges" class="btn btn-primary">Save Changes</button>
                 <button type="button" id="resetDwellerForm" class="btn btn-secondary">Reset</button>
                 <button type="button" id="maxSpecial" class="btn btn-success">Max SPECIAL</button>
+                <button type="button" id="evictDweller" class="btn btn-danger">Evict Dweller</button>
               </div>
               </fieldset>
             </form>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Eviction Confirmation Modal -->
+    <div id="evictionModal" class="modal modal-hidden">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="text-lg font-semibold text-red-400">⚠️ Confirm Dweller Eviction</h3>
+        </div>
+        <div class="modal-body">
+          <p class="text-gray-300 mb-4">
+            <strong class="text-red-400">WARNING:</strong> You are about to evict this dweller from your vault.
+          </p>
+          <p class="text-gray-300 mb-4">
+            Dweller: <span id="evictionDwellerName" class="font-semibold text-white"></span>
+          </p>
+          <p class="text-gray-300 mb-4">
+            This action will:
+          </p>
+          <ul class="list-disc pl-6 text-gray-300 mb-4 space-y-1">
+            <li>Remove the dweller from all room assignments</li>
+            <li>Mark them for eviction from the vault</li>
+            <li>This action cannot be easily undone</li>
+          </ul>
+          <p class="text-red-400 font-medium">
+            Are you sure you want to proceed?
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button id="cancelEviction" class="btn btn-secondary">Cancel</button>
+          <button id="confirmEviction" class="btn btn-danger">Yes, Evict Dweller</button>
         </div>
       </div>
     </div>

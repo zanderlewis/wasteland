@@ -115,6 +115,20 @@ export class SaveEditorDwellerMixin {
   }
 
   /**
+   * Evict a dweller from the vault
+   */
+  evictDweller(dweller: Dweller): void {
+    this.dwellerManager.evictDweller(dweller);
+  }
+
+  /**
+   * Undo eviction of a dweller
+   */
+  unevictDweller(dweller: Dweller): void {
+    this.dwellerManager.unevictDweller(dweller);
+  }
+
+  /**
    * Set all dwellers to super health
    */
   setAllDwellersSuperHealth(): void {

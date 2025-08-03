@@ -51,6 +51,8 @@ export interface ISaveEditor {
   setDwellerOutfit(dweller: Dweller, outfitId: number | string, outfitType?: string): void;
   setDwellerPet(dweller: Dweller, petId: string, petType?: string): void;
   removeDwellerPet(dweller: Dweller): void;
+  evictDweller(dweller: Dweller): void;
+  unevictDweller(dweller: Dweller): void;
   setAllDwellersSuperHealth(): void;
   maxAllHappiness(): void;
   healAllDwellers(): void;

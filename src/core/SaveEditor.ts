@@ -206,6 +206,14 @@ export class SaveEditor implements ISaveEditor {
     this.dwellerMixin.removeDwellerPet(dweller);
   }
 
+  evictDweller(dweller: Dweller): void {
+    this.dwellerMixin.evictDweller(dweller);
+  }
+
+  unevictDweller(dweller: Dweller): void {
+    this.dwellerMixin.unevictDweller(dweller);
+  }
+
   setAllDwellersSuperHealth(): void {
     this.dwellerMixin.setAllDwellersSuperHealth();
   }

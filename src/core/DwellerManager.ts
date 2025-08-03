@@ -156,4 +156,37 @@ export class DwellerManager {
   removeAllRadiation(): void {
     this.batchOperations.removeAllRadiation(this.getDwellers());
   }
+
+  /**
+   * Evict a dweller from the vault
+   */
+  evictDweller(dweller: Dweller): void {
+    if (!dweller) return;
+    
+    // Mark dweller for eviction
+    dweller.WillBeEvicted = true;
+    dweller.IsEvictedWaitingForFollowers = false;
+    dweller.assigned = false;
+    dweller.savedRoom = -1;
+    
+    // Remove any room assignment
+    if (dweller.assignedRoom !== undefined) {
+      dweller.assignedRoom = -1;
+    }
+    
+    console.log(`Dweller ${dweller.name} ${dweller.lastName} marked for eviction`);
+  }
+
+  /**
+   * Undo eviction of a dweller
+   */
+  unevictDweller(dweller: Dweller): void {
+    if (!dweller) return;
+    
+    // Remove eviction flags
+    dweller.WillBeEvicted = false;
+    dweller.IsEvictedWaitingForFollowers = false;
+    
+    console.log(`Dweller ${dweller.name} ${dweller.lastName} eviction undone`);
+  }
 }

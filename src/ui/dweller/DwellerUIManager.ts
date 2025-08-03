@@ -29,11 +29,41 @@ export class DwellerUIManager {
     
     if (fieldset) {
       fieldset.disabled = false;
+      // Also ensure all individual elements are enabled
+      const formElements = fieldset.querySelectorAll('input, select, button') as NodeListOf<HTMLInputElement | HTMLSelectElement | HTMLButtonElement>;
+      formElements.forEach(element => {
+        element.disabled = false;
+      });
     }
     
     if (statusText) {
       statusText.textContent = 'Editing dweller';
       statusText.className = 'text-sm text-green-600';
+    }
+  }
+
+  /**
+   * Show dweller editor in evicted state (read-only except for undo eviction)
+   */
+  showEvictedDwellerEditor(): void {
+    const fieldset = document.getElementById('dwellerFieldset') as HTMLFieldSetElement;
+    const statusText = document.getElementById('dwellerEditorStatus');
+    
+    if (statusText) {
+      statusText.textContent = 'Dweller is evicted - Only undo eviction is available';
+      statusText.className = 'text-sm text-red-600';
+    }
+    
+    // Disable all form inputs except the evict button
+    if (fieldset) {
+      const formElements = fieldset.querySelectorAll('input, select, button') as NodeListOf<HTMLInputElement | HTMLSelectElement | HTMLButtonElement>;
+      formElements.forEach(element => {
+        if (element.id !== 'evictDweller') {
+          element.disabled = true;
+        } else {
+          element.disabled = false;
+        }
+      });
     }
   }
 
@@ -46,6 +76,11 @@ export class DwellerUIManager {
     
     if (fieldset) {
       fieldset.disabled = true;
+      // Also ensure all individual elements are disabled
+      const formElements = fieldset.querySelectorAll('input, select, button') as NodeListOf<HTMLInputElement | HTMLSelectElement | HTMLButtonElement>;
+      formElements.forEach(element => {
+        element.disabled = true;
+      });
     }
     
     if (statusText) {
@@ -103,7 +138,7 @@ export class DwellerUIManager {
     }
 
     dwellersList.innerHTML = dwellers.map(dweller => `
-      <div class="dweller-item cursor-pointer" 
+      <div class="dweller-item cursor-pointer${dweller.WillBeEvicted ? ' border-red-500 bg-red-900' : ''}" 
            data-dweller-id="${dweller.serializeId}">
         <div class="flex items-center justify-between">
           <div>
@@ -118,7 +153,10 @@ export class DwellerUIManager {
             <p class="text-sm font-medium text-blue-400">
               Happiness: ${dweller.happiness?.happinessValue || 50}%
             </p>
-            ${dweller.pregnant ? '<span class="text-xs bg-pink-800 text-pink-200 px-2 py-1 rounded">Pregnant</span>' : ''}
+            <div class="flex flex-wrap gap-1 mt-1">
+              ${dweller.pregnant ? '<span class="text-xs bg-pink-800 text-pink-200 px-2 py-1 rounded">Pregnant</span>' : ''}
+              ${dweller.WillBeEvicted ? '<span class="text-xs bg-red-800 text-red-200 px-2 py-1 rounded">Evicted</span>' : ''}
+            </div>
           </div>
         </div>
       </div>
