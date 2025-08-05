@@ -281,3 +281,60 @@ pre code {
     @apply px-2;
   }
 }
+
+/* Toast Notifications */
+.toast {
+  @apply min-w-80 max-w-sm p-4 rounded-lg border shadow-lg backdrop-blur-sm relative;
+  animation: slideInRight 0.3s ease-out;
+}
+
+.toast-content {
+  @apply flex items-center gap-3;
+}
+
+.toast-icon {
+  @apply text-lg flex-shrink-0;
+}
+
+.toast-message {
+  @apply flex-1 text-sm font-medium break-words;
+}
+
+.toast-close {
+  @apply ml-2 text-lg font-bold opacity-70 hover:opacity-100 transition-opacity cursor-pointer bg-transparent border-none text-inherit flex-shrink-0 w-6 h-6 flex items-center justify-center rounded;
+}
+
+.toast-close:hover {
+  @apply bg-black bg-opacity-20;
+}
+
+/* Toast animations */
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+.animate-slide-in {
+  animation: slideInRight 0.3s ease-out;
+}
+
+.animate-slide-out {
+  animation: slideOutRight 0.3s ease-in;
+}

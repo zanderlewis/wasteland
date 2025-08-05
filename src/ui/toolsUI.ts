@@ -2,23 +2,21 @@
 import { SaveEditor } from '../core/SaveEditor';
 import type { VaultUI } from './vaultUI';
 import type { DwellerUI } from './dwellerUI';
+import { toastManager } from './toastManager';
 
 export class ToolsUI {
   private saveEditor: SaveEditor;
   private vaultUI: VaultUI | null = null;
   private dwellerUI: DwellerUI | null = null;
-  private showStatusCallback: ((message: string, type: 'success' | 'error' | 'info') => void) | null = null;
 
   constructor(
     saveEditor: SaveEditor, 
     vaultUI?: VaultUI, 
-    dwellerUI?: DwellerUI,
-    showStatusCallback?: (message: string, type: 'success' | 'error' | 'info') => void
+    dwellerUI?: DwellerUI
   ) {
     this.saveEditor = saveEditor;
     this.vaultUI = vaultUI || null;
     this.dwellerUI = dwellerUI || null;
-    this.showStatusCallback = showStatusCallback || null;
   }
 
   bindEvents(): void {
@@ -213,11 +211,17 @@ export class ToolsUI {
   }
 
   private showMessage(message: string, type: 'success' | 'error' | 'info'): void {
-    if (this.showStatusCallback) {
-      this.showStatusCallback(message, type);
-    } else {
-      // Fallback to console logging
-      console.log(`${type.toUpperCase()}: ${message}`);
+    switch (type) {
+      case 'success':
+        toastManager.showSuccess(message);
+        break;
+      case 'error':
+        toastManager.showError(message);
+        break;
+      case 'info':
+      default:
+        toastManager.showInfo(message);
+        break;
     }
   }
 }

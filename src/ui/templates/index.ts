@@ -4,3 +4,4 @@ export { createVaultSectionTemplate } from './vaultTemplate';
 export { createDwellersSectionTemplate } from './dwellersTemplate';
 export { createToolsSectionTemplate } from './toolsTemplate';
 export { createStatusTemplate } from './statusTemplate';
+export { createMessageModalTemplate, ModalType, MODAL_CONFIGS } from './messageModalTemplate';

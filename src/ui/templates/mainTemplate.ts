@@ -3,6 +3,7 @@ import { createVaultSectionTemplate } from './vaultTemplate';
 import { createDwellersSectionTemplate } from './dwellersTemplate';
 import { createToolsSectionTemplate } from './toolsTemplate';
 import { createStatusTemplate } from './statusTemplate';
+import { createMessageModalTemplate } from './messageModalTemplate';
 
 export const createMainTemplate = (): string => `
   <div class="container p-6">
@@ -52,5 +53,7 @@ export const createMainTemplate = (): string => `
       ${createDwellersSectionTemplate()}
       ${createToolsSectionTemplate()}
     </div>
+
+    ${createMessageModalTemplate()}
   </div>
 `;

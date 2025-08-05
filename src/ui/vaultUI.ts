@@ -1,5 +1,6 @@
 // Vault-specific UI management
 import { SaveEditor } from '../core/SaveEditor';
+import { toastManager } from './toastManager';
 
 export class VaultUI {
   private saveEditor: SaveEditor;
@@ -14,6 +15,7 @@ export class VaultUI {
     vaultNameInput?.addEventListener('blur', () => {
       if (this.saveEditor.isLoaded()) {
         this.saveEditor.setVaultName(vaultNameInput.value);
+        this.showMessage(`Vault name updated to "${vaultNameInput.value}"`, 'success');
       }
     });
 
@@ -33,6 +35,7 @@ export class VaultUI {
         if (this.saveEditor.isLoaded()) {
           const value = parseInt(input.value) || 0;
           this.updateResource(id, value);
+          this.showMessage(`${this.getResourceDisplayName(id)} updated to ${value.toLocaleString()}`, 'success');
         }
       });
     });
@@ -43,6 +46,7 @@ export class VaultUI {
       if (this.saveEditor.isLoaded()) {
         const value = parseInt(lunchboxesInput.value) || 0;
         this.saveEditor.setLunchboxCount(value);
+        this.showMessage(`Lunchboxes updated to ${value.toLocaleString()}`, 'success');
       }
     });
 
@@ -52,6 +56,7 @@ export class VaultUI {
       if (this.saveEditor.isLoaded()) {
         const value = parseInt(mrHandiesInput.value) || 0;
         this.saveEditor.setMrHandyCount(value);
+        this.showMessage(`Mr. Handies updated to ${value.toLocaleString()}`, 'success');
       }
     });
 
@@ -61,6 +66,7 @@ export class VaultUI {
       if (this.saveEditor.isLoaded()) {
         const value = parseInt(petCarriersInput.value) || 0;
         this.saveEditor.setPetCarrierCount(value);
+        this.showMessage(`Pet Carriers updated to ${value.toLocaleString()}`, 'success');
       }
     });
 
@@ -70,6 +76,7 @@ export class VaultUI {
       if (this.saveEditor.isLoaded()) {
         const value = parseInt(starterPacksInput.value) || 0;
         this.saveEditor.setStarterPackCount(value);
+        this.showMessage(`Starter Packs updated to ${value.toLocaleString()}`, 'success');
       }
     });
   }
@@ -81,6 +88,7 @@ export class VaultUI {
       if (this.saveEditor.isLoaded()) {
         const value = parseInt(vaultThemeSelect.value) || 0;
         this.saveEditor.setVaultTheme(value);
+        this.showMessage(`Vault theme updated`, 'success');
       }
     });
 
@@ -89,6 +97,7 @@ export class VaultUI {
     vaultModeSelect?.addEventListener('change', () => {
       if (this.saveEditor.isLoaded()) {
         this.saveEditor.setVaultMode(vaultModeSelect.value);
+        this.showMessage(`Vault mode updated to ${vaultModeSelect.value}`, 'success');
       }
     });
   }
@@ -212,5 +221,39 @@ export class VaultUI {
     if (vaultModeSelect) {
       vaultModeSelect.value = this.saveEditor.getVaultMode();
     }
+  }
+
+  /**
+   * Show a message to the user using the global toast system
+   */
+  private showMessage(message: string, type: 'success' | 'error' | 'info'): void {
+    switch (type) {
+      case 'success':
+        toastManager.showSuccess(message);
+        break;
+      case 'error':
+        toastManager.showError(message);
+        break;
+      case 'info':
+      default:
+        toastManager.showInfo(message);
+        break;
+    }
+  }
+
+  /**
+   * Get display name for resource
+   */
+  private getResourceDisplayName(resourceId: string): string {
+    const displayNames: { [key: string]: string } = {
+      'caps': 'Caps',
+      'food': 'Food',
+      'water': 'Water', 
+      'energy': 'Energy',
+      'radaway': 'RadAway',
+      'stimpacks': 'Stimpacks',
+      'nuka': 'Nuka Cola'
+    };
+    return displayNames[resourceId] || resourceId;
   }
 }

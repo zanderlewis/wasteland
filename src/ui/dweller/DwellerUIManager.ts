@@ -1,4 +1,5 @@
 import type { Dweller } from '../../types/saveFile';
+import { toastManager } from '../toastManager';
 
 /**
  * Handles UI state management for the dweller editor
@@ -92,37 +93,21 @@ export class DwellerUIManager {
   }
 
   /**
-   * Show a message to the user
+   * Show a message to the user using the global toast system
    */
   showMessage(message: string, type: 'success' | 'error' | 'info'): void {
-    // Create a simple notification
-    const notification = document.createElement('div');
-    notification.className = `notification notification-${type}`;
-    notification.textContent = message;
-    
-    // Style the notification
-    notification.style.cssText = `
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      padding: 12px 20px;
-      border-radius: 4px;
-      color: white;
-      font-weight: 500;
-      z-index: 10000;
-      max-width: 300px;
-      word-wrap: break-word;
-      background-color: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
-    `;
-    
-    document.body.appendChild(notification);
-    
-    // Remove after 3 seconds
-    setTimeout(() => {
-      if (notification.parentNode) {
-        notification.parentNode.removeChild(notification);
-      }
-    }, 3000);
+    switch (type) {
+      case 'success':
+        toastManager.showSuccess(message);
+        break;
+      case 'error':
+        toastManager.showError(message);
+        break;
+      case 'info':
+      default:
+        toastManager.showInfo(message);
+        break;
+    }
   }
 
   /**

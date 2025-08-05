@@ -3,6 +3,8 @@ import { SaveEditor } from '../core/SaveEditor';
 import { DwellerUI } from './dwellerUI';
 import { VaultUI } from './vaultUI';
 import { ToolsUI } from './toolsUI';
+import { messageModal } from './messageModal';
+import { toastManager } from './toastManager';
 
 export class EventManager {
   private saveEditor: SaveEditor;
@@ -17,12 +19,17 @@ export class EventManager {
     this.toolsUI = new ToolsUI(
       saveEditor, 
       this.vaultUI, 
-      this.dwellerUI,
-      (message: string, type: 'success' | 'error' | 'info') => this.showStatus(message, type)
+      this.dwellerUI
     );
   }
 
   bindEvents(): void {
+    // Initialize message modal (for danger confirmations like eviction)
+    messageModal.initialize();
+    
+    // Initialize toast manager (for success/info notifications)
+    toastManager.initialize();
+    
     this.bindFileUploadEvents();
     this.bindTabEvents();
     this.bindVaultEvents();
@@ -198,34 +205,17 @@ export class EventManager {
   }
 
   private showStatus(message: string, type: 'success' | 'error' | 'info'): void {
-    const statusMessage = document.getElementById('statusMessage');
-    const statusText = document.getElementById('statusText');
-    
-    if (statusMessage && statusText) {
-      statusText.textContent = message;
-      statusMessage.classList.remove('hidden');
-      
-      // Reset classes
-      statusMessage.className = 'mt-4 fade-in';
-      
-      // Add appropriate styling
-      const messageDiv = statusMessage.querySelector('div');
-      if (messageDiv) {
-        messageDiv.className = 'p-4 rounded-md';
-        
-        if (type === 'success') {
-          messageDiv.classList.add('status-success');
-        } else if (type === 'error') {
-          messageDiv.classList.add('status-error');
-        } else {
-          messageDiv.classList.add('status-info');
-        }
-      }
-      
-      // Auto-hide after 5 seconds
-      setTimeout(() => {
-        statusMessage.classList.add('hidden');
-      }, 5000);
+    switch (type) {
+      case 'success':
+        toastManager.showSuccess(message);
+        break;
+      case 'error':
+        toastManager.showError(message);
+        break;
+      case 'info':
+      default:
+        toastManager.showInfo(message);
+        break;
     }
   }
 }
