@@ -82,6 +82,7 @@ export class DwellerUI {
   selectDweller(dweller: Dweller): void {
     this.selectedDweller = dweller;
     this.formManager.loadDwellerToForm(dweller);
+    this.formManager.loadEquipmentToForm(dweller);
     
     // Update UI based on eviction status
     if (dweller.WillBeEvicted) {
@@ -106,12 +107,22 @@ export class DwellerUI {
       });
     }
 
+    // Save button
+    const saveButton = document.getElementById('saveDwellerChanges');
+    if (saveButton) {
+      saveButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.saveDwellerChanges();
+      });
+    }
+
     // Reset form button
     const resetButton = document.getElementById('resetDwellerForm');
     if (resetButton) {
       resetButton.addEventListener('click', () => {
         if (this.selectedDweller) {
-          this.formManager.loadDwellerToForm(this.selectedDweller);
+          this.formManager.resetForm(this.selectedDweller);
+          this.uiManager.showMessage('Form reset to original values', 'info');
         }
       });
     }
@@ -121,8 +132,15 @@ export class DwellerUI {
     if (maxSpecialButton) {
       maxSpecialButton.addEventListener('click', () => {
         if (this.selectedDweller) {
-          this.saveEditor.maxDwellerSpecial(this.selectedDweller);
-          this.formManager.loadDwellerToForm(this.selectedDweller);
+          // Set all SPECIAL stats to 10 in the form only (don't save to dweller yet)
+          this.formManager.setFormValue('dwellerStrength', '10');
+          this.formManager.setFormValue('dwellerPerception', '10');
+          this.formManager.setFormValue('dwellerEndurance', '10');
+          this.formManager.setFormValue('dwellerCharisma', '10');
+          this.formManager.setFormValue('dwellerIntelligence', '10');
+          this.formManager.setFormValue('dwellerAgility', '10');
+          this.formManager.setFormValue('dwellerLuck', '10');
+          this.uiManager.showMessage(`${this.selectedDweller.name} ${this.selectedDweller.lastName}'s SPECIAL stats set to max (click Save to apply)`, 'info');
         }
       });
     }
@@ -161,10 +179,9 @@ export class DwellerUI {
    */
   private setupBatchOperationListeners(): void {
     const operations = [
-      { id: 'maxAllStats', method: () => this.batchOperations.maxSpecialAll() },
-      { id: 'maxAllHealth', method: () => this.batchOperations.healAll() },
-      { id: 'maxAllHappiness', method: () => this.batchOperations.maxHappinessAll() },
-      { id: 'healAllDwellers', method: () => this.batchOperations.healAll() }
+      { id: 'maxSpecialAll', method: () => this.batchOperations.maxSpecialAll() },
+      { id: 'healAll', method: () => this.batchOperations.healAll() },
+      { id: 'maxHappinessAll', method: () => this.batchOperations.maxHappinessAll() }
     ];
 
     operations.forEach(({ id, method }) => {
@@ -172,10 +189,12 @@ export class DwellerUI {
       if (button) {
         button.addEventListener('click', () => {
           method();
+          this.uiManager.showMessage(`Batch operation completed: ${button.textContent}`, 'success');
           this.loadDwellerList(); // Refresh the list
           if (this.selectedDweller) {
             // Refresh the selected dweller's form
             this.formManager.loadDwellerToForm(this.selectedDweller);
+            this.formManager.loadEquipmentToForm(this.selectedDweller);
           }
         });
       }
@@ -188,6 +207,7 @@ export class DwellerUI {
   private saveDwellerChanges(): void {
     if (!this.selectedDweller) {
       console.warn('No dweller selected for saving');
+      this.uiManager.showMessage('No dweller selected for saving', 'error');
       return;
     }
 
@@ -198,10 +218,13 @@ export class DwellerUI {
       // Refresh the dweller list and form
       this.loadDwellerList();
       this.formManager.loadDwellerToForm(this.selectedDweller);
+      this.formManager.loadEquipmentToForm(this.selectedDweller);
       
+      this.uiManager.showMessage(`${this.selectedDweller.name} ${this.selectedDweller.lastName} updated successfully!`, 'success');
       console.log('Dweller changes saved successfully');
     } catch (error) {
       console.error('Error saving dweller changes:', error);
+      this.uiManager.showMessage('Failed to save dweller changes. Please try again.', 'error');
     }
   }
 
@@ -218,10 +241,13 @@ export class DwellerUI {
     const experience = parseInt(this.formManager.getFormValue('dwellerExperience')) || 0;
     this.saveEditor.setDwellerLevel(dweller, level, experience);
 
-    // Health
+    // Health and radiation
     const health = parseInt(this.formManager.getFormValue('dwellerHealth')) || 100;
     const maxHealth = parseInt(this.formManager.getFormValue('dwellerMaxHealth')) || 100;
     this.saveEditor.setDwellerHealth(dweller, health, maxHealth);
+    
+    const radiation = parseInt(this.formManager.getFormValue('dwellerRadiation')) || 0;
+    this.saveEditor.setDwellerRadiation(dweller, radiation);
 
     // Happiness
     const happiness = parseInt(this.formManager.getFormValue('dwellerHappiness')) || 50;
@@ -247,6 +273,9 @@ export class DwellerUI {
     const pet = this.formManager.getFormValue('dwellerPet');
     if (pet) {
       this.saveEditor.setDwellerPet(dweller, pet);
+    } else {
+      // Remove pet if none selected
+      this.saveEditor.removeDwellerPet(dweller);
     }
 
     // Gender and pregnancy
@@ -255,6 +284,11 @@ export class DwellerUI {
 
     const pregnant = this.formManager.getFormValue('dwellerPregnant') === 'true';
     dweller.pregnant = pregnant;
+
+    const babyReady = this.formManager.getFormValue('dwellerBabyReadyTime') === 'true';
+    if (dweller.babyReadyTime) {
+      dweller.babyReadyTime = babyReady;
+    }
 
     // Colors (using form values directly for now)
     const hairColor = this.formManager.getFormValue('dwellerHairColor');
@@ -290,6 +324,7 @@ export class DwellerUI {
     this.loadDwellerList();
     if (this.selectedDweller) {
       this.formManager.loadDwellerToForm(this.selectedDweller);
+      this.formManager.loadEquipmentToForm(this.selectedDweller);
     }
   }
 

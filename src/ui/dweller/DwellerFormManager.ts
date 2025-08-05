@@ -53,7 +53,7 @@ export class DwellerFormManager {
     // Pregnancy (only for females)
     if (dweller.gender === 1) {      
       this.setFormValue('dwellerPregnant', dweller.pregnant ? 'true' : 'false');
-      this.setFormValue('dwellerBabyReady', dweller.babyReady ? 'true' : 'false');
+      this.setFormValue('dwellerBabyReadyTime', dweller.babyReady ? 'true' : 'false');
       this.togglePregnancyFields(true);
     } else {
       this.togglePregnancyFields(false);
@@ -155,17 +155,35 @@ export class DwellerFormManager {
     // Reset pregnancy values if switching to male
     if (!isFemale) {
       this.setFormValue('dwellerPregnant', 'false');
-      this.setFormValue('dwellerBabyReady', 'false');
+      this.setFormValue('dwellerBabyReadyTime', 'false');
     }
   }
 
   /**
-   * Reset all form fields
+   * Reset all form fields to the dweller's current data
    */
-  resetForm(): void {
-    const form = document.getElementById('dwellerEditForm') as HTMLFormElement;
-    if (form) {
-      form.reset();
+  resetForm(dweller?: Dweller): void {
+    if (dweller) {
+      // Reload the dweller's actual data instead of using browser form reset
+      this.loadDwellerToForm(dweller);
+      this.loadEquipmentToForm(dweller);
+      
+      // Ensure pregnancy fields are properly set based on dweller's actual data
+      if (dweller.gender === 1) {
+        this.setFormValue('dwellerPregnant', dweller.pregnant ? 'true' : 'false');
+        this.setFormValue('dwellerBabyReadyTime', dweller.babyReady ? 'true' : 'false');
+        this.togglePregnancyFields(true);
+      } else {
+        this.setFormValue('dwellerPregnant', 'false');
+        this.setFormValue('dwellerBabyReadyTime', 'false');
+        this.togglePregnancyFields(false);
+      }
+    } else {
+      // Fallback to browser reset if no dweller provided
+      const form = document.getElementById('dwellerForm') as HTMLFormElement;
+      if (form) {
+        form.reset();
+      }
     }
   }
 
