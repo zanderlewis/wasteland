@@ -40,8 +40,14 @@ export class ToolsUI {
     // Fallback to a single hardcoded example if manifest fetch fails.
     (async () => {
       let files: string[] = [];
+      // Compute base-aware URL for the examples manifest so it works on GH Pages or any subpath.
+      // Prefer Vite's BASE_URL during dev/build, otherwise use the page's base (document.baseURI).
+      const viteBase = (import.meta as any)?.env?.BASE_URL;
+      const baseForExamples = viteBase ? new URL(viteBase, window.location.href).href : (document.baseURI || window.location.href);
+      const manifestUrl = new URL('examples/examples.json', baseForExamples).href;
+
       try {
-        const resp = await fetch('/examples/examples.json');
+        const resp = await fetch(manifestUrl);
         if (!resp.ok) throw new Error(`manifest fetch failed: ${resp.status}`);
         files = await resp.json();
         if (!Array.isArray(files) || files.length === 0) {
@@ -76,9 +82,11 @@ export class ToolsUI {
       }
 
       try {
-        // Examples are served from /examples/<filename> (public/examples)
-        const url = `/examples/${val}`;
-        const resp = await fetch(url);
+  // Build a base-aware URL for the selected example so this works from any base path
+  const viteBase2 = (import.meta as any)?.env?.BASE_URL;
+  const baseForFetch = viteBase2 ? new URL(viteBase2, window.location.href).href : (document.baseURI || window.location.href);
+  const url = new URL(`examples/${val}`, baseForFetch).href;
+  const resp = await fetch(url);
         if (!resp.ok) throw new Error(`Failed to fetch ${url}: ${resp.status} ${resp.statusText}`);
 
         // Try to parse JSON (manifest ensures .json)

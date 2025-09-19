@@ -39,3 +39,8 @@ Wasteland is a modern save editor for Fallout Shelter, designed to provide a use
 - Windows Store: `%LOCALAPPDATA%\FalloutShelter`
 - Steam: `C:\Users\YOURUSERNAME\AppData\Local\FalloutShelter`
 - Android: `storage/sdcard/Android/data/com.bethsoft.falloutshelter/files`
+
+## Example save files
+
+Example saves are bundled in `public/examples/` and served by the app from `/examples/<filename>`.
+The UI automatically computes the correct base path so examples load correctly when the app is hosted under a subpath (for example: `https://<user>.github.io/wasteland/`). To add new examples, put your JSON save files into `public/examples/` and add their filename to `public/examples/examples.json` (array of filenames).
