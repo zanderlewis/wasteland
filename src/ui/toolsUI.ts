@@ -25,6 +25,94 @@ export class ToolsUI {
     
     // Export/backup buttons
     this.bindExportEvents();
+
+    // Examples dropdown
+    this.bindExampleLoader();
+  }
+
+  private bindExampleLoader(): void {
+    const select = document.getElementById('exampleFilesSelect') as HTMLSelectElement | null;
+    const loadBtn = document.getElementById('loadExampleBtn');
+
+    if (!select || !loadBtn) return;
+
+    // Fetch a simple manifest of example filenames from /examples/examples.json
+    // Fallback to a single hardcoded example if manifest fetch fails.
+    (async () => {
+      let files: string[] = [];
+      try {
+        const resp = await fetch('/examples/examples.json');
+        if (!resp.ok) throw new Error(`manifest fetch failed: ${resp.status}`);
+        files = await resp.json();
+        if (!Array.isArray(files) || files.length === 0) {
+          files = [];
+        }
+      } catch (err) {
+        // Manifest not available; use fallback single example path
+        console.warn('Could not load examples manifest, falling back to single example', err);
+        files = ['maxBaseVault.json'];
+      }
+
+      // Populate select
+      select.innerHTML = '';
+      const placeholder = document.createElement('option');
+      placeholder.value = '';
+      placeholder.textContent = '-- select example --';
+      select.appendChild(placeholder);
+
+      files.forEach((fileName) => {
+        const opt = document.createElement('option');
+        opt.value = fileName; // store just filename
+        opt.textContent = fileName;
+        select.appendChild(opt);
+      });
+    })();
+
+    loadBtn.addEventListener('click', async () => {
+      const val = select.value;
+      if (!val) {
+        this.showMessage('Please choose an example file to load', 'info');
+        return;
+      }
+
+      try {
+        // Examples are served from /examples/<filename> (public/examples)
+        const url = `/examples/${val}`;
+        const resp = await fetch(url);
+        if (!resp.ok) throw new Error(`Failed to fetch ${url}: ${resp.status} ${resp.statusText}`);
+
+        // Try to parse JSON (manifest ensures .json)
+        const text = await resp.text();
+        let data: any;
+        try {
+          data = JSON.parse(text);
+        } catch (parseErr) {
+          throw new Error(`Failed to parse JSON from ${url}: ${parseErr}`);
+        }
+
+        const fileName = val || 'example.json';
+
+        // Mimic file upload behavior: update file UI status (same elements used by EventManager)
+        const fileStatus = document.getElementById('fileStatus');
+        const fileNameEl = document.getElementById('fileName');
+        if (fileNameEl) fileNameEl.textContent = fileName;
+        if (fileStatus) fileStatus.classList.remove('hidden');
+
+        // Load into save editor (this should set internal filename/state)
+        this.saveEditor.loadSave(data, fileName);
+        console.info(`Loaded example ${fileName}`);
+        this.showMessage(`Loaded ${fileName}`, 'success');
+
+        // Ensure editor UI is visible and refreshed
+        const editorSection = document.getElementById('editorSection');
+        if (editorSection) editorSection.classList.remove('hidden');
+        this.refreshVaultUI();
+        this.refreshDwellersUI();
+      } catch (err) {
+        console.error('Error loading example file:', err);
+        this.showMessage(`Error loading example file: ${err instanceof Error ? err.message : String(err)}`, 'error');
+      }
+    });
   }
 
   private bindQuickActionEvents(): void {

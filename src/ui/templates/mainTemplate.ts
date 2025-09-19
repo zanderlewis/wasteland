@@ -22,6 +22,15 @@ export const createMainTemplate = (): string => `
           <p class="text-sm text-gray-500">
             Supported formats: .sav (encrypted), .json (decrypted)
           </p>
+          <!-- Use an example -->
+          <div class="mt-6">
+            <h4 class="text-sm font-medium text-gray-200 mb-2">Load example save</h4>
+            <div class="flex items-center gap-2">
+              <select id="exampleFilesSelect" class="form-input w-56 text-sm"></select>
+              <button id="loadExampleBtn" class="btn btn-primary btn-sm">Load</button>
+            </div>
+            <p class="text-xs text-gray-400 mt-2">Examples are bundled with the app and safe to load.</p>
+          </div>
           <!-- How to Find Your Save File -->
           <div class="text-sm text-gray-500 mt-2">
             <strong>How to Find Your Save File:</strong>
