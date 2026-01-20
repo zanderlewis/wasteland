@@ -1,5 +1,7 @@
-import type { Dweller, SpecialStatType } from '../../types/saveFile';
-import { SpecialStat } from '../../types/saveFile';
+import type { DwellersItem as Dweller } from '../../types/saveFile';
+
+// Local SPECIAL stat type (generated types don't export these)
+export type SpecialStatType = number;
 import { GAME_LIMITS, validateValue } from '../../constants/gameConstants';
 
 /**
@@ -18,18 +20,17 @@ export class DwellerStatsManager {
     
     const clampedValue = validateValue.special(value);
     
-    // Initialize the stat object if it doesn't exist
-    if (!dweller.stats.stats[statType]) {
-      dweller.stats.stats[statType] = { value: clampedValue };
-    } else {
-      const statData = dweller.stats.stats[statType];
-      if (typeof statData === 'object' && statData !== null && 'value' in statData) {
-        (statData as any).value = clampedValue;
-      } else {
-        // Convert number to object format
-        dweller.stats.stats[statType] = { value: clampedValue };
-      }
-    }
+        if (!dweller.stats.stats[statType]) {
+          dweller.stats.stats[statType] = { value: clampedValue, mod: 0, exp: 0 };
+        } else {
+          const statData = dweller.stats.stats[statType];
+          if (typeof statData === 'object' && statData !== null && 'value' in statData) {
+            (statData as any).value = clampedValue;
+          } else {
+            // Convert number to object format
+            dweller.stats.stats[statType] = { value: clampedValue, mod: 0, exp: 0 };
+          }
+        }
   }
 
   /**
@@ -56,11 +57,9 @@ export class DwellerStatsManager {
    * @param dweller - The dweller to modify
    */
   maxDwellerSpecial(dweller: Dweller): void {
-    Object.values(SpecialStat).forEach(stat => {
-      if (typeof stat === 'number') {
-        this.setDwellerSpecial(dweller, stat, GAME_LIMITS.SPECIAL_MAX);
-      }
-    });
+    for (let stat = 0; stat < 8; stat++) {
+      this.setDwellerSpecial(dweller, stat, GAME_LIMITS.SPECIAL_MAX);
+    }
   }
 
   /**
@@ -71,7 +70,7 @@ export class DwellerStatsManager {
    */
   setDwellerLevel(dweller: Dweller, level: number, experience?: number): void {
     if (!dweller.experience) {
-      dweller.experience = { currentLevel: 1, experienceValue: 0, wastelandExperience: 0 };
+      dweller.experience = { currentLevel: 1, experienceValue: 0, wastelandExperience: 0, storage: 0, accum: 0, needLvUp: false };
     }
     
     const clampedLevel = Math.max(1, Math.min(50, level));
@@ -91,7 +90,7 @@ export class DwellerStatsManager {
    * @param happiness - Happiness value (0-100)
    */
   setDwellerHappiness(dweller: Dweller, happiness: number): void {
-    if (!dweller.happiness) dweller.happiness = {};
-    dweller.happiness.happinessValue = validateValue.happiness(happiness);
+    if (!dweller.happiness) dweller.happiness = { happinessValue: validateValue.happiness(happiness) };
+    else dweller.happiness.happinessValue = validateValue.happiness(happiness);
   }
 }

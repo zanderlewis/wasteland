@@ -1,7 +1,20 @@
-import type { 
-  FalloutShelterSave, 
-  ResourceTypeValue 
-} from '../types/saveFile';
+import type { FalloutShelterSave } from '../types/saveFile';
+
+type ResourceTypeValue =
+  | 'Caps'
+  | 'Nuka'
+  | 'Food'
+  | 'Energy'
+  | 'Water'
+  | 'StimPack'
+  | 'RadAway'
+  | 'Lunchbox'
+  | 'MrHandy'
+  | 'PetCarrier'
+  | 'CraftedOutfit'
+  | 'CraftedWeapon'
+  | 'NukaColaQuantum'
+  | 'CraftedTheme';
 import { 
   GAME_LIMITS, 
   ROOM_UNLOCKS, 
@@ -73,13 +86,13 @@ export class QuickActions {
   unlockAllRecipes(): void {
     if (!this.save) throw new Error('No save loaded');
     
-    if (!this.save.vault.unlockedRecipes) {
-      this.save.vault.unlockedRecipes = [];
+    if (!(this.save.vault as any).unlockedRecipes) {
+      (this.save.vault as any).unlockedRecipes = [];
     }
 
     RECIPE_UNLOCKS.forEach(recipe => {
-      if (!this.save!.vault.unlockedRecipes!.includes(recipe)) {
-        this.save!.vault.unlockedRecipes!.push(recipe);
+      if (!(this.save!.vault as any).unlockedRecipes.includes(recipe)) {
+        (this.save!.vault as any).unlockedRecipes.push(recipe);
       }
     });
   }
@@ -129,10 +142,10 @@ export class QuickActions {
   private setResource(resourceType: ResourceTypeValue, amount: number): void {
     if (!this.save) throw new Error('No save loaded');
     if (!this.save.vault.storage) {
-      this.save.vault.storage = { resources: {}, bonus: {} };
+      (this.save.vault as any).storage = { resources: {}, bonus: {} };
     }
-    if (!this.save.vault.storage.resources) {
-      this.save.vault.storage.resources = {};
+    if (!(this.save.vault.storage as any).resources) {
+      (this.save.vault.storage as any).resources = {};
     }
     
     // Map our internal resource names to save file names
@@ -148,7 +161,7 @@ export class QuickActions {
                     resourceType === 'StimPack' ? GAME_LIMITS.STIMPACKS_MAX :
                     GAME_LIMITS.NUKA_COLA_MAX;
     
-    (this.save.vault.storage.resources as Record<string, number>)[saveFileResourceName] = Math.max(0, Math.min(maxValue, amount));
+    (this.save.vault.storage.resources as unknown as Record<string, number>)[saveFileResourceName] = Math.max(0, Math.min(maxValue, amount));
   }
 
   private setLunchboxCount(count: number): void {
@@ -185,14 +198,14 @@ export class QuickActions {
   private unlockAllThemes(): void {
     if (!this.save) throw new Error('No save loaded');
     
-    if (!this.save.vault.unlockedThemes) {
-      this.save.vault.unlockedThemes = [];
+    if (!(this.save.vault as any).unlockedThemes) {
+      (this.save.vault as any).unlockedThemes = [];
     }
 
     // Unlock themes 1-20 (0 is default)
     for (let i = 1; i <= 20; i++) {
-      if (!this.save.vault.unlockedThemes.includes(i)) {
-        this.save.vault.unlockedThemes.push(i);
+      if (!(this.save.vault as any).unlockedThemes.includes(i)) {
+        (this.save.vault as any).unlockedThemes.push(i);
       }
     }
   }

@@ -1,5 +1,9 @@
 // Dweller-related operations for SaveEditor
-import type { Dweller, Actor, SpecialStatType } from '../../types/saveFile';
+import type { DwellersItem as Dweller } from '../../types/saveFile';
+
+type Actor = any;
+
+type SpecialStatType = number;
 import { DwellerManager } from '../DwellerManager';
 
 /**

@@ -1,4 +1,4 @@
-import type { Dweller, EquipedItem } from '../../types/saveFile';
+import type { DwellersItem as Dweller, EquipedOutfit, EquipedWeapon } from '../../types/saveFile';
 import { petBonusMap } from '../../constants/petConstants';
 
 /**
@@ -13,7 +13,7 @@ export class DwellerEquipmentManager {
    */
   setDwellerOutfit(dweller: Dweller, outfitId: number | string, outfitType?: string): void {
     // Handle only 'equipedOutfit' property as per Vault3.json structure
-    const outfitData: EquipedItem = {
+    const outfitData: EquipedOutfit = {
       id: String(outfitType || outfitId), // Convert to string for actual save format
       type: "Outfit",
       hasBeenAssigned: true,
@@ -31,7 +31,7 @@ export class DwellerEquipmentManager {
    */
   setDwellerWeapon(dweller: Dweller, weaponId: number | string, weaponType?: string): void {
     // Handle only 'equipedWeapon' property as per Vault3.json structure
-    const weaponData: EquipedItem = {
+    const weaponData: EquipedWeapon = {
       id: String(weaponType || weaponId), // Convert to string for actual save format
       type: "Weapon",
       hasBeenAssigned: true,
@@ -48,35 +48,35 @@ export class DwellerEquipmentManager {
    * @param petType - Pet type string (defaults to "Pet")
    */
   setDwellerPet(dweller: Dweller, petId: string, petType?: string): void {
-    // Set both pet and equippedPet properties for compatibility
-    if (!dweller.pet) {
-      dweller.pet = {};
+    // Set both pet and equippedPet properties for compatibility (save shape may not include these fields)
+    if (!(dweller as any).pet) {
+      (dweller as any).pet = {};
     }
-    if (!dweller.equippedPet) {
-      dweller.equippedPet = {};
+    if (!(dweller as any).equippedPet) {
+      (dweller as any).equippedPet = {};
     }
     
     // Get pet bonus data based on pet ID
     const petBonusData = this.getPetBonusData(petId);
     
-    dweller.pet.id = petId;
-    dweller.pet.type = petType || "Pet";
-    dweller.pet.hasBeenAssigned = true;
-    dweller.pet.hasRandonWeaponBeenAssigned = false;
-    
+    (dweller as any).pet.id = petId;
+    (dweller as any).pet.type = petType || "Pet";
+    (dweller as any).pet.hasBeenAssigned = true;
+    (dweller as any).pet.hasRandonWeaponBeenAssigned = false;
+
     // Set extraData with pet bonus information
     if (petBonusData) {
-      dweller.pet.extraData = petBonusData;
+      (dweller as any).pet.extraData = petBonusData;
     }
-    
-    dweller.equippedPet.id = petId;
-    dweller.equippedPet.type = petType || "Pet";
-    dweller.equippedPet.hasBeenAssigned = true;
-    dweller.equippedPet.hasRandonWeaponBeenAssigned = false;
-    
+
+    (dweller as any).equippedPet.id = petId;
+    (dweller as any).equippedPet.type = petType || "Pet";
+    (dweller as any).equippedPet.hasBeenAssigned = true;
+    (dweller as any).equippedPet.hasRandonWeaponBeenAssigned = false;
+
     // Set extraData for equippedPet as well
     if (petBonusData) {
-      dweller.equippedPet.extraData = petBonusData;
+      (dweller as any).equippedPet.extraData = petBonusData;
     }
   }
 
@@ -85,8 +85,8 @@ export class DwellerEquipmentManager {
    * @param dweller - The dweller to modify
    */
   removeDwellerPet(dweller: Dweller): void {
-    dweller.pet = undefined;
-    dweller.equippedPet = undefined;
+    (dweller as any).pet = undefined;
+    (dweller as any).equippedPet = undefined;
   }
 
   /**

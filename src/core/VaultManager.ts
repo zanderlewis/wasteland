@@ -1,7 +1,22 @@
 import type { 
-  FalloutShelterSave, 
-  ResourceTypeValue 
+  FalloutShelterSave
 } from '../types/saveFile';
+
+type ResourceTypeValue =
+  | 'Caps'
+  | 'Nuka'
+  | 'Food'
+  | 'Energy'
+  | 'Water'
+  | 'StimPack'
+  | 'RadAway'
+  | 'Lunchbox'
+  | 'MrHandy'
+  | 'PetCarrier'
+  | 'CraftedOutfit'
+  | 'CraftedWeapon'
+  | 'NukaColaQuantum'
+  | 'CraftedTheme';
 import { 
   GAME_LIMITS, 
   validateValue 
@@ -46,10 +61,10 @@ export class VaultManager {
   setResource(resourceType: ResourceTypeValue, amount: number): void {
     if (!this.save) throw new Error('No save loaded');
     if (!this.save.vault.storage) {
-      this.save.vault.storage = { resources: {}, bonus: {} };
+      (this.save.vault as any).storage = { resources: {}, bonus: {} };
     }
-    if (!this.save.vault.storage.resources) {
-      this.save.vault.storage.resources = {};
+    if (!(this.save.vault.storage as any).resources) {
+      (this.save.vault.storage as any).resources = {};
     }
 
     const saveFileResourceName = resourceType === 'Caps' ? 'Nuka' : resourceType;
@@ -63,7 +78,7 @@ export class VaultManager {
                     resourceType === 'StimPack' ? GAME_LIMITS.STIMPACKS_MAX :
                     GAME_LIMITS.NUKA_COLA_MAX;
     
-    (this.save.vault.storage.resources as Record<string, number>)[saveFileResourceName] = validateValue.resource(amount, maxValue);
+    ((this.save.vault.storage.resources as unknown) as Record<string, number>)[saveFileResourceName] = validateValue.resource(amount, maxValue);
   }
 
   /**
@@ -75,7 +90,7 @@ export class VaultManager {
 
     const saveFileResourceName = resourceType === 'Caps' ? 'Nuka' : resourceType;
 
-    return (this.save.vault.storage.resources as Record<string, number>)[saveFileResourceName] || 0;
+    return (this.save.vault.storage.resources as unknown as Record<string, number>)[saveFileResourceName] || 0;
   }
 
   /**
@@ -211,13 +226,13 @@ export class VaultManager {
   unlockAllThemes(): void {
     if (!this.save) throw new Error('No save loaded');
     
-    if (!this.save.vault.unlockedThemes) {
-      this.save.vault.unlockedThemes = [];
+    if (!(this.save.vault as any).unlockedThemes) {
+      (this.save.vault as any).unlockedThemes = [];
     }
 
     for (let i = 1; i <= 20; i++) {
-      if (!this.save.vault.unlockedThemes.includes(i)) {
-        this.save.vault.unlockedThemes.push(i);
+      if (!(this.save.vault as any).unlockedThemes.includes(i)) {
+        (this.save.vault as any).unlockedThemes.push(i);
       }
     }
   }

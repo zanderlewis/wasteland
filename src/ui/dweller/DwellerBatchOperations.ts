@@ -1,5 +1,5 @@
 import type { SaveEditor } from '../../core/SaveEditor';
-import type { Dweller } from '../../types/saveFile';
+import type { DwellersItem as Dweller } from '../../types/saveFile';
 
 /**
  * Handles batch operations for dwellers

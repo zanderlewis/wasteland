@@ -1,10 +1,27 @@
-import type { 
-  FalloutShelterSave, 
-  Dweller, 
-  Actor, 
-  SpecialStatType,
-  ResourceTypeValue 
+import type {
+  FalloutShelterSave,
+  DwellersItem as Dweller
 } from '../types/saveFile';
+
+type Actor = any;
+
+type SpecialStatType = number;
+
+type ResourceTypeValue =
+  | 'Caps'
+  | 'Nuka'
+  | 'Food'
+  | 'Energy'
+  | 'Water'
+  | 'StimPack'
+  | 'RadAway'
+  | 'Lunchbox'
+  | 'MrHandy'
+  | 'PetCarrier'
+  | 'CraftedOutfit'
+  | 'CraftedWeapon'
+  | 'NukaColaQuantum'
+  | 'CraftedTheme';
 import type { ISaveEditor } from './interfaces/ISaveEditor';
 import { VaultManager } from './VaultManager';
 import { DwellerManager } from './DwellerManager';

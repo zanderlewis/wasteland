@@ -1,9 +1,11 @@
-import type { 
-  FalloutShelterSave, 
-  Dweller, 
-  Actor, 
-  SpecialStatType 
+import type {
+  FalloutShelterSave,
+  DwellersItem as Dweller
 } from '../types/saveFile';
+
+type SpecialStatType = number;
+
+type Actor = any;
 import { 
   DwellerStatsManager,
   DwellerHealthManager,
@@ -169,10 +171,7 @@ export class DwellerManager {
     dweller.assigned = false;
     dweller.savedRoom = -1;
     
-    // Remove any room assignment
-    if (dweller.assignedRoom !== undefined) {
-      dweller.assignedRoom = -1;
-    }
+    // Room assignment is stored under `savedRoom` in the generated format; already cleared above.
     
     console.log(`Dweller ${dweller.name} ${dweller.lastName} marked for eviction`);
   }

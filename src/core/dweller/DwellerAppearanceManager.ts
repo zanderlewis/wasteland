@@ -1,4 +1,4 @@
-import type { Dweller } from '../../types/saveFile';
+import type { DwellersItem as Dweller } from '../../types/saveFile';
 
 /**
  * Manages dweller appearance (colors, styling)

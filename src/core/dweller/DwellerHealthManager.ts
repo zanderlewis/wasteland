@@ -1,4 +1,4 @@
-import type { Dweller } from '../../types/saveFile';
+import type { DwellersItem as Dweller } from '../../types/saveFile';
 import { validateValue } from '../../constants/gameConstants';
 
 /**
@@ -13,7 +13,7 @@ export class DwellerHealthManager {
    */
   setDwellerHealth(dweller: Dweller, health: number, maxHealth?: number): void {
     if (!dweller.health) {
-      dweller.health = { healthValue: 100, maxHealth: 100, radiationValue: 0 };
+      dweller.health = { healthValue: 100, maxHealth: 100, radiationValue: 0, permaDeath: false, lastLevelUpdated: 0 };
     }
     
     dweller.health.healthValue = Math.max(0, health);
@@ -44,7 +44,7 @@ export class DwellerHealthManager {
    */
   healDweller(dweller: Dweller): void {
     if (!dweller.health) {
-      dweller.health = { healthValue: 100, maxHealth: 100, radiationValue: 0 };
+      dweller.health = { healthValue: 100, maxHealth: 100, radiationValue: 0, permaDeath: false, lastLevelUpdated: 0 };
     }
     
     const maxHealth = dweller.health.maxHealth || 100;
@@ -59,7 +59,7 @@ export class DwellerHealthManager {
    */
   setDwellerRadiation(dweller: Dweller, radiation: number): void {
     if (!dweller.health) {
-      dweller.health = { healthValue: 100, maxHealth: 100, radiationValue: 0 };
+      dweller.health = { healthValue: 100, maxHealth: 100, radiationValue: 0, permaDeath: false, lastLevelUpdated: 0 };
     }
     dweller.health.radiationValue = validateValue.radiation(radiation);
   }

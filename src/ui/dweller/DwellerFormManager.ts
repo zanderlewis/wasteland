@@ -1,4 +1,4 @@
-import type { Dweller } from '../../types/saveFile';
+import type { DwellersItem as Dweller } from '../../types/saveFile';
 
 // Default color constants
 const DEFAULT_SKIN_COLORS = {
@@ -89,8 +89,8 @@ export class DwellerFormManager {
     this.setFormValue('dwellerWeapon', (dweller.equipedWeapon?.id || '').toString());
     this.setFormValue('dwellerOutfit', (dweller.equipedOutfit?.id || '').toString());
     
-    // Set pet value
-    const petId = dweller.equippedPet?.id || dweller.pet?.id || '';
+    // Set pet value (some generated save shapes don't include pet fields)
+    const petId = (dweller as any).equippedPet?.id || (dweller as any).pet?.id || '';
     this.setFormValue('dwellerPet', petId);
     
     // Verify the pet was set correctly

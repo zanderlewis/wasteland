@@ -1,11 +1,28 @@
 // SaveEditor interface definitions
 import type { 
   FalloutShelterSave, 
-  Dweller, 
-  Actor, 
-  SpecialStatType,
-  ResourceTypeValue 
+  DwellersItem as Dweller
 } from '../../types/saveFile';
+
+type Actor = any;
+
+type SpecialStatType = number;
+
+type ResourceTypeValue =
+  | 'Caps'
+  | 'Nuka'
+  | 'Food'
+  | 'Energy'
+  | 'Water'
+  | 'StimPack'
+  | 'RadAway'
+  | 'Lunchbox'
+  | 'MrHandy'
+  | 'PetCarrier'
+  | 'CraftedOutfit'
+  | 'CraftedWeapon'
+  | 'NukaColaQuantum'
+  | 'CraftedTheme';
 
 /**
  * Interface for the main SaveEditor class

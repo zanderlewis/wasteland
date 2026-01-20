@@ -1,4 +1,4 @@
-import type { Dweller } from '../types/saveFile';
+import type { DwellersItem as Dweller } from '../types/saveFile';
 import type { SaveEditor } from '../core/SaveEditor';
 import { DwellerFormManager, DwellerEquipmentManager, DwellerBatchOperations, DwellerUIManager } from './dweller';
 
@@ -285,9 +285,9 @@ export class DwellerUI {
     const pregnant = this.formManager.getFormValue('dwellerPregnant') === 'true';
     dweller.pregnant = pregnant;
 
-    const babyReady = this.formManager.getFormValue('dwellerBabyReadyTime') === 'true';
-    if (dweller.babyReadyTime) {
-      dweller.babyReadyTime = babyReady;
+    const babyReady = this.formManager.getFormValue('dwellerBabyReady') === 'true';
+    if (dweller.babyReady !== undefined) {
+      dweller.babyReady = babyReady;
     }
 
     // Colors (using form values directly for now)
