@@ -107,11 +107,11 @@ export class DwellerUIManager {
         <div class="min-w-[1200px] space-y-2">
 
           <div class="hidden lg:grid grid-cols-12 gap-3 px-3 py-2 text-xs text-gray-300 uppercase">
-            <div class="col-span-3">Name</div>
+            <div class="min-w-0 basis-[22%] shrink-0">Name</div>
             <div class="col-span-1 text-right">Gender</div>
             <div class="col-span-1 text-right">Lvl</div>
             <div class="col-span-1 text-right">XP</div>
-            <div class="col-span-1 text-right">Happy</div>
+            <div class="shrink-0 w-10 text-right">Happy</div>
             <div class="col-span-3 text-right">SPECIAL</div>
             <div class="col-span-2 text-right">Health</div>
           </div>
@@ -226,7 +226,7 @@ export class DwellerUIManager {
             return `
               <div class="flex flex-col items-center gap-1">
                 <div class="h-[20px] w-2 bg-gray-700 rounded-sm overflow-hidden" title="${labels[i]}: ${clamped}">
-                  <div class="w-full bg-blue-400" style="height:${h}px; margin-top:${20 - h}px"></div>
+                  <div class="w-full bg-green-500" style="height:${h}px; margin-top:${20 - h}px"></div>
                 </div>
                 <div class="text-[10px] text-gray-300">${labels[i]}</div>
               </div>
@@ -253,7 +253,7 @@ export class DwellerUIManager {
     const radPct = (safeRad / safeMax) * 100;
 
     return `
-      <div class="w-[200px]" aria-label="Health">
+      <div class="w-[100px]" aria-label="Health">
         <div class="flex justify-between text-[10px] text-gray-300 mb-1">
           <span class="tabular-nums">${safeHp}/${safeMax}</span>
           <span class="tabular-nums">Rad ${safeRad}</span>
