@@ -13,9 +13,12 @@ const DEFAULT_HAIR_COLORS = {
  * Handles form field management for the dweller editor
  */
 export class DwellerFormManager {
+  // Store the bound handler once so removeEventListener actually works
+  private readonly boundGenderChangeHandler = this.handleGenderChange.bind(this);
+
   private colorConverter(colorhex: string | number, mode?: boolean): string | number {
     const colorInt = typeof colorhex === 'string' ? parseInt(colorhex) : colorhex;
-    
+
     if (mode) {
       // Convert from FOS integer to hex color for HTML input
       const rgb = colorInt & 0xFFFFFF;
@@ -47,11 +50,21 @@ export class DwellerFormManager {
     this.setFormValue('dwellerRadiation', (dweller.health?.radiationValue || 0).toString());
 
     // Appearance
-    this.setFormValue('dwellerSkinColor', dweller.skinColor ? '#' + this.colorConverter(dweller.skinColor, true).toString() : DEFAULT_SKIN_COLORS.LIGHT);
-    this.setFormValue('dwellerHairColor', dweller.hairColor ? '#' + this.colorConverter(dweller.hairColor, true).toString() : DEFAULT_HAIR_COLORS.BROWN);
+    this.setFormValue(
+      'dwellerSkinColor',
+      dweller.skinColor
+        ? '#' + this.colorConverter(dweller.skinColor, true).toString()
+        : DEFAULT_SKIN_COLORS.LIGHT
+    );
+    this.setFormValue(
+      'dwellerHairColor',
+      dweller.hairColor
+        ? '#' + this.colorConverter(dweller.hairColor, true).toString()
+        : DEFAULT_HAIR_COLORS.BROWN
+    );
 
     // Pregnancy (only for females)
-    if (dweller.gender === 1) {      
+    if (dweller.gender === 1) {
       this.setFormValue('dwellerPregnant', dweller.pregnant ? 'true' : 'false');
       this.setFormValue('dwellerBabyReadyTime', dweller.babyReady ? 'true' : 'false');
       this.togglePregnancyFields(true);
@@ -88,11 +101,11 @@ export class DwellerFormManager {
   loadEquipmentToForm(dweller: Dweller): void {
     this.setFormValue('dwellerWeapon', (dweller.equipedWeapon?.id || '').toString());
     this.setFormValue('dwellerOutfit', (dweller.equipedOutfit?.id || '').toString());
-    
+
     // Set pet value (some generated save shapes don't include pet fields)
     const petId = (dweller as any).equippedPet?.id || (dweller as any).pet?.id || '';
     this.setFormValue('dwellerPet', petId);
-    
+
     // Verify the pet was set correctly
     const petSelect = document.getElementById('dwellerPet') as HTMLSelectElement;
     if (petSelect && petId) {
@@ -137,10 +150,8 @@ export class DwellerFormManager {
   private setupGenderChangeListener(): void {
     const genderSelect = document.getElementById('dwellerGender') as HTMLSelectElement;
     if (genderSelect) {
-      // Remove existing listener to avoid duplicates
-      genderSelect.removeEventListener('change', this.handleGenderChange.bind(this));
-      // Add new listener
-      genderSelect.addEventListener('change', this.handleGenderChange.bind(this));
+      genderSelect.removeEventListener('change', this.boundGenderChangeHandler);
+      genderSelect.addEventListener('change', this.boundGenderChangeHandler);
     }
   }
 
@@ -151,7 +162,7 @@ export class DwellerFormManager {
     const target = event.target as HTMLSelectElement;
     const isFemale = target.value === '1';
     this.togglePregnancyFields(isFemale);
-    
+
     // Reset pregnancy values if switching to male
     if (!isFemale) {
       this.setFormValue('dwellerPregnant', 'false');
@@ -167,7 +178,7 @@ export class DwellerFormManager {
       // Reload the dweller's actual data instead of using browser form reset
       this.loadDwellerToForm(dweller);
       this.loadEquipmentToForm(dweller);
-      
+
       // Ensure pregnancy fields are properly set based on dweller's actual data
       if (dweller.gender === 1) {
         this.setFormValue('dwellerPregnant', dweller.pregnant ? 'true' : 'false');
