@@ -34,14 +34,19 @@ jobs:
 
       # Build MAIN into site/
       - name: Build main
+        env:
+          VITE_BASE: /wasteland/
         run: |
           git checkout main
+          npm ci
           npm run build
           mkdir -p site
           cp -R dist/* site/
 
       # Build layout-update into site/layout-update/
       - name: Build layout-update
+        env:
+          VITE_BASE: /wasteland/layout-update/
         run: |
           git checkout layout-update
           npm ci
