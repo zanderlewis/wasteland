@@ -1,8 +1,10 @@
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vite';
 
-// https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
-  base: mode === 'production' ? '/wasteland/' : '/',
+export default defineConfig(() => ({
+  base: process.env.VITE_BASE ?? '/',
+  define: {
+    __APP_CHANNEL__: JSON.stringify(process.env.VITE_APP_CHANNEL ?? 'main')
+  },
   build: {
     outDir: 'dist',
     sourcemap: true,
@@ -18,4 +20,4 @@ export default defineConfig(({ mode }) => ({
     port: 3000,
     open: true
   }
-}))
+}));
