@@ -17,7 +17,7 @@ export class DwellerUI {
 
   constructor(saveEditor: SaveEditor) {
     this.saveEditor = saveEditor;
-    
+
     // Initialize managers
     this.formManager = new DwellerFormManager();
     this.equipmentManager = new DwellerEquipmentManager();
@@ -30,7 +30,10 @@ export class DwellerUI {
    */
   initialize(): void {
     this.setupEventListeners();
+
+    // Populate selectors with known items initially (no dweller selected yet)
     this.equipmentManager.loadEquipmentSelectors();
+
     // Start with form disabled
     this.uiManager.closeDwellerEditor();
   }
@@ -81,9 +84,23 @@ export class DwellerUI {
    */
   selectDweller(dweller: Dweller): void {
     this.selectedDweller = dweller;
+
+    // Load dweller data into the form
     this.formManager.loadDwellerToForm(dweller);
     this.formManager.loadEquipmentToForm(dweller);
-    
+
+    // Refresh equipment selectors and include currently equipped items (even if unknown/missing from constants)
+    const petId =
+      (dweller as any).equippedPet?.id ||
+      (dweller as any).pet?.id ||
+      '';
+
+    this.equipmentManager.loadEquipmentSelectors(
+      dweller.equipedWeapon?.id,
+      dweller.equipedOutfit?.id,
+      petId
+    );
+
     // Update UI based on eviction status
     if (dweller.WillBeEvicted) {
       this.uiManager.showEvictedDwellerEditor();
@@ -122,6 +139,19 @@ export class DwellerUI {
       resetButton.addEventListener('click', () => {
         if (this.selectedDweller) {
           this.formManager.resetForm(this.selectedDweller);
+
+          // Re-sync selectors in case equipped IDs are unknown
+          const petId =
+            (this.selectedDweller as any).equippedPet?.id ||
+            (this.selectedDweller as any).pet?.id ||
+            '';
+
+          this.equipmentManager.loadEquipmentSelectors(
+            this.selectedDweller.equipedWeapon?.id,
+            this.selectedDweller.equipedOutfit?.id,
+            petId
+          );
+
           this.uiManager.showMessage('Form reset to original values', 'info');
         }
       });
@@ -140,7 +170,10 @@ export class DwellerUI {
           this.formManager.setFormValue('dwellerIntelligence', '10');
           this.formManager.setFormValue('dwellerAgility', '10');
           this.formManager.setFormValue('dwellerLuck', '10');
-          this.uiManager.showMessage(`${this.selectedDweller.name} ${this.selectedDweller.lastName}'s SPECIAL stats set to max (click Save to apply)`, 'info');
+          this.uiManager.showMessage(
+            `${this.selectedDweller.name} ${this.selectedDweller.lastName}'s SPECIAL stats set to max (click Save to apply)`,
+            'info'
+          );
         }
       });
     }
@@ -195,6 +228,17 @@ export class DwellerUI {
             // Refresh the selected dweller's form
             this.formManager.loadDwellerToForm(this.selectedDweller);
             this.formManager.loadEquipmentToForm(this.selectedDweller);
+
+            const petId =
+              (this.selectedDweller as any).equippedPet?.id ||
+              (this.selectedDweller as any).pet?.id ||
+              '';
+
+            this.equipmentManager.loadEquipmentSelectors(
+              this.selectedDweller.equipedWeapon?.id,
+              this.selectedDweller.equipedOutfit?.id,
+              petId
+            );
           }
         });
       }
@@ -285,7 +329,7 @@ export class DwellerUI {
     const pregnant = this.formManager.getFormValue('dwellerPregnant') === 'true';
     dweller.pregnant = pregnant;
 
-    const babyReady = this.formManager.getFormValue('dwellerBabyReady') === 'true';
+    const babyReady = this.formManager.getFormValue('dwellerBabyReadyTime') === 'true';
     if (dweller.babyReady !== undefined) {
       dweller.babyReady = babyReady;
     }
