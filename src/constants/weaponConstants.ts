@@ -182,5 +182,6 @@ export const WEAPON_LIST = {
   "SniperRifle_VictoryRifle": 'Victory Rifle',
   "InstituteRifle_VirgilsRifle": "Virgil's Rifle",
   "LaserRifle_WaserWifle": 'Wazer Wifle',
-  "032Pistol_WildBillsSidearm": "Wild Bill's Sidearm"
+  "032Pistol_WildBillsSidearm": "Wild Bill's Sidearm",
+  "SurgicalRipper_Enhanced": 'Enhanced Surgical Ripper'
 } as const;
