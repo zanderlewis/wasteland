@@ -29,9 +29,6 @@ jobs:
           node-version: "20"
           cache: "npm"
 
-      - name: Install dependencies
-        run: npm ci
-
       # Build MAIN into site/
       - name: Build main
         env:
@@ -39,6 +36,7 @@ jobs:
         run: |
           git checkout main
           npm ci
+          rm -rf dist
           npm run build
           mkdir -p site
           cp -R dist/* site/
@@ -47,9 +45,11 @@ jobs:
       - name: Build layout-update
         env:
           VITE_BASE: /wasteland/layout-update/
+          VITE_APP_CHANNEL: layout-update
         run: |
           git checkout layout-update
           npm ci
+          rm -rf dist
           npm run build
           mkdir -p site/layout-update
           cp -R dist/* site/layout-update/
