@@ -3,7 +3,7 @@ import { GAME_LIMITS } from '../../constants/gameConstants';
 
 export const createDwellersSectionTemplate = (): string => `
   <!-- Dwellers Section -->
-  <div id="dwellers-section" class="tab-content hidden">
+  <div id="dwellers-section" class="tab-content hidden text-green-200">
     <!-- Batch Operations -->
     <div class="card mb-6">
       <div class="card-header">
