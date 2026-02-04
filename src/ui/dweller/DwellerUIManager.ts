@@ -29,7 +29,7 @@ export class DwellerUIManager {
 
     if (statusText) {
       statusText.textContent = 'Editing dweller';
-      statusText.className = 'text-sm text-green-600';
+      statusText.className = 'text-sm text-green-400';
     }
   }
 
@@ -39,7 +39,7 @@ export class DwellerUIManager {
 
     if (statusText) {
       statusText.textContent = 'Dweller is evicted - Only undo eviction is available';
-      statusText.className = 'text-sm text-red-600';
+      statusText.className = 'text-sm text-red-400';
     }
 
     if (fieldset) {
@@ -66,7 +66,7 @@ export class DwellerUIManager {
 
     if (statusText) {
       statusText.textContent = 'Select a dweller to edit';
-      statusText.className = 'text-sm text-gray-500';
+      statusText.className = 'text-sm text-green-200/70';
     }
 
     this.selectedDweller = null;
@@ -95,7 +95,7 @@ export class DwellerUIManager {
     if (!dwellersList) return;
 
     if (dwellers.length === 0) {
-      dwellersList.innerHTML = '<p class="text-gray-500 text-center py-4">No dwellers found</p>';
+      dwellersList.innerHTML = '<p class="text-green-200/70 text-center py-4">No dwellers found</p>';
       return;
     }
 
@@ -103,17 +103,18 @@ export class DwellerUIManager {
     (dwellersList as any).__dwellers = dwellers;
 
     dwellersList.innerHTML = `
-      <div class="w-full overflow-x-auto">
+      <div class="w-full overflow-x-auto text-green-200">
         <div class="min-w-[1200px] space-y-2">
 
-          <div class="hidden lg:grid grid-cols-12 gap-3 px-3 py-2 text-xs text-gray-300 uppercase">
-            <div class="min-w-0 basis-[22%] shrink-0">Name</div>
-            <div class="col-span-1 text-right">Gender</div>
-            <div class="col-span-1 text-right">Lvl</div>
-            <div class="col-span-1 text-right">XP</div>
-            <div class="shrink-0 w-10 text-right">Happy</div>
-            <div class="col-span-3 text-right">SPECIAL</div>
-            <div class="col-span-2 text-right">Health</div>
+          <!-- Header -->
+          <div class="hidden lg:flex items-center gap-3 px-3 py-2 text-xs uppercase text-green-200/70">
+            <div class="min-w-0 basis-[18%] shrink-0">Name</div>
+            <div class="shrink-0 w-12 text-right">Gender</div>
+            <div class="shrink-0 w-12 text-right">Lvl</div>
+            <div class="shrink-0 w-24 text-right">XP</div>
+            <div class="shrink-0 w-10 text-right">😊</div>
+            <div class="shrink-0 w-[220px] text-right">SPECIAL</div>
+            <div class="shrink-0 w-[50px] text-right">Health</div>
           </div>
 
           ${dwellers.map((dweller) => this.renderDwellerRow(dweller)).join('')}
@@ -164,19 +165,19 @@ export class DwellerUIManager {
     const rowClasses = [
       'dweller-row',
       'w-full',
-      'grid',
-      'grid-cols-12',
-      'gap-3',
+      'flex',
       'items-center',
+      'gap-3',
       'px-3',
       'py-2',
       'rounded-lg',
       'border',
-      'border-gray-700',
+      'border-green-900/60',
       'bg-gray-800',
       'hover:bg-gray-700',
       'cursor-pointer',
-      'transition-colors'
+      'transition-colors',
+      'text-green-200'
     ];
 
     if (dweller.WillBeEvicted) {
@@ -185,21 +186,26 @@ export class DwellerUIManager {
 
     return `
       <div class="${rowClasses.join(' ')}" data-dweller-id="${dweller.serializeId}">
-        <div class="col-span-3 min-w-0">
-          <div class="truncate font-medium text-gray-100">${this.escapeHtml(name)}</div>
+        <!-- NAME (about 30% smaller than before) -->
+        <div class="min-w-0 basis-[18%] shrink-0">
+          <div class="truncate font-medium text-green-100">${this.escapeHtml(name)}</div>
           <div class="mt-1 flex flex-wrap gap-1">${statuses}</div>
         </div>
 
-        <div class="col-span-1 text-right text-gray-300">${gender}</div>
-        <div class="col-span-1 text-right tabular-nums text-gray-200">${level}</div>
-        <div class="col-span-1 text-right tabular-nums text-gray-200">${xp}</div>
-        <div class="col-span-1 text-right tabular-nums text-blue-300">${happy}%</div>
+        <div class="shrink-0 w-12 text-right text-green-200/80">${gender}</div>
+        <div class="shrink-0 w-12 text-right tabular-nums text-green-100">${level}</div>
+        <div class="shrink-0 w-24 text-right tabular-nums text-green-100">${xp}</div>
 
-        <div class="col-span-3 justify-end flex">
+        <!-- HAPPY (75% smaller) -->
+        <div class="shrink-0 w-10 text-right tabular-nums text-green-300">${happy}%</div>
+
+        <!-- SPECIAL (bars green already) -->
+        <div class="shrink-0 w-[220px] flex justify-end">
           ${this.renderSpecialMiniChart(dweller)}
         </div>
 
-        <div class="col-span-2 justify-end flex">
+        <!-- HEALTH (50% of previous width) -->
+        <div class="shrink-0 w-[50px] flex justify-end">
           ${this.renderHealthMiniBar(hp, maxHp, rad)}
         </div>
       </div>
@@ -214,9 +220,6 @@ export class DwellerUIManager {
     const values = this.getSpecialValues(dweller); // [S,P,E,C,I,A,L]
     const labels = ['S', 'P', 'E', 'C', 'I', 'A', 'L'];
 
-    // Fixed chart geometry
-    // - container height 28px, bar max height 20px
-    // - each bar is 8px wide
     return `
       <div class="flex items-end gap-2" aria-label="SPECIAL stats">
         ${values
@@ -228,7 +231,7 @@ export class DwellerUIManager {
                 <div class="h-[20px] w-2 bg-gray-700 rounded-sm overflow-hidden" title="${labels[i]}: ${clamped}">
                   <div class="w-full bg-green-500" style="height:${h}px; margin-top:${20 - h}px"></div>
                 </div>
-                <div class="text-[10px] text-gray-300">${labels[i]}</div>
+                <div class="text-[10px] text-green-200/70">${labels[i]}</div>
               </div>
             `;
           })
@@ -243,6 +246,8 @@ export class DwellerUIManager {
    * - background represents max HP
    * - green fills from left = current HP
    * - orange fills from right = radiation
+   *
+   * NOTE: Outer width is controlled by the caller (we keep this as w-full).
    */
   private renderHealthMiniBar(hp: number, maxHp: number, rad: number): string {
     const safeMax = Math.max(1, maxHp);
@@ -253,17 +258,12 @@ export class DwellerUIManager {
     const radPct = (safeRad / safeMax) * 100;
 
     return `
-      <div class="w-[100px]" aria-label="Health">
-        <div class="flex justify-between text-[10px] text-gray-300 mb-1">
-          <span class="tabular-nums">${safeHp}/${safeMax}</span>
-          <span class="tabular-nums">Rad ${safeRad}</span>
-        </div>
-
+      <div class="w-full" aria-label="Health">
         <div class="relative h-3 w-full bg-gray-700 rounded overflow-hidden" title="HP ${safeHp}/${safeMax}, Rad ${safeRad}">
           <!-- HP from left -->
           <div class="absolute left-0 top-0 h-full bg-green-500" style="width:${hpPct}%"></div>
           <!-- Radiation from right -->
-          <div class="absolute right-0 top-0 h-full bg-orange-400" style="width:${radPct}%"></div>
+          <div class="absolute right-0 top-0 h-full bg-orange-500" style="width:${radPct}%"></div>
         </div>
       </div>
     `;
