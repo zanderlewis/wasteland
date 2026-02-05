@@ -2,14 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'FuturaCondensed';
+  src: url('./assets/fonts/futura-condensed-pt-medium-589e44ed1e3a5.otf')
+       format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* Force dark mode for the entire app */
 @layer base {
   html {
     color-scheme: dark;
   }
-  
   body {
     @apply bg-gray-900 text-white;
+    font-family: 'FuturaCondensed', system-ui, sans-serif;
   }
 }
 
