@@ -89,6 +89,8 @@ export class DwellerUIManager {
 
   /**
    * Update the dweller list display (full width, one row per dweller)
+   * - Sticky header
+   * - No gaps between rows
    */
   updateDwellersList(dwellers: Dweller[]): void {
     const dwellersList = document.getElementById('dwellerList');
@@ -103,12 +105,14 @@ export class DwellerUIManager {
     // Store dwellers for delegated click handler
     (dwellersList as any).__dwellers = dwellers;
 
+    // IMPORTANT: make THIS the scrolling container, so sticky works
+    // dwellersTemplate already gives #dwellerList "overflow-y-auto" — perfect.
     dwellersList.innerHTML = `
       <div class="w-full overflow-x-auto text-green-200">
-        <div class="min-w-[1200px] space-y-2 font-semibold">
+        <div class="min-w-[1200px] font-semibold">
 
-          <!-- Header -->
-          <div class="hidden lg:flex items-center gap-3 px-3 py-2 text-xs uppercase text-green-200/70 font-semibold">
+          <!-- Sticky Header -->
+          <div class="hidden lg:flex items-center gap-3 px-3 py-2 text-xs uppercase text-green-200/70 font-bold sticky top-0 z-10 bg-gray-900 border-b border-green-900/60">
             <div class="min-w-0 basis-[18%] shrink-0">Name</div>
             <div class="shrink-0 w-12 text-center">Gender</div>
             <div class="shrink-0 w-12 text-center">Lvl</div>
@@ -118,13 +122,16 @@ export class DwellerUIManager {
             <div class="shrink-0 w-[100px] text-right">Health</div>
           </div>
 
-          ${dwellers.map((dweller) => this.renderDwellerRow(dweller)).join('')}
+          <!-- Rows (no gaps) -->
+          <div class="divide-y divide-green-900/50">
+            ${dwellers.map((dweller) => this.renderDwellerRow(dweller)).join('')}
+          </div>
 
         </div>
       </div>
     `;
 
-    // Bind click handler once
+    // Bind click handler once (delegated)
     if (!(dwellersList as any).__dwellerClickBound) {
       (dwellersList as any).__dwellerClickBound = true;
 
@@ -163,6 +170,7 @@ export class DwellerUIManager {
       .filter(Boolean)
       .join(' ');
 
+    // NOTE: no rounded + no border here; we use divide-y on the container instead.
     const rowClasses = [
       'dweller-row',
       'w-full',
@@ -171,9 +179,6 @@ export class DwellerUIManager {
       'gap-3',
       'px-3',
       'py-2',
-      'rounded-lg',
-      'border',
-      'border-green-900/60',
       'bg-gray-800',
       'hover:bg-gray-700',
       'cursor-pointer',
@@ -183,34 +188,25 @@ export class DwellerUIManager {
     ];
 
     if (dweller.WillBeEvicted) {
-      rowClasses.push('border-red-500', 'bg-red-900', 'hover:bg-red-800');
+      rowClasses.push('bg-red-900', 'hover:bg-red-800');
     }
 
     return `
       <div class="${rowClasses.join(' ')}" data-dweller-id="${dweller.serializeId}">
-        <!-- NAME -->
         <div class="min-w-0 basis-[18%] shrink-0">
           <div class="truncate text-green-100">${this.escapeHtml(name)}</div>
           <div class="mt-1 flex flex-wrap gap-1">${statuses}</div>
         </div>
 
-        <!-- GENDER centered -->
         <div class="shrink-0 w-12 text-center text-green-200/80">${gender}</div>
-
-        <!-- LVL centered -->
         <div class="shrink-0 w-12 text-center tabular-nums text-green-100">${level}</div>
-
         <div class="shrink-0 w-24 text-right tabular-nums text-green-100">${xp}</div>
-
-        <!-- HAPPY small -->
         <div class="shrink-0 w-10 text-right tabular-nums text-green-300">${happy}%</div>
 
-        <!-- SPECIAL -->
         <div class="shrink-0 w-[220px] flex justify-end">
           ${this.renderSpecialMiniChart(dweller)}
         </div>
 
-        <!-- HEALTH (double width vs previous 50px) -->
         <div class="shrink-0 w-[100px] flex justify-end">
           ${this.renderHealthMiniBar(hp, maxHp, rad)}
         </div>
@@ -218,9 +214,6 @@ export class DwellerUIManager {
     `;
   }
 
-  /**
-   * SPECIAL: 7 vertical bars with labels S P E C I A L
-   */
   private renderSpecialMiniChart(dweller: Dweller): string {
     const values = this.getSpecialValues(dweller);
     const labels = ['S', 'P', 'E', 'C', 'I', 'A', 'L'];
@@ -245,12 +238,6 @@ export class DwellerUIManager {
     `;
   }
 
-  /**
-   * Health bar:
-   * - fixed width for every row (container controls width)
-   * - green from left = current HP
-   * - orange from right = radiation
-   */
   private renderHealthMiniBar(hp: number, maxHp: number, rad: number): string {
     const safeMax = Math.max(1, maxHp);
     const safeHp = this.clamp(hp, 0, safeMax);
