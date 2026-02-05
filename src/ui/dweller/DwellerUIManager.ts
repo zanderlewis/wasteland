@@ -96,27 +96,34 @@ export class DwellerUIManager {
 
     if (dwellers.length === 0) {
       dwellersList.innerHTML =
-        '<p class="text-green-200/70 text-center py-4 font-semibold">No dwellers found</p>';
+        '<p class="text-green-200/70 text-center py-4">No dwellers found</p>';
       return;
     }
 
     (dwellersList as any).__dwellers = dwellers;
 
-    dwellersList.innerHTML = `
-      <div class="min-w-[1200px] font-semibold">
+    // Column sizing (per your request)
+    const NAME_BASIS = 'basis-[12.5%]'; // 18% -> ~30% smaller
+    const XP_W = 'w-[72px]'; // 96px -> 25% smaller
+    const SPECIAL_W = 'w-[143px]'; // 220px -> 35% smaller
+    const HEALTH_W = 'w-[100px]';
 
-        <div class="hidden lg:flex items-center gap-3 px-0 py-2 text-xs uppercase font-bold sticky top-0 z-20 bg-gray-900 border-b border-green-900/60">
-          <div class="basis-[18%] shrink-0">Name</div>
+    dwellersList.innerHTML = `
+      <div class="min-w-[1100px]">
+
+        <!-- Header (same font size as rows, aligned with row content) -->
+        <div class="hidden lg:flex items-center gap-3 px-0 py-2 sticky top-0 z-20 bg-gray-900 border-b border-green-900/60">
+          <div class="${NAME_BASIS} shrink-0 pl-3">Name</div>
           <div class="w-12 text-center">Gender</div>
           <div class="w-12 text-center">Lvl</div>
-          <div class="w-24 text-right">XP</div>
+          <div class="${XP_W} text-right">XP</div>
           <div class="w-10 text-right">😊</div>
-          <div class="w-[220px] text-right">SPECIAL</div>
-          <div class="w-[100px] text-right">Health</div>
+          <div class="${SPECIAL_W} text-center">SPECIAL</div>
+          <div class="${HEALTH_W} text-center">Health</div>
         </div>
 
         <div class="divide-y divide-green-900/50">
-          ${dwellers.map((d) => this.renderDwellerRow(d)).join('')}
+          ${dwellers.map((d) => this.renderDwellerRow(d, { NAME_BASIS, XP_W, SPECIAL_W, HEALTH_W })).join('')}
         </div>
 
       </div>
@@ -137,12 +144,24 @@ export class DwellerUIManager {
     }
   }
 
-  private renderDwellerRow(dweller: Dweller): string {
+  private renderDwellerRow(
+    dweller: Dweller,
+    widths: { NAME_BASIS: string; XP_W: string; SPECIAL_W: string; HEALTH_W: string }
+  ): string {
     const name = `${dweller.name} ${dweller.lastName || ''}`.trim();
-    const genderSymbol = dweller.gender === 1 ? '♀' : '♂';
+
+    const isFemale = dweller.gender === 1;
+    const isPregnantFemale = isFemale && !!dweller.pregnant;
+
+    const genderHtml = isFemale
+      ? `♀${isPregnantFemale ? '<span class="ml-1 text-green-300">+</span>' : ''}`
+      : '♂';
+
     const level = dweller.experience?.currentLevel ?? 1;
     const xp = dweller.experience?.experienceValue ?? 0;
-    const happy = dweller.happiness?.happinessValue ?? 50;
+
+    const happyRaw = dweller.happiness?.happinessValue ?? 50;
+    const happy = Math.round(happyRaw); // 0 decimals
 
     const hp = dweller.health?.healthValue ?? 100;
     const maxHp = dweller.health?.maxHealth ?? 100;
@@ -150,22 +169,22 @@ export class DwellerUIManager {
 
     return `
       <div
-        class="dweller-row flex items-center gap-3 px-0 py-1 bg-gray-800 hover:bg-gray-700 cursor-pointer transition-colors text-green-200 font-semibold"
+        class="dweller-row flex items-center gap-3 px-0 py-1 bg-gray-800 hover:bg-gray-700 cursor-pointer transition-colors text-green-200 font-normal"
         data-dweller-id="${dweller.serializeId}"
       >
-        <div class="basis-[18%] shrink-0 pl-3 text-green-100 font-bold truncate">
+        <div class="${widths.NAME_BASIS} shrink-0 pl-3 text-green-100 truncate">
           ${this.escapeHtml(name)}
         </div>
 
-        <div class="w-12 text-center text-green-400 text-base font-bold">
-          ${genderSymbol}
+        <div class="w-12 text-center text-green-400 text-base">
+          ${genderHtml}
         </div>
 
         <div class="w-12 text-center tabular-nums text-green-100">
           ${level}
         </div>
 
-        <div class="w-24 text-right tabular-nums text-green-100">
+        <div class="${widths.XP_W} text-right tabular-nums text-green-100">
           ${xp}
         </div>
 
@@ -173,11 +192,11 @@ export class DwellerUIManager {
           ${happy}%
         </div>
 
-        <div class="w-[220px] flex justify-end">
+        <div class="${widths.SPECIAL_W} flex justify-center">
           ${this.renderSpecialMiniChart(dweller)}
         </div>
 
-        <div class="w-[100px] flex justify-end">
+        <div class="${widths.HEALTH_W} flex justify-center">
           ${this.renderHealthMiniBar(hp, maxHp, rad)}
         </div>
       </div>
@@ -185,13 +204,14 @@ export class DwellerUIManager {
   }
 
   /**
-   * SPECIAL: 7 vertical bars with labels S P E C I A L
-   * Tooltip shows the value for the hovered stat only
+   * SPECIAL: 7 vertical bars
+   * Tooltip shows the value for the hovered stat only (per-bar title).
+   * Removed tiny labels under bars so there’s no “small text” in the table.
    */
   private renderSpecialMiniChart(dweller: Dweller): string {
     const values = this.getSpecialValues(dweller);
     const labels = ['S', 'P', 'E', 'C', 'I', 'A', 'L'];
-  
+
     return `
       <div class="inline-flex items-end gap-2" aria-label="SPECIAL stats">
         ${values
@@ -199,19 +219,12 @@ export class DwellerUIManager {
             const clamped = this.clamp(v ?? 1, 0, 10);
             const h = Math.round((clamped / 10) * 20);
             const tooltip = `${labels[i]}: ${clamped}`;
-  
+
             return `
-              <div
-                class="flex flex-col items-center gap-1 cursor-default"
-                title="${tooltip}"
-              >
+              <div class="flex flex-col items-center cursor-default" title="${tooltip}">
                 <div class="h-[20px] w-2 bg-gray-700 rounded overflow-hidden">
-                  <div
-                    class="w-full bg-green-500"
-                    style="height:${h}px; margin-top:${20 - h}px"
-                  ></div>
+                  <div class="w-full bg-green-500" style="height:${h}px; margin-top:${20 - h}px"></div>
                 </div>
-                <div class="text-[10px] text-green-200/70">${labels[i]}</div>
               </div>
             `;
           })
@@ -221,8 +234,7 @@ export class DwellerUIManager {
   }
 
   /**
-   * Health bar:
-   * Tooltips: put title on OUTER wrapper so it triggers even if inner bars overlap.
+   * Health bar with tooltip on wrapper.
    */
   private renderHealthMiniBar(hp: number, maxHp: number, rad: number): string {
     const safeMax = Math.max(1, maxHp);
