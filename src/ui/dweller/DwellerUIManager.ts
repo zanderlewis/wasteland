@@ -2,8 +2,66 @@ import type { DwellersItem as Dweller } from '../../types/saveFile';
 import { toastManager } from '../toastManager';
 
 /**
- * Handles UI state management for the dweller editor
+ * Total XP required to be at each level (minimum XP at that level)
+ * Level 50 is cap.
  */
+const DWELLER_XP_BY_LEVEL: Record<number, number> = {
+  1: 0,
+  2: 100,
+  3: 300,
+  4: 600,
+  5: 1000,
+  6: 1500,
+  7: 2100,
+  8: 2800,
+  9: 3600,
+  10: 4500,
+
+  11: 5600,
+  12: 6900,
+  13: 8400,
+  14: 10100,
+  15: 12000,
+  16: 14100,
+  17: 16400,
+  18: 18900,
+  19: 21600,
+  20: 24500,
+
+  21: 27600,
+  22: 30900,
+  23: 34400,
+  24: 38100,
+  25: 42000,
+  26: 46100,
+  27: 50400,
+  28: 54900,
+  29: 59600,
+  30: 64500,
+
+  31: 69600,
+  32: 74900,
+  33: 80400,
+  34: 86100,
+  35: 92000,
+  36: 98100,
+  37: 104400,
+  38: 110900,
+  39: 117600,
+  40: 124500,
+
+  41: 131600,
+  42: 138900,
+  43: 146400,
+  44: 154100,
+  45: 162000,
+  46: 170100,
+  47: 178400,
+  48: 186900,
+  49: 195600,
+  50: 204500
+};
+
 export class DwellerUIManager {
   private selectedDweller: Dweller | null = null;
 
@@ -109,10 +167,10 @@ export class DwellerUIManager {
           <div class="basis-[18%] shrink-0 pl-3">Name</div>
           <div class="w-12 text-center">Gender</div>
           <div class="w-12 text-center">Lvl</div>
-          <div class="w-24 text-right">XP</div>
+          <div class="w-24 text-center">XP</div>
           <div class="w-10 text-right">😊</div>
-          <div class="w-[220px] text-right">SPECIAL</div>
-          <div class="w-[100px] text-right">Health</div>
+          <div class="w-[220px] text-right pr-1">SPECIAL</div>
+          <div class="w-[100px] text-right pr-3">Health</div>
         </div>
 
         <div class="divide-y divide-green-900/50">
@@ -150,10 +208,10 @@ export class DwellerUIManager {
 
     return `
       <div
-        class="dweller-row flex items-center gap-3 px-0 py-1 bg-gray-800 hover:bg-gray-700 cursor-pointer transition-colors text-green-200 font-semibold"
+        class="dweller-row flex items-center gap-3 px-0 py-[3px] bg-gray-800 hover:bg-gray-700 cursor-pointer transition-colors text-green-200 font-semibold"
         data-dweller-id="${dweller.serializeId}"
       >
-        <div class="basis-[18%] shrink-0 pl-3 text-green-100 font-bold">
+        <div class="basis-[18%] shrink-0 pl-3 truncate text-green-100 font-bold">
           ${this.escapeHtml(name)}
         </div>
 
@@ -165,20 +223,52 @@ export class DwellerUIManager {
           ${level}
         </div>
 
-        <div class="w-24 text-right tabular-nums text-green-100">
-          ${xp}
+        <div class="w-24 flex justify-center">
+          ${this.renderXpProgressBar(level, xp)}
         </div>
 
-        <div class="w-10 text-right tabular-nums text-green-300">
+        <div class="w-10 text-right tabular-nums text-green-300 pr-1">
           ${happy}%
         </div>
 
-        <div class="w-[220px] flex justify-end">
+        <div class="w-[220px] flex justify-end pr-1">
           ${this.renderSpecialMiniChart(dweller)}
         </div>
 
-        <div class="w-[100px] flex justify-end">
+        <div class="w-[100px] flex justify-end pr-3">
           ${this.renderHealthMiniBar(hp, maxHp, rad)}
+        </div>
+      </div>
+    `;
+  }
+
+  /**
+   * XP progress to next level as a fixed-width green bar.
+   * Uses total cumulative XP thresholds from DWELLER_XP_BY_LEVEL.
+   */
+  private renderXpProgressBar(level: number, totalXp: number): string {
+    const lvl = this.clamp(Math.floor(level), 1, 50);
+
+    const curMin = DWELLER_XP_BY_LEVEL[lvl] ?? 0;
+    const nextMin = lvl < 50 ? (DWELLER_XP_BY_LEVEL[lvl + 1] ?? curMin) : curMin;
+
+    // At level cap: always full bar
+    let pct = 100;
+    if (lvl < 50) {
+      const span = Math.max(1, nextMin - curMin);
+      const within = this.clamp(totalXp - curMin, 0, span);
+      pct = (within / span) * 100;
+    }
+
+    const tooltip =
+      lvl < 50
+        ? `XP ${totalXp} • Level ${lvl}: ${curMin} → ${nextMin}`
+        : `XP ${totalXp} • Level 50 (cap)`;
+
+    return `
+      <div class="w-[84px]" title="${tooltip}">
+        <div class="h-2 bg-gray-700 rounded overflow-hidden">
+          <div class="h-full bg-green-500" style="width:${pct}%"></div>
         </div>
       </div>
     `;
