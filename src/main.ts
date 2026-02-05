@@ -3,9 +3,6 @@ import { SaveEditor } from './core/SaveEditor';
 import { EventManager } from './ui/eventManager';
 import { createMainTemplate } from './ui/templates';
 
-declare const __APP_CHANNEL__: string;
-declare const __BUILD_SHA__: string;
-
 class WastelandApp {
   private saveEditor: SaveEditor;
   private eventManager: EventManager;
@@ -25,20 +22,17 @@ class WastelandApp {
     const app = document.getElementById('app');
     if (!app) return;
 
-    // Show a banner for non-main builds (e.g. layout-update)
-    if (typeof __APP_CHANNEL__ !== 'undefined' && __APP_CHANNEL__ !== 'main') {
-      const sha = typeof __BUILD_SHA__ !== 'undefined' ? __BUILD_SHA__ : '';
+    const channel = import.meta.env.VITE_APP_CHANNEL as string | undefined;
+    const sha = import.meta.env.VITE_BUILD_SHA as string | undefined;
+
+    // Show a banner only for non-main builds (e.g. layout-update)
+    if (channel && channel !== 'main') {
       const shortSha = sha ? sha.slice(0, 7) : '';
 
       const banner = document.createElement('div');
-      banner.textContent = shortSha
-        ? `TEST BUILD: ${__APP_CHANNEL__} • ${shortSha}`
-        : `TEST BUILD: ${__APP_CHANNEL__}`;
+      banner.textContent = shortSha ? `TEST BUILD: ${channel} • ${shortSha}` : `TEST BUILD: ${channel}`;
+      banner.className = 'w-full bg-yellow-600 text-black text-center text-sm font-semibold py-2';
 
-      banner.className =
-        'w-full bg-yellow-600 text-black text-center text-sm font-semibold py-2';
-
-      // Insert banner before the app container
       app.parentElement?.insertBefore(banner, app);
     }
 
@@ -50,5 +44,4 @@ class WastelandApp {
   }
 }
 
-// Initialize the application
 new WastelandApp();
