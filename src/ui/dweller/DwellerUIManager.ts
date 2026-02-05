@@ -2,66 +2,8 @@ import type { DwellersItem as Dweller } from '../../types/saveFile';
 import { toastManager } from '../toastManager';
 
 /**
- * Total XP required to be at each level (minimum XP at that level)
- * Level 50 is cap.
+ * Handles UI state management for the dweller editor
  */
-const DWELLER_XP_BY_LEVEL: Record<number, number> = {
-  1: 0,
-  2: 100,
-  3: 300,
-  4: 600,
-  5: 1000,
-  6: 1500,
-  7: 2100,
-  8: 2800,
-  9: 3600,
-  10: 4500,
-
-  11: 5600,
-  12: 6900,
-  13: 8400,
-  14: 10100,
-  15: 12000,
-  16: 14100,
-  17: 16400,
-  18: 18900,
-  19: 21600,
-  20: 24500,
-
-  21: 27600,
-  22: 30900,
-  23: 34400,
-  24: 38100,
-  25: 42000,
-  26: 46100,
-  27: 50400,
-  28: 54900,
-  29: 59600,
-  30: 64500,
-
-  31: 69600,
-  32: 74900,
-  33: 80400,
-  34: 86100,
-  35: 92000,
-  36: 98100,
-  37: 104400,
-  38: 110900,
-  39: 117600,
-  40: 124500,
-
-  41: 131600,
-  42: 138900,
-  43: 146400,
-  44: 154100,
-  45: 162000,
-  46: 170100,
-  47: 178400,
-  48: 186900,
-  49: 195600,
-  50: 204500
-};
-
 export class DwellerUIManager {
   private selectedDweller: Dweller | null = null;
 
@@ -164,13 +106,13 @@ export class DwellerUIManager {
       <div class="min-w-[1200px] font-semibold">
 
         <div class="hidden lg:flex items-center gap-3 px-0 py-2 text-xs uppercase font-bold sticky top-0 z-20 bg-gray-900 border-b border-green-900/60">
-          <div class="basis-[18%] shrink-0 pl-3">Name</div>
+          <div class="basis-[18%] shrink-0">Name</div>
           <div class="w-12 text-center">Gender</div>
           <div class="w-12 text-center">Lvl</div>
-          <div class="w-24 text-center">XP</div>
+          <div class="w-24 text-right">XP</div>
           <div class="w-10 text-right">😊</div>
-          <div class="w-[220px] text-right pr-1">SPECIAL</div>
-          <div class="w-[100px] text-right pr-3">Health</div>
+          <div class="w-[220px] text-right">SPECIAL</div>
+          <div class="w-[100px] text-right">Health</div>
         </div>
 
         <div class="divide-y divide-green-900/50">
@@ -208,10 +150,10 @@ export class DwellerUIManager {
 
     return `
       <div
-        class="dweller-row flex items-center gap-3 px-0 py-[3px] bg-gray-800 hover:bg-gray-700 cursor-pointer transition-colors text-green-200 font-semibold"
+        class="dweller-row flex items-center gap-3 px-0 py-1 bg-gray-800 hover:bg-gray-700 cursor-pointer transition-colors text-green-200 font-semibold"
         data-dweller-id="${dweller.serializeId}"
       >
-        <div class="basis-[18%] shrink-0 pl-3 truncate text-green-100 font-bold">
+        <div class="basis-[18%] shrink-0 pl-3 text-green-100 font-bold truncate">
           ${this.escapeHtml(name)}
         </div>
 
@@ -223,19 +165,19 @@ export class DwellerUIManager {
           ${level}
         </div>
 
-        <div class="w-24 flex justify-center">
-          ${this.renderXpProgressBar(level, xp)}
+        <div class="w-24 text-right tabular-nums text-green-100">
+          ${xp}
         </div>
 
-        <div class="w-10 text-right tabular-nums text-green-300 pr-1">
+        <div class="w-10 text-right tabular-nums text-green-300">
           ${happy}%
         </div>
 
-        <div class="w-[220px] flex justify-end pr-1">
+        <div class="w-[220px] flex justify-end">
           ${this.renderSpecialMiniChart(dweller)}
         </div>
 
-        <div class="w-[100px] flex justify-end pr-3">
+        <div class="w-[100px] flex justify-end">
           ${this.renderHealthMiniBar(hp, maxHp, rad)}
         </div>
       </div>
@@ -243,46 +185,23 @@ export class DwellerUIManager {
   }
 
   /**
-   * XP progress to next level as a fixed-width green bar.
-   * Uses total cumulative XP thresholds from DWELLER_XP_BY_LEVEL.
+   * SPECIAL: 7 vertical bars with labels S P E C I A L
+   * Tooltips: put title on the OUTER wrapper so it always triggers.
    */
-  private renderXpProgressBar(level: number, totalXp: number): string {
-    const lvl = this.clamp(Math.floor(level), 1, 50);
-
-    const curMin = DWELLER_XP_BY_LEVEL[lvl] ?? 0;
-    const nextMin = lvl < 50 ? (DWELLER_XP_BY_LEVEL[lvl + 1] ?? curMin) : curMin;
-
-    // At level cap: always full bar
-    let pct = 100;
-    if (lvl < 50) {
-      const span = Math.max(1, nextMin - curMin);
-      const within = this.clamp(totalXp - curMin, 0, span);
-      pct = (within / span) * 100;
-    }
-
-    const tooltip =
-      lvl < 50
-        ? `XP ${totalXp} • Level ${lvl}: ${curMin} → ${nextMin}`
-        : `XP ${totalXp} • Level 50 (cap)`;
-
-    return `
-      <div class="w-[84px]" title="${tooltip}">
-        <div class="h-2 bg-gray-700 rounded overflow-hidden">
-          <div class="h-full bg-green-500" style="width:${pct}%"></div>
-        </div>
-      </div>
-    `;
-  }
-
   private renderSpecialMiniChart(dweller: Dweller): string {
-    const values = this.getSpecialValues(dweller);
+    const values = this.getSpecialValues(dweller); // [S,P,E,C,I,A,L]
     const labels = ['S', 'P', 'E', 'C', 'I', 'A', 'L'];
 
+    const tooltip = labels
+      .map((l, i) => `${l}:${this.clamp(values[i] ?? 1, 0, 10)}`)
+      .join('  ');
+
     return `
-      <div class="flex items-end gap-2">
+      <div class="inline-flex items-end gap-2 cursor-default" title="${tooltip}" aria-label="SPECIAL stats">
         ${values
           .map((v, i) => {
-            const h = Math.round((this.clamp(v, 0, 10) / 10) * 20);
+            const clamped = this.clamp(v ?? 1, 0, 10);
+            const h = Math.round((clamped / 10) * 20);
             return `
               <div class="flex flex-col items-center gap-1">
                 <div class="h-[20px] w-2 bg-gray-700 rounded overflow-hidden">
@@ -297,13 +216,22 @@ export class DwellerUIManager {
     `;
   }
 
+  /**
+   * Health bar:
+   * Tooltips: put title on OUTER wrapper so it triggers even if inner bars overlap.
+   */
   private renderHealthMiniBar(hp: number, maxHp: number, rad: number): string {
     const safeMax = Math.max(1, maxHp);
-    const hpPct = (this.clamp(hp, 0, safeMax) / safeMax) * 100;
-    const radPct = (this.clamp(rad, 0, safeMax) / safeMax) * 100;
+    const safeHp = this.clamp(hp, 0, safeMax);
+    const safeRad = this.clamp(rad, 0, safeMax);
+
+    const hpPct = (safeHp / safeMax) * 100;
+    const radPct = (safeRad / safeMax) * 100;
+
+    const tooltip = `HP ${safeHp}/${safeMax} • Rad ${safeRad}`;
 
     return `
-      <div class="w-full">
+      <div class="w-full cursor-default" title="${tooltip}" aria-label="Health">
         <div class="relative h-3 bg-gray-700 rounded overflow-hidden">
           <div class="absolute left-0 top-0 h-full bg-green-500" style="width:${hpPct}%"></div>
           <div class="absolute right-0 top-0 h-full bg-orange-500" style="width:${radPct}%"></div>
