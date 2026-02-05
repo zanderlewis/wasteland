@@ -252,7 +252,7 @@ export class DwellerUIManager {
     const rad = dweller.health?.radiationValue ?? 0;
 
     const isFemale = dweller.gender === 1;
-    const isPregnant = !!dweller.pregnancy?.isPregnant;
+    const isPregnant = !!dweller.pregnant;
     const genderSymbol = isFemale ? `♀${isPregnant ? '+' : ''}` : '♂';
 
     return `
