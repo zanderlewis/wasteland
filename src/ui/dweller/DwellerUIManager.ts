@@ -88,9 +88,7 @@ export class DwellerUIManager {
   }
 
   /**
-   * Update the dweller list display (full width, one row per dweller)
-   * - Sticky header
-   * - No gaps between rows
+   * Update the dweller list display
    */
   updateDwellersList(dwellers: Dweller[]): void {
     const dwellersList = document.getElementById('dwellerList');
@@ -102,47 +100,40 @@ export class DwellerUIManager {
       return;
     }
 
-    // Store dwellers for delegated click handler
     (dwellersList as any).__dwellers = dwellers;
 
-    // IMPORTANT: make THIS the scrolling container, so sticky works
-    // dwellersTemplate already gives #dwellerList "overflow-y-auto" — perfect.
     dwellersList.innerHTML = `
       <div class="w-full overflow-x-auto text-green-200">
         <div class="min-w-[1200px] font-semibold">
 
-          <!-- Sticky Header -->
-          <div class="hidden lg:flex items-center gap-3 px-3 py-2 text-xs uppercase text-green-200/70 font-bold sticky top-0 z-10 bg-gray-900 border-b border-green-900/60">
-            <div class="min-w-0 basis-[18%] shrink-0">Name</div>
-            <div class="shrink-0 w-12 text-center">Gender</div>
-            <div class="shrink-0 w-12 text-center">Lvl</div>
-            <div class="shrink-0 w-24 text-right">XP</div>
-            <div class="shrink-0 w-10 text-right">😊</div>
-            <div class="shrink-0 w-[220px] text-right">SPECIAL</div>
-            <div class="shrink-0 w-[100px] text-right">Health</div>
+          <div class="hidden lg:flex items-center gap-3 px-3 py-2 text-xs uppercase font-bold sticky top-0 z-10 bg-gray-900 border-b border-green-900/60">
+            <div class="basis-[18%] shrink-0">Name</div>
+            <div class="w-12 text-center">Gender</div>
+            <div class="w-12 text-center">Lvl</div>
+            <div class="w-24 text-right">XP</div>
+            <div class="w-10 text-right">😊</div>
+            <div class="w-[220px] text-right">SPECIAL</div>
+            <div class="w-[100px] text-right">Health</div>
           </div>
 
-          <!-- Rows (no gaps) -->
           <div class="divide-y divide-green-900/50">
-            ${dwellers.map((dweller) => this.renderDwellerRow(dweller)).join('')}
+            ${dwellers.map((d) => this.renderDwellerRow(d)).join('')}
           </div>
 
         </div>
       </div>
     `;
 
-    // Bind click handler once (delegated)
     if (!(dwellersList as any).__dwellerClickBound) {
       (dwellersList as any).__dwellerClickBound = true;
 
       dwellersList.addEventListener('click', (e) => {
-        const target = e.target as HTMLElement;
-        const row = target.closest('.dweller-row') as HTMLElement | null;
+        const row = (e.target as HTMLElement).closest('.dweller-row') as HTMLElement | null;
         if (!row) return;
 
-        const dwellerId = parseInt(row.getAttribute('data-dweller-id') || '0', 10);
-        const listDwellers: Dweller[] = (dwellersList as any).__dwellers || [];
-        const dweller = listDwellers.find((d) => d.serializeId === dwellerId);
+        const id = parseInt(row.dataset.dwellerId || '0', 10);
+        const list: Dweller[] = (dwellersList as any).__dwellers;
+        const dweller = list.find((d) => d.serializeId === id);
         if (dweller) this.selectDweller(dweller);
       });
     }
@@ -150,7 +141,7 @@ export class DwellerUIManager {
 
   private renderDwellerRow(dweller: Dweller): string {
     const name = `${dweller.name} ${dweller.lastName || ''}`.trim();
-    const gender = dweller.gender === 1 ? 'F' : 'M';
+    const genderSymbol = dweller.gender === 1 ? '♀' : '♂';
     const level = dweller.experience?.currentLevel ?? 1;
     const xp = dweller.experience?.experienceValue ?? 0;
     const happy = dweller.happiness?.happinessValue ?? 50;
@@ -159,55 +150,36 @@ export class DwellerUIManager {
     const maxHp = dweller.health?.maxHealth ?? 100;
     const rad = dweller.health?.radiationValue ?? 0;
 
-    const statuses = [
-      dweller.pregnant
-        ? '<span class="text-xs bg-pink-800 text-pink-200 px-2 py-1 rounded font-semibold">Pregnant</span>'
-        : '',
-      dweller.WillBeEvicted
-        ? '<span class="text-xs bg-red-800 text-red-200 px-2 py-1 rounded font-semibold">Evicted</span>'
-        : ''
-    ]
-      .filter(Boolean)
-      .join(' ');
-
-    // NOTE: no rounded + no border here; we use divide-y on the container instead.
-    const rowClasses = [
-      'dweller-row',
-      'w-full',
-      'flex',
-      'items-center',
-      'gap-3',
-      'px-3',
-      'py-2',
-      'bg-gray-800',
-      'hover:bg-gray-700',
-      'cursor-pointer',
-      'transition-colors',
-      'text-green-200',
-      'font-semibold'
-    ];
-
-    if (dweller.WillBeEvicted) {
-      rowClasses.push('bg-red-900', 'hover:bg-red-800');
-    }
-
     return `
-      <div class="${rowClasses.join(' ')}" data-dweller-id="${dweller.serializeId}">
-        <div class="min-w-0 basis-[18%] shrink-0">
-          <div class="truncate text-green-100">${this.escapeHtml(name)}</div>
-          <div class="mt-1 flex flex-wrap gap-1">${statuses}</div>
+      <div
+        class="dweller-row flex items-center gap-3 px-3 py-2 bg-gray-800 hover:bg-gray-700 cursor-pointer transition-colors text-green-200 font-semibold"
+        data-dweller-id="${dweller.serializeId}"
+      >
+        <div class="basis-[18%] shrink-0 truncate text-green-100">
+          ${this.escapeHtml(name)}
         </div>
 
-        <div class="shrink-0 w-12 text-center text-green-200/80">${gender}</div>
-        <div class="shrink-0 w-12 text-center tabular-nums text-green-100">${level}</div>
-        <div class="shrink-0 w-24 text-right tabular-nums text-green-100">${xp}</div>
-        <div class="shrink-0 w-10 text-right tabular-nums text-green-300">${happy}%</div>
+        <div class="w-12 text-center text-green-400 text-lg font-bold">
+          ${genderSymbol}
+        </div>
 
-        <div class="shrink-0 w-[220px] flex justify-end">
+        <div class="w-12 text-center tabular-nums text-green-100">
+          ${level}
+        </div>
+
+        <div class="w-24 text-right tabular-nums text-green-100">
+          ${xp}
+        </div>
+
+        <div class="w-10 text-right tabular-nums text-green-300">
+          ${happy}%
+        </div>
+
+        <div class="w-[220px] flex justify-end">
           ${this.renderSpecialMiniChart(dweller)}
         </div>
 
-        <div class="shrink-0 w-[100px] flex justify-end">
+        <div class="w-[100px] flex justify-end">
           ${this.renderHealthMiniBar(hp, maxHp, rad)}
         </div>
       </div>
@@ -219,14 +191,13 @@ export class DwellerUIManager {
     const labels = ['S', 'P', 'E', 'C', 'I', 'A', 'L'];
 
     return `
-      <div class="flex items-end gap-2" aria-label="SPECIAL stats">
+      <div class="flex items-end gap-2">
         ${values
           .map((v, i) => {
-            const clamped = this.clamp(v, 0, 10);
-            const h = Math.round((clamped / 10) * 20);
+            const h = Math.round((this.clamp(v, 0, 10) / 10) * 20);
             return `
               <div class="flex flex-col items-center gap-1">
-                <div class="h-[20px] w-2 bg-gray-700 rounded-sm overflow-hidden" title="${labels[i]}: ${clamped}">
+                <div class="h-[20px] w-2 bg-gray-700 rounded overflow-hidden">
                   <div class="w-full bg-green-500" style="height:${h}px; margin-top:${20 - h}px"></div>
                 </div>
                 <div class="text-[10px] text-green-200/70">${labels[i]}</div>
@@ -240,15 +211,12 @@ export class DwellerUIManager {
 
   private renderHealthMiniBar(hp: number, maxHp: number, rad: number): string {
     const safeMax = Math.max(1, maxHp);
-    const safeHp = this.clamp(hp, 0, safeMax);
-    const safeRad = this.clamp(rad, 0, safeMax);
-
-    const hpPct = (safeHp / safeMax) * 100;
-    const radPct = (safeRad / safeMax) * 100;
+    const hpPct = (this.clamp(hp, 0, safeMax) / safeMax) * 100;
+    const radPct = (this.clamp(rad, 0, safeMax) / safeMax) * 100;
 
     return `
-      <div class="w-full" aria-label="Health">
-        <div class="relative h-3 w-full bg-gray-700 rounded overflow-hidden" title="HP ${safeHp}/${safeMax}, Rad ${safeRad}">
+      <div class="w-full">
+        <div class="relative h-3 bg-gray-700 rounded overflow-hidden">
           <div class="absolute left-0 top-0 h-full bg-green-500" style="width:${hpPct}%"></div>
           <div class="absolute right-0 top-0 h-full bg-orange-500" style="width:${radPct}%"></div>
         </div>
@@ -257,16 +225,8 @@ export class DwellerUIManager {
   }
 
   private getSpecialValues(dweller: Dweller): number[] {
-    const stats = dweller.stats?.stats;
-    return [
-      stats?.[1]?.value ?? 1,
-      stats?.[2]?.value ?? 1,
-      stats?.[3]?.value ?? 1,
-      stats?.[4]?.value ?? 1,
-      stats?.[5]?.value ?? 1,
-      stats?.[6]?.value ?? 1,
-      stats?.[7]?.value ?? 1
-    ].map((n) => (typeof n === 'number' ? n : 1));
+    const s = dweller.stats?.stats;
+    return [1, 2, 3, 4, 5, 6, 7].map((i) => s?.[i]?.value ?? 1);
   }
 
   private clamp(n: number, min: number, max: number): number {
