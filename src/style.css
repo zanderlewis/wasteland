@@ -17,8 +17,10 @@
     color-scheme: dark;
   }
   body {
-    @apply bg-gray-900 text-white;
+    @apply bg-gray-900 text-green-200;
     font-family: 'FuturaCondensed', system-ui, sans-serif;
+    font-size: 22px;
+    line-height: 1.15;
   }
 }
 
