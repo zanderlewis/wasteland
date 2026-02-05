@@ -103,24 +103,22 @@ export class DwellerUIManager {
     (dwellersList as any).__dwellers = dwellers;
 
     dwellersList.innerHTML = `
-      <div class="w-full overflow-x-auto text-green-200">
-        <div class="min-w-[1200px] font-semibold">
+      <div class="min-w-[1200px] font-semibold">
 
-          <div class="hidden lg:flex items-center gap-3 px-3 py-2 text-xs uppercase font-bold sticky top-0 z-10 bg-gray-900 border-b border-green-900/60">
-            <div class="basis-[18%] shrink-0">Name</div>
-            <div class="w-12 text-center">Gender</div>
-            <div class="w-12 text-center">Lvl</div>
-            <div class="w-24 text-right">XP</div>
-            <div class="w-10 text-right">😊</div>
-            <div class="w-[220px] text-right">SPECIAL</div>
-            <div class="w-[100px] text-right">Health</div>
-          </div>
-
-          <div class="divide-y divide-green-900/50">
-            ${dwellers.map((d) => this.renderDwellerRow(d)).join('')}
-          </div>
-
+        <div class="hidden lg:flex items-center gap-3 px-3 py-2 text-xs uppercase font-bold sticky top-0 z-10 bg-gray-900 border-b border-green-900/60">
+          <div class="basis-[18%] shrink-0">Name</div>
+          <div class="w-12 text-center">Gender</div>
+          <div class="w-12 text-center">Lvl</div>
+          <div class="w-24 text-right">XP</div>
+          <div class="w-10 text-right">😊</div>
+          <div class="w-[220px] text-right">SPECIAL</div>
+          <div class="w-[100px] text-right">Health</div>
         </div>
+
+        <div class="divide-y divide-green-900/50">
+          ${dwellers.map((d) => this.renderDwellerRow(d)).join('')}
+        </div>
+
       </div>
     `;
 
