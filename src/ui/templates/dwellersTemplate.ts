@@ -193,7 +193,7 @@ export const createDwellersSectionTemplate = (): string => `
         <div class="card-header">
           <h3 class="text-lg font-semibold">Dwellers</h3>
         </div>
-        <div id="dwellerList" class="card-body max-h-96 overflow-y-auto space-y-2">
+        <div id="dwellerList" class="card-body max-h-96 overflow-auto p-0">
           <!-- Dwellers will be populated here -->
         </div>
       </div>
