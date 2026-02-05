@@ -49,11 +49,11 @@
 }
 
 .btn-primary {
-  @apply bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500;
+  @apply bg-blue-600 text-green-100 hover:bg-blue-700 focus:ring-blue-500;
 }
 
 .btn-secondary {
-  @apply bg-gray-600 text-white hover:bg-gray-700 focus:ring-gray-500;
+  @apply bg-gray-600 text-green-100 hover:bg-gray-700 focus:ring-gray-500;
 }
 
 .btn-success {
@@ -145,11 +145,11 @@
 }
 
 .dweller-name {
-  @apply font-medium text-gray-100;
+  @apply font-medium text-green-100;
 }
 
 .dweller-stats {
-  @apply text-sm text-gray-400 mt-1;
+  @apply text-sm text-green-200/60 mt-1;
 }
 
 .special-grid {
@@ -161,7 +161,7 @@
 }
 
 .special-stat label {
-  @apply block text-xs font-medium text-gray-400 mb-1;
+  @apply block text-xs font-medium text-green-200/70 mb-1;
 }
 
 .special-stat input {
