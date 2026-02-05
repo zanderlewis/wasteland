@@ -184,37 +184,41 @@ export class DwellerUIManager {
     `;
   }
 
-  /**
-   * SPECIAL: 7 vertical bars with labels S P E C I A L
-   * Tooltips: put title on the OUTER wrapper so it always triggers.
-   */
-  private renderSpecialMiniChart(dweller: Dweller): string {
-    const values = this.getSpecialValues(dweller); // [S,P,E,C,I,A,L]
-    const labels = ['S', 'P', 'E', 'C', 'I', 'A', 'L'];
+/**
+ * SPECIAL: 7 vertical bars with labels S P E C I A L
+ * Tooltip shows the value for the hovered stat only
+ */
+private renderSpecialMiniChart(dweller: Dweller): string {
+  const values = this.getSpecialValues(dweller);
+  const labels = ['S', 'P', 'E', 'C', 'I', 'A', 'L'];
 
-    const tooltip = labels
-      .map((l, i) => `${l}:${this.clamp(values[i] ?? 1, 0, 10)}`)
-      .join('  ');
+  return `
+    <div class="inline-flex items-end gap-2" aria-label="SPECIAL stats">
+      ${values
+        .map((v, i) => {
+          const clamped = this.clamp(v ?? 1, 0, 10);
+          const h = Math.round((clamped / 10) * 20);
+          const tooltip = `${labels[i]}: ${clamped}`;
 
-    return `
-      <div class="inline-flex items-end gap-2 cursor-default" title="${tooltip}" aria-label="SPECIAL stats">
-        ${values
-          .map((v, i) => {
-            const clamped = this.clamp(v ?? 1, 0, 10);
-            const h = Math.round((clamped / 10) * 20);
-            return `
-              <div class="flex flex-col items-center gap-1">
-                <div class="h-[20px] w-2 bg-gray-700 rounded overflow-hidden">
-                  <div class="w-full bg-green-500" style="height:${h}px; margin-top:${20 - h}px"></div>
-                </div>
-                <div class="text-[10px] text-green-200/70">${labels[i]}</div>
+          return `
+            <div
+              class="flex flex-col items-center gap-1 cursor-default"
+              title="${tooltip}"
+            >
+              <div class="h-[20px] w-2 bg-gray-700 rounded overflow-hidden">
+                <div
+                  class="w-full bg-green-500"
+                  style="height:${h}px; margin-top:${20 - h}px"
+                ></div>
               </div>
-            `;
-          })
-          .join('')}
-      </div>
-    `;
-  }
+              <div class="text-[10px] text-green-200/70">${labels[i]}</div>
+            </div>
+          `;
+        })
+        .join('')}
+    </div>
+  `;
+}
 
   /**
    * Health bar:
