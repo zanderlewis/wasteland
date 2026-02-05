@@ -91,7 +91,7 @@ export class DwellerUIManager {
    * Update the dweller list display
    */
   updateDwellersList(dwellers: Dweller[]): void {
-    const dwellersList = document.getElementById('dwellerList');
+    const dwellersList = document.getElementById('dwellerListScroll');
     if (!dwellersList) return;
 
     if (dwellers.length === 0) {
