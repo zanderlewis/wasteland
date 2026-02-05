@@ -106,7 +106,7 @@ export class DwellerUIManager {
       <div class="min-w-[1200px] font-semibold">
 
         <div class="hidden lg:flex items-center gap-3 px-0 py-2 text-xs uppercase font-bold sticky top-0 z-20 bg-gray-900 border-b border-green-900/60">
-          <div class="basis-[18%] shrink-0">Name</div>
+          <div class="basis-[18%] shrink-0 pl-3">Name</div>
           <div class="w-12 text-center">Gender</div>
           <div class="w-12 text-center">Lvl</div>
           <div class="w-24 text-right">XP</div>
@@ -153,7 +153,7 @@ export class DwellerUIManager {
         class="dweller-row flex items-center gap-3 px-0 py-1 bg-gray-800 hover:bg-gray-700 cursor-pointer transition-colors text-green-200 font-semibold"
         data-dweller-id="${dweller.serializeId}"
       >
-        <div class="basis-[18%] shrink-0 pl-3 text-green font-bold">
+        <div class="basis-[18%] shrink-0 pl-3 text-green-100 font-bold">
           ${this.escapeHtml(name)}
         </div>
 
