@@ -19,6 +19,7 @@
 @layer base {
   html {
     color-scheme: dark;
+    font-size: 22px; /* make 1rem match Pip-Boy base text */
   }
 
   body {
@@ -245,6 +246,21 @@ pre code {
 
   .max-h-\[calc\(100vh-200px\)\] {
     max-height: calc(100vh - 200px);
+  }
+
+  /* Make any Tailwind "small text" at least the base size (requested) */
+  .text-xs,
+  .text-sm {
+    font-size: 1rem;
+    line-height: 1.15;
+  }
+
+  /* Clamp common arbitrary small text sizes used in a few templates */
+  .text-\[10px\],
+  .text-\[11px\],
+  .text-\[12px\] {
+    font-size: 1rem !important;
+    line-height: 1.15 !important;
   }
 }
 
