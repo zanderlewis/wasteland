@@ -1,354 +1,557 @@
-// src/ui/dwellerUI.ts
 import type { DwellersItem as Dweller } from '../types/saveFile';
-import { SaveEditor } from '../core/SaveEditor';
-import { DwellerUIManager } from './dweller/DwellerUIManager';
-import { toastManager } from './toastManager';
+import type { SaveEditor } from '../core/SaveEditor';
+import {
+  DwellerFormManager,
+  DwellerEquipmentManager,
+  DwellerBatchOperations,
+  DwellerUIManager
+} from './dweller';
 
+/**
+ * Handles the dweller editing interface
+ */
 export class DwellerUI {
   private saveEditor: SaveEditor;
-  private ui: DwellerUIManager;
+  private selectedDweller: Dweller | null = null;
+
+  // Manager instances
+  private formManager: DwellerFormManager;
+  private equipmentManager: DwellerEquipmentManager;
+  private batchOperations: DwellerBatchOperations;
+  private uiManager: DwellerUIManager;
 
   constructor(saveEditor: SaveEditor) {
     this.saveEditor = saveEditor;
-    this.ui = new DwellerUIManager();
+
+    // Initialize managers
+    this.formManager = new DwellerFormManager();
+    this.equipmentManager = new DwellerEquipmentManager();
+    this.batchOperations = new DwellerBatchOperations(saveEditor);
+    this.uiManager = new DwellerUIManager();
   }
 
+  /**
+   * Initialize the dweller UI
+   */
+  initialize(): void {
+    // IMPORTANT: never allow the eviction modal to be visible by default
+    this.forceEvictionModalHidden();
+
+    this.setupEventListeners();
+
+    // Populate selectors with known items initially (no dweller selected yet)
+    this.equipmentManager.loadEquipmentSelectors();
+
+    // Start with form disabled
+    this.uiManager.closeDwellerEditor();
+  }
+
+  /**
+   * Bind event listeners
+   */
   bindEvents(): void {
-    // ---- Prevent the eviction modal from ever showing unless we explicitly show it ----
-    this.bindEvictionModal();
-
-    // Dweller selection event (fired by DwellerUIManager when a row is clicked)
-    document.addEventListener('dwellerSelected', (e: Event) => {
-      const ce = e as CustomEvent<{ dweller: Dweller }>;
-      const dweller = ce.detail?.dweller;
-      if (!dweller) return;
-
-      this.ui.setSelectedDweller(dweller);
-
-      // If evicted, lock down; otherwise enable editor
-      if ((dweller as any).WillBeEvicted) {
-        this.ui.showEvictedDwellerEditor();
-      } else {
-        this.ui.showDwellerEditor();
-      }
-
-      this.populateDwellerForm(dweller);
-    });
-
-    // Form submit -> save
-    const form = document.getElementById('dwellerForm') as HTMLFormElement | null;
-    form?.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const selected = this.ui.getSelectedDweller();
-      if (!selected) {
-        toastManager.showInfo('Select a dweller first.');
-        return;
-      }
-
-      try {
-        this.applyFormToDweller(selected);
-        this.persistDweller(selected);
-        toastManager.showSuccess('Dweller updated.');
-        this.loadDwellersList(); // refresh list view
-      } catch (err) {
-        console.error(err);
-        toastManager.showError(
-          `Failed to save dweller: ${err instanceof Error ? err.message : 'Unknown error'}`
-        );
-      }
-    });
-
-    // Reset
-    const resetBtn = document.getElementById('resetDwellerForm') as HTMLButtonElement | null;
-    resetBtn?.addEventListener('click', (e) => {
-      e.preventDefault();
-      const selected = this.ui.getSelectedDweller();
-      if (selected) this.populateDwellerForm(selected);
-    });
-
-    // Max SPECIAL (single dweller)
-    const maxSpecialBtn = document.getElementById('maxSpecial') as HTMLButtonElement | null;
-    maxSpecialBtn?.addEventListener('click', (e) => {
-      e.preventDefault();
-      const selected = this.ui.getSelectedDweller();
-      if (!selected) return;
-
-      const stats = (selected as any).stats?.stats;
-      if (stats) {
-        for (let i = 1; i <= 7; i++) {
-          if (!stats[i]) stats[i] = {};
-          stats[i].value = 10;
-        }
-      }
-      this.populateDwellerForm(selected);
-      this.persistDweller(selected);
-      toastManager.showSuccess('SPECIAL maxed.');
-      this.loadDwellersList();
-    });
-
-    // Evict button -> show eviction modal
-    const evictBtn = document.getElementById('evictDweller') as HTMLButtonElement | null;
-    evictBtn?.addEventListener('click', (e) => {
-      e.preventDefault();
-      const selected = this.ui.getSelectedDweller();
-      if (!selected) return;
-
-      // If already evicted, do nothing (your UIManager already locks most controls)
-      if ((selected as any).WillBeEvicted) {
-        toastManager.showInfo('Dweller is already marked for eviction.');
-        return;
-      }
-
-      this.showEvictionModalFor(selected);
-    });
-
-    // Pregnancy section visibility (basic)
-    const genderSelect = document.getElementById('dwellerGender') as HTMLSelectElement | null;
-    const pregnancySection = document.getElementById('pregnancySection') as HTMLDivElement | null;
-    const updatePregnancyVisibility = () => {
-      // Your save uses 1 = Female, 2 = Male
-      const isFemale = (genderSelect?.value ?? '2') === '1';
-      if (pregnancySection) pregnancySection.style.display = isFemale ? 'block' : 'none';
-    };
-    genderSelect?.addEventListener('change', updatePregnancyVisibility);
-    updatePregnancyVisibility();
+    this.initialize();
   }
 
-  closeDwellerEditor(): void {
-    this.ui.closeDwellerEditor();
-  }
-
+  /**
+   * Load dwellers list
+   */
   loadDwellersList(): void {
-    const dwellers = this.getDwellersFromSave();
-    this.ui.updateDwellersList(dwellers);
+    this.loadDwellerList();
   }
 
-  // -----------------------------
-  // Eviction modal (id: evictionModal, cancelEviction, confirmEviction)
-  // -----------------------------
-  private bindEvictionModal(): void {
-    const evictionModal = document.getElementById('evictionModal') as HTMLDivElement | null;
-    const cancelBtn = document.getElementById('cancelEviction') as HTMLButtonElement | null;
-    const confirmBtn = document.getElementById('confirmEviction') as HTMLButtonElement | null;
+  /**
+   * Close dweller editor modal
+   */
+  closeDwellerEditor(): void {
+    this.uiManager.closeDwellerEditor();
+    this.clearSelection();
+    // Reset eviction button to default state
+    this.updateEvictionButton(false);
+  }
 
-    const hide = () => {
-      if (!evictionModal) return;
-      evictionModal.classList.add('modal-hidden');
-      evictionModal.style.display = 'none';
-      (evictionModal as any).__pendingDwellerId = undefined;
-    };
+  /**
+   * Update the save editor instance
+   */
+  updateSave(saveEditor: SaveEditor): void {
+    this.saveEditor = saveEditor;
+    this.batchOperations = new DwellerBatchOperations(saveEditor);
+    this.loadDwellerList();
+  }
 
-    const show = () => {
-      if (!evictionModal) return;
-      evictionModal.classList.remove('modal-hidden');
-      evictionModal.style.display = 'flex';
-    };
+  /**
+   * Load and display the list of dwellers
+   */
+  loadDwellerList(): void {
+    const dwellers = this.saveEditor.getDwellers();
+    this.uiManager.updateDwellersList(dwellers);
+  }
 
-    // Hard force hidden on init
-    hide();
+  /**
+   * Select a dweller for editing
+   */
+  selectDweller(dweller: Dweller): void {
+    this.selectedDweller = dweller;
 
-    cancelBtn?.addEventListener('click', (e) => {
-      e.preventDefault();
-      hide();
+    // Load dweller data into the form
+    this.formManager.loadDwellerToForm(dweller);
+    this.formManager.loadEquipmentToForm(dweller);
+
+    // Refresh equipment selectors and include currently equipped items (even if unknown/missing from constants)
+    const petId =
+      (dweller as any).equippedPet?.id ||
+      (dweller as any).pet?.id ||
+      '';
+
+    this.equipmentManager.loadEquipmentSelectors(
+      dweller.equipedWeapon?.id,
+      dweller.equipedOutfit?.id,
+      petId
+    );
+
+    // Update UI based on eviction status
+    if (dweller.WillBeEvicted) {
+      this.uiManager.showEvictedDwellerEditor();
+      this.updateEvictionButton(true);
+    } else {
+      this.uiManager.showDwellerEditor();
+      this.updateEvictionButton(false);
+    }
+  }
+
+  /**
+   * Setup event listeners for the dweller UI
+   */
+  private setupEventListeners(): void {
+    // Dweller form submission
+    const dwellerForm = document.getElementById('dwellerForm');
+    if (dwellerForm) {
+      dwellerForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.saveDwellerChanges();
+      });
+    }
+
+    // Save button
+    const saveButton = document.getElementById('saveDwellerChanges');
+    if (saveButton) {
+      saveButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.saveDwellerChanges();
+      });
+    }
+
+    // Reset form button
+    const resetButton = document.getElementById('resetDwellerForm');
+    if (resetButton) {
+      resetButton.addEventListener('click', (e) => {
+        e.preventDefault();
+
+        if (this.selectedDweller) {
+          this.formManager.resetForm(this.selectedDweller);
+
+          // Re-sync selectors in case equipped IDs are unknown
+          const petId =
+            (this.selectedDweller as any).equippedPet?.id ||
+            (this.selectedDweller as any).pet?.id ||
+            '';
+
+          this.equipmentManager.loadEquipmentSelectors(
+            this.selectedDweller.equipedWeapon?.id,
+            this.selectedDweller.equipedOutfit?.id,
+            petId
+          );
+
+          this.uiManager.showMessage('Form reset to original values', 'info');
+        }
+      });
+    }
+
+    // Max SPECIAL button
+    const maxSpecialButton = document.getElementById('maxSpecial');
+    if (maxSpecialButton) {
+      maxSpecialButton.addEventListener('click', (e) => {
+        e.preventDefault();
+
+        if (this.selectedDweller) {
+          // Set all SPECIAL stats to 10 in the form only (don't save to dweller yet)
+          this.formManager.setFormValue('dwellerStrength', '10');
+          this.formManager.setFormValue('dwellerPerception', '10');
+          this.formManager.setFormValue('dwellerEndurance', '10');
+          this.formManager.setFormValue('dwellerCharisma', '10');
+          this.formManager.setFormValue('dwellerIntelligence', '10');
+          this.formManager.setFormValue('dwellerAgility', '10');
+          this.formManager.setFormValue('dwellerLuck', '10');
+          this.uiManager.showMessage(
+            `${this.selectedDweller.name} ${this.selectedDweller.lastName}'s SPECIAL stats set to max (click Save to apply)`,
+            'info'
+          );
+        }
+      });
+    }
+
+    // Listen for dweller selection events
+    document.addEventListener('dwellerSelected', (e: any) => {
+      const dweller = e.detail.dweller;
+      this.selectDweller(dweller);
     });
 
-    confirmBtn?.addEventListener('click', (e) => {
-      e.preventDefault();
+    // Eviction button
+    const evictButton = document.getElementById('evictDweller');
+    if (evictButton) {
+      evictButton.addEventListener('click', (e) => {
+        e.preventDefault();
 
-      const selected = this.ui.getSelectedDweller();
-      if (!selected) {
-        hide();
-        return;
+        // Never show modal if nothing is selected
+        if (!this.selectedDweller) return;
+
+        if (this.selectedDweller.WillBeEvicted) {
+          // Undo eviction
+          this.undoEviction(this.selectedDweller);
+        } else {
+          // Show eviction modal
+          this.showEvictionModal(this.selectedDweller);
+        }
+      });
+    }
+
+    // Eviction modal events
+    this.setupEvictionModalEvents();
+
+    // Batch operation buttons
+    this.setupBatchOperationListeners();
+
+    // Safety: ensure modal is hidden after all bindings too
+    this.forceEvictionModalHidden();
+  }
+
+  /**
+   * Setup batch operation event listeners
+   */
+  private setupBatchOperationListeners(): void {
+    const operations = [
+      { id: 'maxSpecialAll', method: () => this.batchOperations.maxSpecialAll() },
+      { id: 'healAll', method: () => this.batchOperations.healAll() },
+      { id: 'maxHappinessAll', method: () => this.batchOperations.maxHappinessAll() }
+    ];
+
+    operations.forEach(({ id, method }) => {
+      const button = document.getElementById(id);
+      if (button) {
+        button.addEventListener('click', (e) => {
+          e.preventDefault();
+
+          method();
+          this.uiManager.showMessage(`Batch operation completed: ${button.textContent}`, 'success');
+          this.loadDwellerList(); // Refresh the list
+          if (this.selectedDweller) {
+            // Refresh the selected dweller's form
+            this.formManager.loadDwellerToForm(this.selectedDweller);
+            this.formManager.loadEquipmentToForm(this.selectedDweller);
+
+            const petId =
+              (this.selectedDweller as any).equippedPet?.id ||
+              (this.selectedDweller as any).pet?.id ||
+              '';
+
+            this.equipmentManager.loadEquipmentSelectors(
+              this.selectedDweller.equipedWeapon?.id,
+              this.selectedDweller.equipedOutfit?.id,
+              petId
+            );
+          }
+        });
       }
+    });
+  }
 
-      // Mark for eviction (your list rendering already highlights WillBeEvicted)
-      (selected as any).WillBeEvicted = true;
+  /**
+   * Save changes made to the currently selected dweller
+   */
+  private saveDwellerChanges(): void {
+    if (!this.selectedDweller) {
+      console.warn('No dweller selected for saving');
+      this.uiManager.showMessage('No dweller selected for saving', 'error');
+      return;
+    }
 
-      this.persistDweller(selected);
-      toastManager.showSuccess('Dweller marked for eviction.');
-      this.ui.showEvictedDwellerEditor();
-      this.loadDwellersList();
-      hide();
+    try {
+      // Get form data and update dweller
+      this.updateDwellerFromForm(this.selectedDweller);
+
+      // Refresh the dweller list and form
+      this.loadDwellerList();
+      this.formManager.loadDwellerToForm(this.selectedDweller);
+      this.formManager.loadEquipmentToForm(this.selectedDweller);
+
+      this.uiManager.showMessage(
+        `${this.selectedDweller.name} ${this.selectedDweller.lastName} updated successfully!`,
+        'success'
+      );
+      console.log('Dweller changes saved successfully');
+    } catch (error) {
+      console.error('Error saving dweller changes:', error);
+      this.uiManager.showMessage('Failed to save dweller changes. Please try again.', 'error');
+    }
+  }
+
+  /**
+   * Update dweller properties from form data
+   */
+  private updateDwellerFromForm(dweller: Dweller): void {
+    // Basic properties
+    dweller.name = this.formManager.getFormValue('dwellerName') || dweller.name;
+    dweller.lastName = this.formManager.getFormValue('dwellerLastName') || dweller.lastName;
+
+    // Level and experience
+    const level = parseInt(this.formManager.getFormValue('dwellerLevel')) || 1;
+    const experience = parseInt(this.formManager.getFormValue('dwellerExperience')) || 0;
+    this.saveEditor.setDwellerLevel(dweller, level, experience);
+
+    // Health and radiation
+    const health = parseInt(this.formManager.getFormValue('dwellerHealth')) || 100;
+    const maxHealth = parseInt(this.formManager.getFormValue('dwellerMaxHealth')) || 100;
+    this.saveEditor.setDwellerHealth(dweller, health, maxHealth);
+
+    const radiation = parseInt(this.formManager.getFormValue('dwellerRadiation')) || 0;
+    this.saveEditor.setDwellerRadiation(dweller, radiation);
+
+    // Happiness
+    const happiness = parseInt(this.formManager.getFormValue('dwellerHappiness')) || 50;
+    this.saveEditor.setDwellerHappiness(dweller, happiness);
+
+    // SPECIAL stats
+    const specialStats = this.formManager.getSpecialStatsFromForm();
+    specialStats.forEach(({ type, value }) => {
+      this.saveEditor.setDwellerSpecial(dweller, type as any, value);
     });
 
-    // Backdrop click closes
-    evictionModal?.addEventListener('click', (e) => {
-      if (e.target === evictionModal) hide();
+    // Equipment
+    const weapon = this.formManager.getFormValue('dwellerWeapon');
+    if (weapon) {
+      this.saveEditor.setDwellerWeapon(dweller, weapon);
+    }
+
+    const outfit = this.formManager.getFormValue('dwellerOutfit');
+    if (outfit) {
+      this.saveEditor.setDwellerOutfit(dweller, outfit);
+    }
+
+    const pet = this.formManager.getFormValue('dwellerPet');
+    if (pet) {
+      this.saveEditor.setDwellerPet(dweller, pet);
+    } else {
+      // Remove pet if none selected
+      this.saveEditor.removeDwellerPet(dweller);
+    }
+
+    // Gender and pregnancy
+    const gender = parseInt(this.formManager.getFormValue('dwellerGender')) || 1;
+    dweller.gender = gender;
+
+    // Your type seems to be "dweller.pregnant?.isPregnant" (object), but your older code used boolean.
+    // Keep it compatible: store a boolean on dweller.pregnant if that is what your save type expects.
+    const pregnant = this.formManager.getFormValue('dwellerPregnant') === 'true';
+    (dweller as any).pregnant = (dweller as any).pregnant ?? {};
+    if (typeof (dweller as any).pregnant === 'object') {
+      (dweller as any).pregnant.isPregnant = pregnant;
+    } else {
+      (dweller as any).pregnant = pregnant;
+    }
+
+    const babyReady = this.formManager.getFormValue('dwellerBabyReadyTime') === 'true';
+    if ((dweller as any).babyReady !== undefined) {
+      (dweller as any).babyReady = babyReady;
+    }
+
+    // Colors
+    const hairColor = this.formManager.getFormValue('dwellerHairColor');
+    if (hairColor) {
+      (dweller as any).hairColor = parseInt(hairColor.replace('#', ''), 16) | 0xff000000;
+    }
+
+    const skinColor = this.formManager.getFormValue('dwellerSkinColor');
+    if (skinColor) {
+      (dweller as any).skinColor = parseInt(skinColor.replace('#', ''), 16) | 0xff000000;
+    }
+  }
+
+  /**
+   * Clear the currently selected dweller
+   */
+  clearSelection(): void {
+    this.selectedDweller = null;
+    this.formManager.resetForm();
+  }
+
+  /**
+   * Get the currently selected dweller
+   */
+  getSelectedDweller(): Dweller | null {
+    return this.selectedDweller;
+  }
+
+  /**
+   * Refresh the UI with current data
+   */
+  refresh(): void {
+    this.loadDwellerList();
+    if (this.selectedDweller) {
+      this.formManager.loadDwellerToForm(this.selectedDweller);
+      this.formManager.loadEquipmentToForm(this.selectedDweller);
+    }
+  }
+
+  /**
+   * Update the eviction button text and behavior based on dweller state
+   */
+  private updateEvictionButton(isEvicted: boolean): void {
+    const evictButton = document.getElementById('evictDweller') as HTMLButtonElement | null;
+    if (evictButton) {
+      if (isEvicted) {
+        evictButton.textContent = 'Undo Eviction';
+        evictButton.className = 'btn btn-warning';
+      } else {
+        evictButton.textContent = 'Evict Dweller';
+        evictButton.className = 'btn btn-danger';
+      }
+    }
+  }
+
+  /**
+   * Make absolutely sure the eviction modal starts hidden.
+   * This prevents "pops up on tab open" when CSS/classes change.
+   */
+  private forceEvictionModalHidden(): void {
+    const modal = document.getElementById('evictionModal') as HTMLElement | null;
+    if (!modal) return;
+
+    modal.classList.add('modal-hidden');
+    // Belt + suspenders
+    modal.style.display = 'none';
+    modal.style.pointerEvents = '';
+  }
+
+  /**
+   * Show the eviction confirmation modal
+   */
+  private showEvictionModal(dweller: Dweller): void {
+    const modal = document.getElementById('evictionModal') as HTMLElement | null;
+    const dwellerNameSpan = document.getElementById('evictionDwellerName');
+
+    if (modal && dwellerNameSpan) {
+      dwellerNameSpan.textContent = `${dweller.name} ${dweller.lastName ?? ''}`.trim();
+      modal.classList.remove('modal-hidden');
+      modal.style.display = 'flex'; // ensure visible even if CSS changed
+    } else {
+      console.warn('Eviction modal elements missing:', { modal, dwellerNameSpan });
+    }
+  }
+
+  /**
+   * Hide the eviction confirmation modal
+   */
+  private hideEvictionModal(): void {
+    const modal = document.getElementById('evictionModal') as HTMLElement | null;
+    if (modal) {
+      modal.classList.add('modal-hidden');
+      modal.style.display = 'none';
+    }
+  }
+
+  /**
+   * Setup eviction modal event listeners
+   */
+  private setupEvictionModalEvents(): void {
+    const cancelButton = document.getElementById('cancelEviction') as HTMLButtonElement | null;
+    const confirmButton = document.getElementById('confirmEviction') as HTMLButtonElement | null;
+    const modal = document.getElementById('evictionModal') as HTMLElement | null;
+
+    // Cancel eviction
+    cancelButton?.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      this.hideEvictionModal();
+    });
+
+    // Confirm eviction
+    confirmButton?.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (this.selectedDweller) {
+        this.confirmEviction(this.selectedDweller);
+      }
+      this.hideEvictionModal();
+    });
+
+    // Close modal when clicking outside
+    modal?.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        this.hideEvictionModal();
+      }
     });
 
     // ESC closes
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && evictionModal && evictionModal.style.display !== 'none') {
-        hide();
+      if (e.key === 'Escape') {
+        this.hideEvictionModal();
       }
     });
 
-    // Stash helpers
-    (this as any).__hideEvictionModal = hide;
-    (this as any).__showEvictionModal = show;
+    // Safety: start hidden
+    this.forceEvictionModalHidden();
   }
 
-  private showEvictionModalFor(dweller: Dweller): void {
-    const nameEl = document.getElementById('evictionDwellerName') as HTMLSpanElement | null;
-    const fullName = `${dweller.name} ${dweller.lastName || ''}`.trim();
-    if (nameEl) nameEl.textContent = fullName;
+  /**
+   * Confirm and execute dweller eviction
+   */
+  private confirmEviction(dweller: Dweller): void {
+    try {
+      // Execute the eviction
+      this.saveEditor.evictDweller(dweller);
 
-    const show = (this as any).__showEvictionModal as (() => void) | undefined;
-    if (show) show();
-  }
+      // Show success message
+      this.uiManager.showMessage(
+        `${dweller.name} ${dweller.lastName} has been evicted from the vault.`,
+        'success'
+      );
 
-  // -----------------------------
-  // Form <-> Dweller mapping
-  // -----------------------------
-  private populateDwellerForm(dweller: Dweller): void {
-    const setVal = (id: string, v: string) => {
-      const el = document.getElementById(id) as HTMLInputElement | HTMLSelectElement | null;
-      if (el) (el as any).value = v;
-    };
+      // Refresh the dweller list and update UI state
+      this.loadDwellerList();
+      this.updateEvictionButton(true);
+      this.uiManager.showEvictedDwellerEditor();
 
-    setVal('dwellerName', dweller.name ?? '');
-    setVal('dwellerLastName', dweller.lastName ?? '');
-    setVal('dwellerGender', String(dweller.gender ?? 2));
-
-    setVal('dwellerLevel', String(dweller.experience?.currentLevel ?? 1));
-    setVal('dwellerExperience', String(dweller.experience?.experienceValue ?? 0));
-    setVal('dwellerHappiness', String(dweller.happiness?.happinessValue ?? 50));
-
-    setVal('dwellerHealth', String(dweller.health?.healthValue ?? 100));
-    setVal('dwellerMaxHealth', String(dweller.health?.maxHealth ?? 100));
-    setVal('dwellerRadiation', String(dweller.health?.radiationValue ?? 0));
-
-    // Appearance (best-effort)
-    setVal('dwellerSkinColor', String((dweller as any).skinColor ?? '#FFDBAC'));
-    setVal('dwellerHairColor', String((dweller as any).hairColor ?? '#8B4513'));
-
-    // Pregnancy (your save object appears to use dweller.pregnant?.isPregnant etc.)
-    const isPreg = !!(dweller as any).pregnant?.isPregnant;
-    setVal('dwellerPregnant', isPreg ? 'true' : 'false');
-    const babyReady = !!(dweller as any).pregnant?.babyReady;
-    setVal('dwellerBabyReadyTime', babyReady ? 'true' : 'false');
-
-    // SPECIAL stats
-    const stats = (dweller as any).stats?.stats;
-    setVal('dwellerStrength', String(stats?.[1]?.value ?? 1));
-    setVal('dwellerPerception', String(stats?.[2]?.value ?? 1));
-    setVal('dwellerEndurance', String(stats?.[3]?.value ?? 1));
-    setVal('dwellerCharisma', String(stats?.[4]?.value ?? 1));
-    setVal('dwellerIntelligence', String(stats?.[5]?.value ?? 1));
-    setVal('dwellerAgility', String(stats?.[6]?.value ?? 1));
-    setVal('dwellerLuck', String(stats?.[7]?.value ?? 1));
-
-    // Equipment / pet (best-effort; will depend on your save schema)
-    setVal('dwellerWeapon', String((dweller as any).equip?.weapon ?? ''));
-    setVal('dwellerOutfit', String((dweller as any).equip?.outfit ?? ''));
-    setVal('dwellerPet', String((dweller as any).pet ?? ''));
-
-    // Pregnancy section visibility (female only)
-    const pregnancySection = document.getElementById('pregnancySection') as HTMLDivElement | null;
-    if (pregnancySection) pregnancySection.style.display = dweller.gender === 1 ? 'block' : 'none';
-  }
-
-  private applyFormToDweller(dweller: Dweller): void {
-    const getVal = (id: string) => {
-      const el = document.getElementById(id) as HTMLInputElement | HTMLSelectElement | null;
-      return el ? (el as any).value : '';
-    };
-    const getNum = (id: string, fallback = 0) => {
-      const raw = getVal(id);
-      const n = Number(raw);
-      return Number.isFinite(n) ? n : fallback;
-    };
-
-    dweller.name = getVal('dwellerName');
-    dweller.lastName = getVal('dwellerLastName');
-    dweller.gender = getNum('dwellerGender', 2) as any;
-
-    if (!dweller.experience) dweller.experience = {} as any;
-    dweller.experience.currentLevel = getNum('dwellerLevel', 1) as any;
-    dweller.experience.experienceValue = getNum('dwellerExperience', 0) as any;
-
-    if (!dweller.happiness) dweller.happiness = {} as any;
-    dweller.happiness.happinessValue = getNum('dwellerHappiness', 50) as any;
-
-    if (!dweller.health) dweller.health = {} as any;
-    dweller.health.healthValue = getNum('dwellerHealth', 100) as any;
-    dweller.health.maxHealth = getNum('dwellerMaxHealth', 100) as any;
-    dweller.health.radiationValue = getNum('dwellerRadiation', 0) as any;
-
-    // Pregnancy (only meaningful for female; but keep whatever user sets)
-    const pregVal = getVal('dwellerPregnant') === 'true';
-    const babyReadyVal = getVal('dwellerBabyReadyTime') === 'true';
-    if (!(dweller as any).pregnant) (dweller as any).pregnant = {};
-    (dweller as any).pregnant.isPregnant = pregVal;
-    (dweller as any).pregnant.babyReady = babyReadyVal;
-
-    // SPECIAL stats
-    if (!(dweller as any).stats) (dweller as any).stats = {};
-    if (!(dweller as any).stats.stats) (dweller as any).stats.stats = {};
-    const stats = (dweller as any).stats.stats;
-    const setStat = (idx: number, id: string) => {
-      if (!stats[idx]) stats[idx] = {};
-      stats[idx].value = getNum(id, 1);
-    };
-    setStat(1, 'dwellerStrength');
-    setStat(2, 'dwellerPerception');
-    setStat(3, 'dwellerEndurance');
-    setStat(4, 'dwellerCharisma');
-    setStat(5, 'dwellerIntelligence');
-    setStat(6, 'dwellerAgility');
-    setStat(7, 'dwellerLuck');
-
-    // Equipment / pet best-effort
-    if (!(dweller as any).equip) (dweller as any).equip = {};
-    (dweller as any).equip.weapon = getVal('dwellerWeapon');
-    (dweller as any).equip.outfit = getVal('dwellerOutfit');
-    (dweller as any).pet = getVal('dwellerPet');
-  }
-
-  // -----------------------------
-  // SaveEditor integration (best-effort; uses any-casts to match your existing SaveEditor API)
-  // -----------------------------
-  private getDwellersFromSave(): Dweller[] {
-    // Try common patterns without requiring you to rename anything.
-    const se: any = this.saveEditor as any;
-
-    // If you already have a helper:
-    if (typeof se.getDwellers === 'function') {
-      const list = se.getDwellers();
-      return Array.isArray(list) ? list : [];
+      console.log(`Dweller ${dweller.name} ${dweller.lastName} evicted successfully`);
+    } catch (error) {
+      console.error('Error evicting dweller:', error);
+      this.uiManager.showMessage('Failed to evict dweller. Please try again.', 'error');
     }
-
-    // Otherwise try to crawl save structure
-    const save = typeof se.getSave === 'function' ? se.getSave() : se.saveData ?? se.save ?? null;
-
-    const candidates =
-      save?.vault?.dwellers?.dwellers ??
-      save?.vault?.dwellers ??
-      save?.dwellers ??
-      save?.Vault?.Dwellers ??
-      null;
-
-    if (Array.isArray(candidates)) return candidates as Dweller[];
-    if (Array.isArray(candidates?.dwellers)) return candidates.dwellers as Dweller[];
-
-    return [];
   }
 
-  private persistDweller(updated: Dweller): void {
-    const se: any = this.saveEditor as any;
+  /**
+   * Undo dweller eviction
+   */
+  private undoEviction(dweller: Dweller): void {
+    try {
+      // Execute the undo eviction
+      this.saveEditor.unevictDweller(dweller);
 
-    // If you have a direct method, use it
-    if (typeof se.updateDweller === 'function') {
-      se.updateDweller(updated);
-      return;
+      // Show success message
+      this.uiManager.showMessage(
+        `${dweller.name} ${dweller.lastName} eviction has been undone.`,
+        'success'
+      );
+
+      // Refresh the dweller list and update UI state
+      this.loadDwellerList();
+      this.updateEvictionButton(false);
+      this.uiManager.showDwellerEditor();
+
+      console.log(`Dweller ${dweller.name} ${dweller.lastName} eviction undone successfully`);
+    } catch (error) {
+      console.error('Error undoing dweller eviction:', error);
+      this.uiManager.showMessage('Failed to undo eviction. Please try again.', 'error');
     }
-
-    // Otherwise replace in-place by serializeId
-    const dwellers = this.getDwellersFromSave();
-    const idx = dwellers.findIndex((d) => d.serializeId === updated.serializeId);
-    if (idx >= 0) dwellers[idx] = updated;
-
-    // If SaveEditor has a "mark dirty" or similar, call it
-    if (typeof se.setDirty === 'function') se.setDirty(true);
   }
 }
