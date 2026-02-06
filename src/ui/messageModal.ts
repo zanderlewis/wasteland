@@ -14,29 +14,27 @@ class MessageModal {
 
   initialize(): void {
     if (this.initialized) return;
-    this.initialized = true;
 
     const modal = document.getElementById('messageModal');
     const confirmBtn = document.getElementById('messageModalConfirm') as HTMLButtonElement | null;
     const cancelBtn = document.getElementById('messageModalCancel') as HTMLButtonElement | null;
 
-    // If template isn't in DOM yet, don't crash.
-    // (But this should be present after createMainTemplate is rendered.)
+    // If template isn't in DOM yet, don't mark initialized.
+    // This allows initialize() to be called again later.
     if (!modal || !confirmBtn || !cancelBtn) {
-      // Fail silently to avoid hard-locking the app.
-      // You can console.warn here if you want.
       return;
     }
 
+    this.initialized = true;
+
+    // HARD FORCE hidden on init (prevents “opens on load”)
+    modal.classList.add('modal-hidden', 'hidden');
+
     // Confirm / OK
-    confirmBtn.addEventListener('click', () => {
-      this.close(true);
-    });
+    confirmBtn.addEventListener('click', () => this.close(true));
 
     // Cancel
-    cancelBtn.addEventListener('click', () => {
-      this.close(false);
-    });
+    cancelBtn.addEventListener('click', () => this.close(false));
 
     // Backdrop click (only closes for non-confirm dialogs)
     modal.addEventListener('click', (e) => {
@@ -78,7 +76,7 @@ class MessageModal {
 
   private isOpen(): boolean {
     const modal = document.getElementById('messageModal');
-    return !!modal && !modal.classList.contains('modal-hidden');
+    return !!modal && !modal.classList.contains('modal-hidden') && !modal.classList.contains('hidden');
   }
 
   private open(type: ModalTypeValue, title: string, message: string): void {
@@ -99,8 +97,7 @@ class MessageModal {
     titleEl.textContent = title;
     textEl.textContent = message;
 
-    // Title color class
-    // reset then apply
+    // Title class
     titleEl.className = `text-lg font-semibold ${cfg.titleClass}`;
 
     // Icon
@@ -114,19 +111,16 @@ class MessageModal {
     confirmBtn.className = cfg.confirmClass;
     confirmBtn.textContent = cfg.confirmText;
 
-    if (cfg.showCancel) {
-      cancelBtn.classList.remove('hidden');
-    } else {
-      cancelBtn.classList.add('hidden');
-    }
+    if (cfg.showCancel) cancelBtn.classList.remove('hidden');
+    else cancelBtn.classList.add('hidden');
 
-    // Finally show
-    modal.classList.remove('modal-hidden');
+    // SHOW: remove BOTH hide mechanisms
+    modal.classList.remove('modal-hidden', 'hidden');
   }
 
   private close(result: boolean): void {
     const modal = document.getElementById('messageModal');
-    if (modal) modal.classList.add('modal-hidden');
+    if (modal) modal.classList.add('modal-hidden', 'hidden');
 
     const resolve = this.resolveFn;
     this.resolveFn = null;
