@@ -135,18 +135,27 @@ export class DwellerUIManager {
         ? this.specialNames[this.specialSortIndex]
         : 'Special';
 
+    // NOTE: widths MUST match between header + rows to prevent drift.
+    const W_NAME = 'basis-[12%] shrink-0';
+    const W_GENDER = 'w-10 shrink-0';
+    const W_LEVEL = 'w-12 shrink-0';
+    const W_XP = 'w-[72px] shrink-0';
+    const W_HAPPY = 'w-[56px] shrink-0';
+    const W_SPECIAL = 'w-[140px] shrink-0';
+    const W_HEALTH = 'w-[90px] shrink-0';
+
     dwellersList.innerHTML = `
-      <div class="min-w-[1100px]">
+      <div class="min-w-[1100px] pip-table">
 
         <!-- HEADER -->
         <div class="hidden lg:flex items-center gap-3 px-0 py-2 sticky top-0 z-20 bg-gray-900 border-b border-green-900/60">
-          ${this.renderHeaderCell('name', 'Name', 'basis-[12%] shrink-0 pl-3 text-left')}
-          ${this.renderHeaderCell('gender', 'M/F', 'w-10 shrink-0 text-center')}
-          ${this.renderHeaderCell('level', 'Level', 'w-12 shrink-0 text-center')}
-          ${this.renderHeaderCell('xp', 'XP', 'w-[72px] shrink-0 text-right')}
-          ${this.renderHeaderCell('happy', '😊', 'w-10 shrink-0 text-right')}
-          ${this.renderHeaderCell('special', specialHeaderLabel, 'w-[140px] shrink-0 text-center')}
-          ${this.renderHeaderCell('health', 'Health', 'w-[90px] shrink-0 text-center')}
+          ${this.renderHeaderCell('name', 'Name', `${W_NAME} pl-3 text-left`)}
+          ${this.renderHeaderCell('gender', 'M/F', `${W_GENDER} text-center`)}
+          ${this.renderHeaderCell('level', 'Level', `${W_LEVEL} text-center`)}
+          ${this.renderHeaderCell('xp', 'XP', `${W_XP} text-center`)}
+          ${this.renderHeaderCell('happy', '😊', `${W_HAPPY} text-center`)}
+          ${this.renderHeaderCell('special', specialHeaderLabel, `${W_SPECIAL} text-center`)}
+          ${this.renderHeaderCell('health', 'Health', `${W_HEALTH} text-center`)}
         </div>
 
         <!-- ROWS -->
@@ -231,9 +240,8 @@ export class DwellerUIManager {
     const active = this.sortKey === key;
     const arrow = !active ? '' : this.sortDir === 'asc' ? '▲' : '▼';
 
-    // IMPORTANT:
-    // - Reserve indicator space with pr-5 always so headers to the right never shift
-    // - Use absolute-positioned indicator so width stays identical
+    // Reserve indicator space with pr-5 always so headers to the right never shift
+    // Indicator is absolutely positioned and smaller via CSS (.dw-sort-indicator)
     return `
       <div
         class="relative ${extraClasses} pr-5 cursor-pointer select-none text-green-200 hover:text-green-100"
@@ -250,11 +258,11 @@ export class DwellerUIManager {
   private renderDwellerRow(dweller: Dweller): string {
     const name = `${dweller.name} ${dweller.lastName || ''}`.trim();
 
-    // Gender: M/F, plus sign for pregnant female
+    // Gender: symbols, plus sign for pregnant female
     const isFemale = dweller.gender === 1;
-    const baseGender = isFemale ? 'F' : 'M';
+    const genderSymbol = isFemale ? '♀' : '♂';
     const isPregnant = this.isDwellerPregnant(dweller);
-    const genderText = isFemale && isPregnant ? `${baseGender}+` : baseGender;
+    const genderText = isFemale && isPregnant ? `${genderSymbol}+` : genderSymbol;
 
     const level = dweller.experience?.currentLevel ?? 1;
     const xp = dweller.experience?.experienceValue ?? 0;
@@ -271,7 +279,7 @@ export class DwellerUIManager {
         class="dweller-row flex items-center gap-3 px-0 py-1 bg-gray-800 hover:bg-gray-700 cursor-pointer transition-colors text-green-200 font-normal"
         data-dweller-id="${dweller.serializeId}"
       >
-        <div class="basis-[12%] shrink-0 pl-3 text-green-200 truncate">
+        <div class="basis-[12%] shrink-0 pl-3 text-green-200 truncate text-left">
           ${this.escapeHtml(name)}
         </div>
 
@@ -283,11 +291,11 @@ export class DwellerUIManager {
           ${level}
         </div>
 
-        <div class="w-[72px] shrink-0 text-right tabular-nums text-green-200">
+        <div class="w-[72px] shrink-0 text-center tabular-nums text-green-200">
           ${xp}
         </div>
 
-        <div class="w-[56px] shrink-0 text-right tabular-nums text-green-200">
+        <div class="w-[56px] shrink-0 text-center tabular-nums text-green-200">
           ${happy}%
         </div>
 
@@ -311,7 +319,7 @@ export class DwellerUIManager {
     const labels = this.specialLetters;
 
     return `
-      <div class="inline-flex items-end gap-2" aria-label="SPECIAL stats">
+      <div class="inline-flex items-end gap-2 pip-bars" aria-label="SPECIAL stats">
         ${values
           .map((v, i) => {
             const clamped = this.clamp(v ?? 1, 0, 10);
@@ -322,11 +330,11 @@ export class DwellerUIManager {
               <div class="flex flex-col items-center gap-1 cursor-default" title="${tooltip}">
                 <div class="h-[20px] w-2 bg-gray-700 rounded overflow-hidden">
                   <div
-                    class="w-full bg-green-500"
+                    class="w-full bg-green-500 pip-bar"
                     style="height:${h}px; margin-top:${20 - h}px"
                   ></div>
                 </div>
-                <div class="text-green-200/70">${labels[i]}</div>
+                <div class="text-green-200/80">${labels[i]}</div>
               </div>
             `;
           })
@@ -350,10 +358,10 @@ export class DwellerUIManager {
     const tooltip = `HP ${safeHp}/${safeMax} • Rad ${safeRad}`;
 
     return `
-      <div class="w-full cursor-default" title="${tooltip}" aria-label="Health">
+      <div class="w-full cursor-default pip-bars" title="${tooltip}" aria-label="Health">
         <div class="relative h-3 bg-gray-700 rounded overflow-hidden">
-          <div class="absolute left-0 top-0 h-full bg-green-500" style="width:${hpPct}%"></div>
-          <div class="absolute right-0 top-0 h-full bg-orange-500" style="width:${radPct}%"></div>
+          <div class="absolute left-0 top-0 h-full bg-green-500 pip-bar" style="width:${hpPct}%"></div>
+          <div class="absolute right-0 top-0 h-full bg-orange-500 pip-bar" style="width:${radPct}%"></div>
         </div>
       </div>
     `;
