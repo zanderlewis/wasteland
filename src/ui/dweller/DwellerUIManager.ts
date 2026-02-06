@@ -144,7 +144,7 @@ export class DwellerUIManager {
           ${this.renderHeaderCell('gender', 'M/F', 'w-10 shrink-0 text-center')}
           ${this.renderHeaderCell('level', 'Level', 'w-12 shrink-0 text-center')}
           ${this.renderHeaderCell('xp', 'XP', 'w-[72px] shrink-0 text-right')}
-          ${this.renderHeaderCell('happiness', '😊', 'w-10 shrink-0 text-right')}
+          ${this.renderHeaderCell('happy', '😊', 'w-10 shrink-0 text-right')}
           ${this.renderHeaderCell('special', specialHeaderLabel, 'w-[140px] shrink-0 text-center')}
           ${this.renderHeaderCell('health', 'Health', 'w-[90px] shrink-0 text-center')}
         </div>
