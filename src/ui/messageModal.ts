@@ -13,22 +13,22 @@ class MessageModal {
   private resolveFn: ResolveFn | null = null;
 
   initialize(): void {
+    // IMPORTANT: don’t lock initialize() unless we successfully bind.
     if (this.initialized) return;
 
-    const modal = document.getElementById('messageModal');
+    const modal = document.getElementById('messageModal') as HTMLDivElement | null;
     const confirmBtn = document.getElementById('messageModalConfirm') as HTMLButtonElement | null;
     const cancelBtn = document.getElementById('messageModalCancel') as HTMLButtonElement | null;
 
-    // If template isn't in DOM yet, don't mark initialized.
-    // This allows initialize() to be called again later.
     if (!modal || !confirmBtn || !cancelBtn) {
       return;
     }
 
     this.initialized = true;
 
-    // HARD FORCE hidden on init (prevents “opens on load”)
-    modal.classList.add('modal-hidden', 'hidden');
+    // Force hidden no matter what CSS does
+    modal.classList.add('modal-hidden');
+    modal.style.display = 'none';
 
     // Confirm / OK
     confirmBtn.addEventListener('click', () => this.close(true));
@@ -75,12 +75,12 @@ class MessageModal {
   }
 
   private isOpen(): boolean {
-    const modal = document.getElementById('messageModal');
-    return !!modal && !modal.classList.contains('modal-hidden') && !modal.classList.contains('hidden');
+    const modal = document.getElementById('messageModal') as HTMLDivElement | null;
+    return !!modal && modal.style.display !== 'none';
   }
 
   private open(type: ModalTypeValue, title: string, message: string): void {
-    const modal = document.getElementById('messageModal');
+    const modal = document.getElementById('messageModal') as HTMLDivElement | null;
     const titleEl = document.getElementById('messageModalTitle');
     const textEl = document.getElementById('messageModalText');
     const iconWrap = document.getElementById('messageModalIcon');
@@ -114,13 +114,17 @@ class MessageModal {
     if (cfg.showCancel) cancelBtn.classList.remove('hidden');
     else cancelBtn.classList.add('hidden');
 
-    // SHOW: remove BOTH hide mechanisms
-    modal.classList.remove('modal-hidden', 'hidden');
+    // Show (force via inline style)
+    modal.classList.remove('modal-hidden');
+    modal.style.display = 'flex';
   }
 
   private close(result: boolean): void {
-    const modal = document.getElementById('messageModal');
-    if (modal) modal.classList.add('modal-hidden', 'hidden');
+    const modal = document.getElementById('messageModal') as HTMLDivElement | null;
+    if (modal) {
+      modal.classList.add('modal-hidden');
+      modal.style.display = 'none';
+    }
 
     const resolve = this.resolveFn;
     this.resolveFn = null;
@@ -128,7 +132,6 @@ class MessageModal {
     const wasConfirm = this.isConfirmMode;
     this.isConfirmMode = false;
 
-    // Only resolve promises for confirm mode.
     if (wasConfirm && resolve) resolve(result);
   }
 }
