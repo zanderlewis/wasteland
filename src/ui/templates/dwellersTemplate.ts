@@ -202,7 +202,7 @@ export const createDwellersSectionTemplate = (): string => `
     </div>
 
     <!-- Eviction Confirmation Modal -->
-    <div id="evictionModal" class="modal modal-hidden">
+    <div id="evictionModal" class="modal modal-hidden" style="display:none;">
       <div class="modal-content">
         <div class="modal-header">
           <h3 class="text-lg font-semibold text-red-400">⚠️ Confirm Dweller Eviction</h3>
