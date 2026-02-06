@@ -136,7 +136,7 @@ export class DwellerUIManager {
         : 'Special';
 
     // NOTE: widths MUST match between header + rows to prevent drift.
-    const W_NAME = 'basis-[12%] shrink-0';
+    const W_NAME = 'basis-[10%] shrink-0';
     const W_GENDER = 'w-10 shrink-0';
     const W_LEVEL = 'w-12 shrink-0';
     const W_XP = 'w-[72px] shrink-0';
@@ -151,7 +151,7 @@ export class DwellerUIManager {
         <div class="hidden lg:flex items-center gap-3 px-0 py-2 sticky top-0 z-20 bg-gray-900 border-b border-green-900/60">
           ${this.renderHeaderCell('name', 'Name', `${W_NAME} pl-3 text-left`)}
           ${this.renderHeaderCell('gender', 'M/F', `${W_GENDER} text-center`)}
-          ${this.renderHeaderCell('level', 'Level', `${W_LEVEL} text-center`)}
+          ${this.renderHeaderCell('level', 'LVL', `${W_LEVEL} text-center`)}
           ${this.renderHeaderCell('xp', 'XP', `${W_XP} text-center`)}
           ${this.renderHeaderCell('happy', '😊', `${W_HAPPY} text-center`)}
           ${this.renderHeaderCell('special', specialHeaderLabel, `${W_SPECIAL} text-center`)}
@@ -238,19 +238,19 @@ export class DwellerUIManager {
     extraClasses: string
   ): string {
     const active = this.sortKey === key;
-    const arrow = !active ? '' : this.sortDir === 'asc' ? '▲' : '▼';
+    const arrow = !active ? '' : this.sortDir === 'asc' ? '∧' : '∨';
 
     // Reserve indicator space with pr-5 always so headers to the right never shift
     // Indicator is absolutely positioned and smaller via CSS (.dw-sort-indicator)
     return `
       <div
-        class="relative ${extraClasses} pr-5 cursor-pointer select-none text-green-200 hover:text-green-100"
+        class="relative overflow-visible ${extraClasses} pr-5 cursor-pointer select-none text-green-200 hover:text-green-100"
         data-sort="${key}"
         role="button"
         tabindex="0"
       >
         <span class="uppercase">${this.escapeHtml(label)}</span>
-        <span class="dw-sort-indicator ${active ? '' : 'opacity-0'}">${arrow}</span>
+        <span class="dw-sort-indicator ${active ? '' : 'opacity-0'}" style="position:absolute; left:50%; transform:translateX(-50%); bottom:-12px; line-height:1; font-size:14px; pointer-events:none;">${arrow}</span>
       </div>
     `;
   }
@@ -279,7 +279,7 @@ export class DwellerUIManager {
         class="dweller-row flex items-center gap-3 px-0 py-1 bg-gray-800 hover:bg-gray-700 cursor-pointer transition-colors text-green-200 font-normal"
         data-dweller-id="${dweller.serializeId}"
       >
-        <div class="basis-[12%] shrink-0 pl-3 text-green-200 truncate text-left">
+        <div class="basis-[10%] shrink-0 pl-3 text-green-200 truncate text-left">
           ${this.escapeHtml(name)}
         </div>
 
@@ -318,29 +318,28 @@ export class DwellerUIManager {
     const values = this.getSpecialValues(dweller);
     const labels = this.specialLetters;
 
-    return `
-      <div class="inline-flex items-end gap-2 pip-bars" aria-label="SPECIAL stats">
-        ${values
-          .map((v, i) => {
-            const clamped = this.clamp(v ?? 1, 0, 10);
-            const h = Math.round((clamped / 10) * 20);
-            const tooltip = `${labels[i]}: ${clamped}`;
+return `
+  <div class="inline-flex items-end gap-1" aria-label="SPECIAL stats">
+    ${values
+      .map((v, i) => {
+        const clamped = this.clamp(v ?? 1, 0, 10);
+        const h = Math.round((clamped / 10) * 20);
+        const tooltip = `${labels[i]}: ${clamped}`;
 
-            return `
-              <div class="flex flex-col items-center gap-1 cursor-default" title="${tooltip}">
-                <div class="h-[20px] w-2 bg-gray-700 rounded overflow-hidden">
-                  <div
-                    class="w-full bg-green-500 pip-bar"
-                    style="height:${h}px; margin-top:${20 - h}px"
-                  ></div>
-                </div>
-                <div class="text-green-200/80">${labels[i]}</div>
-              </div>
-            `;
-          })
-          .join('')}
-      </div>
-    `;
+        return `
+          <div class="cursor-default" title="${tooltip}">
+            <div class="h-[20px] w-2 bg-gray-700 rounded overflow-hidden">
+              <div
+                class="w-full bg-green-500"
+                style="height:${h}px; margin-top:${20 - h}px"
+              ></div>
+            </div>
+          </div>
+        `;
+      })
+      .join('')}
+  </div>
+`;
   }
 
   /**
