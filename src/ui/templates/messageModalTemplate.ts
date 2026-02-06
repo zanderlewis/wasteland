@@ -2,7 +2,7 @@
 
 export const createMessageModalTemplate = (): string => `
   <!-- General Message Modal -->
-  <div id="messageModal" class="modal modal-hidden hidden">
+  <div id="messageModal" class="modal modal-hidden" style="display:none;">
     <div class="modal-content">
       <div class="modal-header">
         <h3 id="messageModalTitle" class="text-lg font-semibold text-gray-100">Message</h3>
@@ -80,4 +80,4 @@ export const MODAL_CONFIGS = {
     confirmText: 'Confirm',
     showCancel: true
   }
-};
+} as const;
