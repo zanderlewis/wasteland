@@ -141,10 +141,10 @@ export class DwellerUIManager {
         <!-- HEADER -->
         <div class="hidden lg:flex items-center gap-3 px-0 py-2 sticky top-0 z-20 bg-gray-900 border-b border-green-900/60">
           ${this.renderHeaderCell('name', 'Name', 'basis-[12%] shrink-0 pl-3 text-left')}
-          ${this.renderHeaderCell('gender', 'Gender', 'w-10 shrink-0 text-center')}
+          ${this.renderHeaderCell('gender', 'M/F', 'w-10 shrink-0 text-center')}
           ${this.renderHeaderCell('level', 'Level', 'w-12 shrink-0 text-center')}
           ${this.renderHeaderCell('xp', 'XP', 'w-[72px] shrink-0 text-right')}
-          ${this.renderHeaderCell('happy', 'Happiness', 'w-[56px] shrink-0 text-right')}
+          ${this.renderHeaderCell('happiness', '😊', 'w-10 shrink-0 text-right')}
           ${this.renderHeaderCell('special', specialHeaderLabel, 'w-[140px] shrink-0 text-center')}
           ${this.renderHeaderCell('health', 'Health', 'w-[90px] shrink-0 text-center')}
         </div>
