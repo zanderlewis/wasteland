@@ -30,7 +30,7 @@ export const createDwellersSectionTemplate = (): string => `
           <h3 class="text-lg font-semibold">Edit Dweller</h3>
 
         </div>
-        <div class="card-body max-h-96 overflow-y-auto">
+        <div class="p-3 max-h-96 overflow-y-auto">
           <form id="dwellerForm">
             <fieldset id="dwellerFieldset" disabled>
               <!-- Basic Info -->
@@ -117,35 +117,38 @@ export const createDwellersSectionTemplate = (): string => `
               </div>
 
               <!-- SPECIAL Stats -->
-              <h4 class="text-md font-semibold mt-6 mb-4">SPECIAL Stats</h4>
+              <div class="flex items-center justify-between mt-6 mb-4">
+                <h4 class="text-md font-semibold">SPECIAL Stats</h4>
+                <button id="maxSpecial" class="btn btn-success btn-sm">Max SPECIAL</button>
+              </div>
               <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-6">
                 <div class="form-group">
                   <label class="form-label">Strength</label>
-                  <input type="number" id="dwellerStrength" class="form-input special-input" min="${GAME_LIMITS.SPECIAL_MIN}" max="${GAME_LIMITS.SPECIAL_MAX}">
+                  <input type="range" id="dwellerStrength" class="special-slider dweller-field" min="${GAME_LIMITS.SPECIAL_MIN}" max="${GAME_LIMITS.SPECIAL_MAX}" step="1">
                 </div>
                 <div class="form-group">
                   <label class="form-label">Perception</label>
-                  <input type="number" id="dwellerPerception" class="form-input special-input" min="${GAME_LIMITS.SPECIAL_MIN}" max="${GAME_LIMITS.SPECIAL_MAX}">
+                  <input type="range" id="dwellerPerception" class="special-slider dweller-field" min="${GAME_LIMITS.SPECIAL_MIN}" max="${GAME_LIMITS.SPECIAL_MAX}" step="1">
                 </div>
                 <div class="form-group">
                   <label class="form-label">Endurance</label>
-                  <input type="number" id="dwellerEndurance" class="form-input special-input" min="${GAME_LIMITS.SPECIAL_MIN}" max="${GAME_LIMITS.SPECIAL_MAX}">
+                  <input type="range" id="dwellerEndurance" class="special-slider dweller-field" min="${GAME_LIMITS.SPECIAL_MIN}" max="${GAME_LIMITS.SPECIAL_MAX}" step="1">
                 </div>
                 <div class="form-group">
                   <label class="form-label">Charisma</label>
-                  <input type="number" id="dwellerCharisma" class="form-input special-input" min="${GAME_LIMITS.SPECIAL_MIN}" max="${GAME_LIMITS.SPECIAL_MAX}">
+                  <input type="range" id="dwellerCharisma" class="special-slider dweller-field" min="${GAME_LIMITS.SPECIAL_MIN}" max="${GAME_LIMITS.SPECIAL_MAX}" step="1">
                 </div>
                 <div class="form-group">
                   <label class="form-label">Intelligence</label>
-                  <input type="number" id="dwellerIntelligence" class="form-input special-input" min="${GAME_LIMITS.SPECIAL_MIN}" max="${GAME_LIMITS.SPECIAL_MAX}">
+                  <input type="range" id="dwellerIntelligence" class="special-slider dweller-field" min="${GAME_LIMITS.SPECIAL_MIN}" max="${GAME_LIMITS.SPECIAL_MAX}" step="1">
                 </div>
                 <div class="form-group">
                   <label class="form-label">Agility</label>
-                  <input type="number" id="dwellerAgility" class="form-input special-input" min="${GAME_LIMITS.SPECIAL_MIN}" max="${GAME_LIMITS.SPECIAL_MAX}">
+                  <input type="range" id="dwellerAgility" class="special-slider dweller-field" min="${GAME_LIMITS.SPECIAL_MIN}" max="${GAME_LIMITS.SPECIAL_MAX}" step="1">
                 </div>
                 <div class="form-group">
                   <label class="form-label">Luck</label>
-                  <input type="number" id="dwellerLuck" class="form-input special-input" min="${GAME_LIMITS.SPECIAL_MIN}" max="${GAME_LIMITS.SPECIAL_MAX}">
+                  <input type="range" id="dwellerLuck" class="special-slider dweller-field" min="${GAME_LIMITS.SPECIAL_MIN}" max="${GAME_LIMITS.SPECIAL_MAX}" step="1">
                 </div>
               </div>
 

@@ -141,26 +141,26 @@ export class DwellerUIManager {
 
     // NOTE: widths MUST match between header + rows to prevent drift.
     // Name was made too small; make it 3x wider and keep borders in header+rows.
-    const W_NAME = 'basis-[15%] shrink-0 border-l border-r border-green-900/60';
-    const W_GENDER = 'w-10 shrink-0 border-r border-green-900/60';
-    const W_LEVEL = 'w-12 shrink-0 border-r border-green-900/60';
-    const W_XP = 'w-[72px] shrink-0 border-r border-green-900/60';
-    const W_HAPPY = 'w-10 shrink-0 border-r border-green-900/60';
-    const W_SPECIAL = 'w-[140px] shrink-0 border-r border-green-900/60';
-    const W_HEALTH = 'w-[90px] shrink-0 border-r border-green-900/60';
+    const W_NAME = 'basis-[30%] shrink-0 px-1 border-l border-r border-green-900/60 flex items-center';
+    const W_GENDER = 'w-10 shrink-0 px-1 border-r border-green-900/60 flex items-center justify-center';
+    const W_LEVEL = 'w-12 shrink-0 px-1 border-r border-green-900/60 flex items-center justify-center';
+    const W_XP = 'w-[72px] shrink-0 px-1 border-r border-green-900/60 flex items-center justify-center';
+    const W_HAPPY = 'w-10 shrink-0 px-1 border-r border-green-900/60 flex items-center justify-center';
+    const W_SPECIAL = 'w-[140px] shrink-0 px-1 border-r border-green-900/60 flex items-center justify-center';
+    const W_HEALTH = 'w-[90px] shrink-0 px-1 border-r border-green-900/60 flex items-center justify-center';
 
     dwellersList.innerHTML = `
       <div class="min-w-[1100px] pip-table">
 
         <!-- HEADER -->
         <div class="hidden lg:flex items-center gap-0 px-0 py-2 sticky top-0 z-20 bg-gray-900 border-b border-green-900/60">
-          ${this.renderHeaderCell('name', 'Name', `${W_NAME} pl-3 text-left`)}
-          ${this.renderHeaderCell('gender', 'M/F', `${W_GENDER} text-center`)}
-          ${this.renderHeaderCell('level', 'LVL', `${W_LEVEL} text-center`)}
-          ${this.renderHeaderCell('xp', 'XP', `${W_XP} text-center`)}
-          ${this.renderHeaderCell('happy', '😊', `${W_HAPPY} text-center`)}
-          ${this.renderHeaderCell('special', specialHeaderLabel, `${W_SPECIAL} text-center`)}
-          ${this.renderHeaderCell('health', 'Health', `${W_HEALTH} text-center`)}
+          ${this.renderHeaderCell('name', 'Name', `${W_NAME} pl-2 justify-start`)}
+          ${this.renderHeaderCell('gender', 'M/F', `${W_GENDER}`)}
+          ${this.renderHeaderCell('level', 'LVL', `${W_LEVEL}`)}
+          ${this.renderHeaderCell('xp', 'XP', `${W_XP}`)}
+          ${this.renderHeaderCell('happy', '😊', `${W_HAPPY}`)}
+          ${this.renderHeaderCell('special', specialHeaderLabel, `${W_SPECIAL}`)}
+          ${this.renderHeaderCell('health', 'Health', `${W_HEALTH}`)}
         </div>
 
         <!-- ROWS -->
@@ -208,15 +208,18 @@ export class DwellerUIManager {
    */
   private onHeaderClick(key: string): void {
     if (key === 'special') {
-      if (this.sortKey === 'special') {
-        // cycle special stat
-        this.specialSortIndex = (this.specialSortIndex + 1) % 7;
-        // keep direction as-is
-      } else {
-        // first click sets to SPECIAL sorting
+      // Cycle: Strength asc, Strength desc, Perception asc, Perception desc, ...
+      if (this.sortKey !== 'special') {
         this.sortKey = 'special';
         this.sortDir = 'asc';
-        // keep current index
+        return;
+      }
+
+      if (this.sortDir === 'asc') {
+        this.sortDir = 'desc';
+      } else {
+        this.sortDir = 'asc';
+        this.specialSortIndex = (this.specialSortIndex + 1) % 7;
       }
       return;
     }
@@ -243,20 +246,23 @@ export class DwellerUIManager {
     extraClasses: string
   ): string {
     const active = this.sortKey === key;
-    // Use V / upside-down V and position it below the header text (overlapping the bottom border)
-    const arrow = !active ? '' : this.sortDir === 'asc' ? 'Ʌ' : 'V';
 
-    // Reserve indicator space with pr-5 always so headers to the right never shift
-    // Indicator is absolutely positioned and smaller via CSS (.dw-sort-indicator)
+    // Use one glyph for both directions so the indicator has identical width.
+    // Rotate for ascending.
+    const arrow = !active ? '' : 'V';
+    const rotate = active && this.sortDir === 'asc' ? ' rotate(180deg)' : '';
     return `
       <div
-        class="relative overflow-visible ${extraClasses} pr-5 cursor-pointer select-none text-green-500 hover:text-green-400"
+        class="relative overflow-visible ${extraClasses} cursor-pointer select-none text-green-500 hover:text-green-400"
         data-sort="${key}"
         role="button"
         tabindex="0"
       >
         <span class="uppercase">${this.escapeHtml(label)}</span>
-        <span class="dw-sort-indicator ${active ? '' : 'opacity-0'}" style="position:absolute; left:50%; transform:translateX(-50%) scaleX(1.7); bottom:-16px; line-height:1; font-size:14px; pointer-events:none; color:rgb(34,197,94);">${arrow}</span>
+        <span
+          class="dw-sort-indicator ${active ? '' : 'opacity-0'}"
+          style="position:absolute; left:50%; transform:translateX(-50%) scaleX(1.7)${rotate}; top:calc(100% - 2px); line-height:1; font-size:14px; pointer-events:none; color:rgb(34,197,94);"
+        >${arrow}</span>
       </div>
     `;
   }
@@ -329,15 +335,15 @@ return `
     ${values
       .map((v, i) => {
         const clamped = this.clamp(v ?? 1, 0, 10);
-        const h = Math.round((clamped / 10) * 24);
+        const h = Math.round((clamped / 10) * this.SPECIAL_BAR_H);
         const tooltip = `${labels[i]}: ${clamped}`;
 
         return `
           <div class="cursor-default" title="${tooltip}">
-            <div class="h-[24px] w-1 bg-gray-700 rounded overflow-hidden">
+            <div class="h-[28px] w-2 bg-gray-700 rounded overflow-hidden">
               <div
                 class="w-full bg-green-500 pip-bar"
-                style="height:${h}px; margin-top:${24 - h}px"
+                style="height:${h}px; margin-top:${this.SPECIAL_BAR_H - h}px"
               ></div>
             </div>
           </div>
