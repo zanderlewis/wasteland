@@ -30,6 +30,7 @@ export class DwellerUIManager {
     'Luck'
   ];
   private readonly specialLetters = ['S', 'P', 'E', 'C', 'I', 'A', 'L'];
+  private readonly SPECIAL_BAR_H = 28; // px, must match h-[28px] in the SPECIAL mini chart
 
   // NOTE: Column widths are defined once (W_*) in updateDwellersList().
   // Keep this class focused on behavior (sorting/selection), not layout constants.
