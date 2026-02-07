@@ -13,8 +13,8 @@ export const createDwellersSectionTemplate = (): string => `
           <h3 class="text-lg font-semibold">Dwellers</h3>
           <div class="flex flex-wrap gap-2 justify-end">
             <button id="maxHappinessAll" class="btn btn-success btn-sm">Max All Happiness</button>
-            <button id="healAll" class="btn btn-success btn-sm">Heal All Dwellers</button>
             <button id="maxSpecialAll" class="btn btn-success btn-sm">Max All SPECIAL</button>
+            <button id="healAll" class="btn btn-success btn-sm">Heal All Dwellers</button>
           </div>
         </div>
         <div id="dwellerList" class="card-body-tight bg-gray-900 overflow-hidden">
@@ -28,7 +28,7 @@ export const createDwellersSectionTemplate = (): string => `
       <div id="dwellerEditor" class="card w-full">
         <div class="card-header">
           <h3 class="text-lg font-semibold">Edit Dweller</h3>
-          <span id="dwellerEditorStatus" class="hidden"></span>
+
         </div>
         <div class="card-body max-h-96 overflow-y-auto">
           <form id="dwellerForm">
