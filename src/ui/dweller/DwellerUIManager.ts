@@ -150,7 +150,7 @@ export class DwellerUIManager {
         : 'Special';
 
     dwellersList.innerHTML = `
-      <div class="pip-table min-w-[1100px]">
+      <div class="pip-table w-full">
         <!-- HEADER -->
         <div class="dw-header hidden lg:flex items-stretch px-0 py-2 sticky top-0 z-30 bg-gray-900 border-b border-green-900/60">
           ${this.renderHeaderCell('name', 'Name', this.COL_NAME)}
