@@ -190,6 +190,8 @@
   position: relative;
   background: rgba(17, 24, 39, 0.6);
   box-shadow: 0 0 18px rgba(34, 197, 94, 0.18);
+  border-radius: 14px;
+  overflow: hidden;
 }
 
 .pip-panel-title {
@@ -448,7 +450,9 @@ body::after {
 input.special-slider {
   writing-mode: bt-lr; /* Firefox */
   -webkit-appearance: slider-vertical; /* Chromium/Safari */
-  width: 1.25rem;
-  height: 8rem;
+  display: block;
+  margin: 0 auto;
+  width: 2.25rem;
+  height: 9.5rem;
   padding: 0;
 }
