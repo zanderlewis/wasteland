@@ -14,25 +14,24 @@ export const createMainTemplate = (): string => `
       <div class="pip-panel-title">
         <h2 class="text-xl font-semibold">UPLOAD SAVE FILE</h2>
       </div>
-      <div class="card-body-tight">
-        <div id="dropZone" class="drop-zone flex flex-col items-center justify-center text-center">
-          <p class="text-green-500/70 mb-4">Drag and drop your save file here or click to select</p>
+      <div id="dropZone" class="pip-panel-body flex flex-col items-center justify-center text-center gap-3">
+          <p class="text-green-500 text-lg">Drag and drop your save file here or click to select</p>
           <input type="file" id="fileInput" class="hidden" accept=".sav,.json" />
           <button id="selectFileBtn" class="btn btn-primary mb-4">Select File</button>
-          <p class="text-sm text-green-500/60">
+          <p class="text-base text-green-500/90">
             Supported formats: .sav (encrypted), .json (decrypted)
           </p>
           <!-- Use an example -->
           <div class="mt-6">
-            <h4 class="text-sm font-medium text-green-500 mb-2">Load example save</h4>
+            <h4 class="text-base font-medium text-green-500 mb-2">Load example save</h4>
             <div class="flex items-center gap-2">
               <select id="exampleFilesSelect" class="form-input w-56 text-sm"></select>
               <button id="loadExampleBtn" class="btn btn-primary btn-sm">Load</button>
             </div>
-            <p class="text-xs text-green-500/70 mt-2">Examples are bundled with the app and safe to load.</p>
+            <p class="text-sm text-green-500/80 mt-2">Examples are bundled with the app and safe to load.</p>
           </div>
           <!-- How to Find Your Save File -->
-          <div class="text-sm text-green-500/60 mt-2">
+          <div class="text-base text-green-500/90 mt-2">
             <strong>How to Find Your Save File:</strong>
             <div class="pl-2 mt-2 space-y-1">
               <div><strong>Windows:</strong> <code class="file-path">Documents\\My Games\\Fallout Shelter</code></div>
@@ -41,10 +40,9 @@ export const createMainTemplate = (): string => `
               <div><strong>Android:</strong> <code class="file-path">storage/sdcard/Android/data/com.bethsoft.falloutshelter/files</code></div>
             </div>
           </div>
-        </div>
-        <div id="fileStatus" class="mt-4 hidden">
-          <p class="text-sm text-green-500/70">File: <span id="fileName" class="font-medium text-green-500"></span></p>
-        </div>
+          <div id="fileStatus" class="mt-4 hidden">
+            <p class="text-base text-green-500/80">File: <span id="fileName" class="font-medium text-green-500"></span></p>
+          </div>
       </div>
     </div>
 

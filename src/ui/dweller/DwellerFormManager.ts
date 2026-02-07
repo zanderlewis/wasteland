@@ -74,6 +74,7 @@ export class DwellerFormManager {
 
     // SPECIAL stats
     this.loadSpecialStats(dweller);
+    this.ensureSpecialSliderBubblesBound();
 
     // Set up gender change listener
     this.setupGenderChangeListener();
@@ -130,8 +131,19 @@ export class DwellerFormManager {
    * Get form field value
    */
   getFormValue(fieldId: string): string {
-    const element = document.getElementById(fieldId) as HTMLInputElement | HTMLSelectElement;
-    return element ? element.value : '';
+    const el = document.getElementById(fieldId) as
+      | HTMLInputElement
+      | HTMLSelectElement
+      | null;
+
+    if (!el) return '';
+
+    // Support checkboxes (Pregnant/Baby Ready)
+    if (el instanceof HTMLInputElement && el.type === 'checkbox') {
+      return el.checked ? 'true' : 'false';
+    }
+
+    return el.value;
   }
 
   /**
@@ -212,4 +224,47 @@ export class DwellerFormManager {
       { type: 7, value: parseInt(this.getFormValue('dwellerLuck')) || 1 }
     ];
   }
+
+
+// --- SPECIAL slider bubbles (value on handle) ---
+private ensureSpecialSliderBubblesBound(): void {
+  const sliders = Array.from(
+    document.querySelectorAll('input[type="range"].special-slider[data-bubble]')
+  ) as HTMLInputElement[];
+
+  sliders.forEach((slider) => {
+    if ((slider as any).__bubbleBound) return;
+    (slider as any).__bubbleBound = true;
+
+    const bubbleId = slider.dataset.bubble || '';
+    const bubble = document.getElementById(bubbleId) as HTMLElement | null;
+
+    const update = () => this.updateSpecialSliderBubble(slider, bubble);
+    slider.addEventListener('input', update);
+    slider.addEventListener('change', update);
+
+    // Initial position
+    update();
+  });
+}
+
+private updateSpecialSliderBubble(slider: HTMLInputElement, bubble: HTMLElement | null): void {
+  if (!bubble) return;
+
+  const min = parseInt(slider.min || '1', 10) || 1;
+  const max = parseInt(slider.max || '10', 10) || 10;
+  const val = parseInt(slider.value || String(min), 10) || min;
+
+  bubble.textContent = String(val);
+
+  // Position bubble along the slider track
+  const h = slider.offsetHeight || 1;
+  const pct = (val - min) / Math.max(1, max - min);
+
+  // For slider-vertical, 0 is bottom, 1 is top visually
+  const thumbH = 22; // keep in sync with CSS thumb height
+  const top = (1 - pct) * (h - thumbH);
+
+  bubble.style.top = `${Math.round(top)}px`;
+}
 }
