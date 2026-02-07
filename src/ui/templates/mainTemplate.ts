@@ -7,7 +7,7 @@ import { createMessageModalTemplate } from './messageModalTemplate';
 
 export const createMainTemplate = (): string => `
   <div class="container p-6">
-    <h1 class="text-4xl font-bold text-center mb-8 text-gray-100">Fallout Shelter Save Editor</h1>
+    <h1 class="text-4xl font-bold text-center mb-8 text-gray-100">Wasteland: Fallout Shelter Save Editor</h1>
     
     <!-- File Upload Section -->
     <div class="pip-panel mb-6">
