@@ -150,7 +150,7 @@ export class DwellerUIManager {
         : 'Special';
 
     dwellersList.innerHTML = `
-      <div class="pip-table w-full">
+      <div class="pip-table min-w-[1100px]">
         <!-- HEADER -->
         <div class="dw-header hidden lg:flex items-stretch px-0 py-2 sticky top-0 z-30 bg-gray-900 border-b border-green-900/60">
           ${this.renderHeaderCell('name', 'Name', this.COL_NAME)}
@@ -335,7 +335,7 @@ return `
 
         return `
           <div class="cursor-default" title="${tooltip}">
-            <div class="h-[28px] w-[3px] bg-gray-700 rounded overflow-hidden">
+            <div class="h-[28px] w-[6px] bg-gray-700 rounded overflow-hidden">
               <div
                 class="w-full bg-green-500 pip-bar"
                 style="height:${h}px; margin-top:${this.SPECIAL_BAR_H - h}px"
