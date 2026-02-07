@@ -179,3 +179,6 @@ export const createDwellersTemplate = (): string => `
     </div>
   </div>
 `;
+
+// Backwards-compatible alias (some modules still import the older name)
+export const createDwellersSectionTemplate = createDwellersTemplate;
