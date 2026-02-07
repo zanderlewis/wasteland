@@ -31,6 +31,18 @@ export class DwellerUIManager {
   ];
   private readonly specialLetters = ['S', 'P', 'E', 'C', 'I', 'A', 'L'];
 
+  // Column width classes (must match between header and rows)
+  private readonly COL_NAME = 'basis-[15%]';
+  private readonly COL_GENDER = 'w-10';
+  private readonly COL_LVL = 'w-12';
+  private readonly COL_XP = 'w-[72px]';
+  private readonly COL_HAPPY = 'w-10';
+  private readonly COL_SPECIAL = 'w-[140px]';
+  private readonly COL_HEALTH = 'w-[90px]';
+
+  // Border class for visible column separators
+  private readonly COL_BORDER = 'border-r border-green-900/60';
+
   setSelectedDweller(dweller: Dweller | null): void {
     this.selectedDweller = dweller;
   }
@@ -136,9 +148,10 @@ export class DwellerUIManager {
         : 'Special';
 
     // NOTE: widths MUST match between header + rows to prevent drift.
-    const W_NAME = 'basis-[5%] shrink-0 border-l border-r border-green-900/60';
+    // Name was made too small; make it 3x wider and keep borders in header+rows.
+    const W_NAME = 'basis-[15%] shrink-0 border-l border-r border-green-900/60';
     const W_GENDER = 'w-10 shrink-0 border-r border-green-900/60';
-    const W_LEVEL = 'w-12 shrink-0';
+    const W_LEVEL = 'w-12 shrink-0 border-r border-green-900/60';
     const W_XP = 'w-[72px] shrink-0 border-r border-green-900/60';
     const W_HAPPY = 'w-10 shrink-0 border-r border-green-900/60';
     const W_SPECIAL = 'w-[140px] shrink-0 border-r border-green-900/60';
@@ -238,7 +251,8 @@ export class DwellerUIManager {
     extraClasses: string
   ): string {
     const active = this.sortKey === key;
-    const arrow = !active ? '' : this.sortDir === 'asc' ? '∧' : '∨';
+    // Use V / upside-down V and position it below the header text (overlapping the bottom border)
+    const arrow = !active ? '' : this.sortDir === 'asc' ? 'Ʌ' : 'V';
 
     // Reserve indicator space with pr-5 always so headers to the right never shift
     // Indicator is absolutely positioned and smaller via CSS (.dw-sort-indicator)
@@ -250,7 +264,7 @@ export class DwellerUIManager {
         tabindex="0"
       >
         <span class="uppercase">${this.escapeHtml(label)}</span>
-        <span class="dw-sort-indicator ${active ? '' : 'opacity-0'}" style="position:absolute; left:50%; transform:translateX(-50%); bottom:-12px; line-height:1; font-size:14px; pointer-events:none;">${arrow}</span>
+        <span class="dw-sort-indicator ${active ? '' : 'opacity-0'}" style="position:absolute; left:50%; transform:translateX(-50%) scaleX(1.7); bottom:-16px; line-height:1; font-size:14px; pointer-events:none; color:rgb(34,197,94);">${arrow}</span>
       </div>
     `;
   }
@@ -279,31 +293,31 @@ export class DwellerUIManager {
         class="dweller-row flex items-center gap-0 px-0 py-0.5 bg-gray-800 hover:bg-gray-700 cursor-pointer transition-colors text-green-500 font-normal"
         data-dweller-id="${dweller.serializeId}"
       >
-        <div class="basis-[5%] shrink-0 pl-3 text-green-500 truncate text-left">
+        <div class="basis-[15%] shrink-0 pl-3 text-green-500 truncate text-left border-l border-r border-green-900/60">
           ${this.escapeHtml(name)}
         </div>
 
-        <div class="w-10 shrink-0 text-center text-green-500">
+        <div class="w-10 shrink-0 text-center text-green-500 border-r border-green-900/60">
           ${genderText}
         </div>
 
-        <div class="w-12 shrink-0 text-center tabular-nums text-green-500">
+        <div class="w-12 shrink-0 text-center tabular-nums text-green-500 border-r border-green-900/60">
           ${level}
         </div>
 
-        <div class="w-[72px] shrink-0 text-center tabular-nums text-green-500">
+        <div class="w-[72px] shrink-0 text-center tabular-nums text-green-500 border-r border-green-900/60">
           ${xp}
         </div>
 
-        <div class="w-[56px] shrink-0 text-center tabular-nums text-green-500">
+        <div class="w-[56px] shrink-0 text-center tabular-nums text-green-500 border-r border-green-900/60">
           ${happy}%
         </div>
 
-        <div class="w-[140px] shrink-0 flex justify-center">
+        <div class="w-[140px] shrink-0 flex justify-center border-r border-green-900/60">
           ${this.renderSpecialMiniChart(dweller)}
         </div>
 
-        <div class="w-[90px] shrink-0 flex justify-center">
+        <div class="w-[90px] shrink-0 flex justify-center border-r border-green-900/60">
           ${this.renderHealthMiniBar(hp, maxHp, rad)}
         </div>
       </div>
@@ -319,7 +333,7 @@ export class DwellerUIManager {
     const labels = this.specialLetters;
 
 return `
-  <div class="inline-flex items-end gap-1" aria-label="SPECIAL stats">
+  <div class="inline-flex items-end gap-px" aria-label="SPECIAL stats">
     ${values
       .map((v, i) => {
         const clamped = this.clamp(v ?? 1, 0, 10);
@@ -328,9 +342,9 @@ return `
 
         return `
           <div class="cursor-default" title="${tooltip}">
-            <div class="h-[24px] w-2 bg-gray-700 rounded overflow-hidden">
+            <div class="h-[24px] w-1 bg-gray-700 rounded overflow-hidden">
               <div
-                class="w-full bg-green-500"
+                class="w-full bg-green-500 pip-bar"
                 style="height:${h}px; margin-top:${24 - h}px"
               ></div>
             </div>
