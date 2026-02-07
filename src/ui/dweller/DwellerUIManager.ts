@@ -149,16 +149,6 @@ export class DwellerUIManager {
         ? this.specialNames[this.specialSortIndex]
         : 'Special';
 
-    // NOTE: widths MUST match between header + rows to prevent drift.
-    // Name was made too small; make it 3x wider and keep borders in header+rows.
-    const W_NAME = 'basis-[30%] shrink-0 px-1 border-l border-r border-green-900/60 flex items-center';
-    const W_GENDER = 'w-10 shrink-0 px-1 border-r border-green-900/60 flex items-center justify-center';
-    const W_LEVEL = 'w-12 shrink-0 px-1 border-r border-green-900/60 flex items-center justify-center';
-    const W_XP = 'w-[72px] shrink-0 px-1 border-r border-green-900/60 flex items-center justify-center';
-    const W_HAPPY = 'w-10 shrink-0 px-1 border-r border-green-900/60 flex items-center justify-center';
-    const W_SPECIAL = 'w-[140px] shrink-0 px-1 border-r border-green-900/60 flex items-center justify-center';
-    const W_HEALTH = 'w-[90px] shrink-0 px-1 border-r border-green-900/60 flex items-center justify-center';
-
     dwellersList.innerHTML = `
       <div class="pip-table min-w-[1100px]">
         <!-- HEADER -->
