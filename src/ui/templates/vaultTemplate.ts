@@ -4,11 +4,11 @@ import { GAME_LIMITS } from '../../constants/gameConstants';
 export const createVaultSectionTemplate = (): string => `
   <!-- Vault Section -->
   <div id="vault-section" class="tab-content">
-    <div class="card">
-      <div class="card-header">
+    <div class="pip-panel">
+      <div class="pip-panel-title">
         <h3 class="text-lg font-semibold">Vault Management</h3>
       </div>
-      <div class="card-body">
+      <div class="card-body-tight">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="form-group">
             <label class="form-label">Vault Name</label>

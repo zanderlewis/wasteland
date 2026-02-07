@@ -8,16 +8,16 @@ export const createDwellersSectionTemplate = (): string => `
     <!-- Dwellers Layout -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full items-stretch">
       <!-- List LEFT -->
-      <div id="dwellerListContainer" class="card w-full">
-        <div class="card-header flex items-center justify-between gap-4">
-          <h3 class="text-lg font-semibold">Dwellers</h3>
-          <div class="flex flex-wrap gap-2 justify-end">
-            <button id="maxHappinessAll" class="btn btn-success btn-sm">Max All Happiness</button>
-            <button id="healAll" class="btn btn-success btn-sm">Heal All Dwellers</button>
+      <div id="dwellerListContainer" class="card pip-panel flex flex-col min-h-0 w-full h-[900px]">
+        <div class="pip-panel-title">Dwellers</div>
+        <div class="pip-panel-header flex items-center justify-center gap-4 px-4 pt-4 pb-2">
+          <div class="flex flex-wrap gap-2 justify-center w-full">
+            <button id="healAll" class="btn btn-success btn-sm">Max All Health</button>
             <button id="maxSpecialAll" class="btn btn-success btn-sm">Max All SPECIAL</button>
+            <button id="maxHappinessAll" class="btn btn-success btn-sm">Max All Happiness</button>
           </div>
         </div>
-        <div id="dwellerList" class="card-body-tight bg-gray-900 overflow-hidden">
+        <div id="dwellerList" class="flex-1 min-h-0 bg-gray-900 overflow-hidden">
           <div id="dwellerListScroll" class="h-full overflow-auto">
             <!-- Dwellers will be populated here -->
           </div>
@@ -25,16 +25,14 @@ export const createDwellersSectionTemplate = (): string => `
       </div>
 
       <!-- Editor RIGHT -->
-      <div id="dwellerEditor" class="card w-full">
-        <div class="card-header">
-          <h3 class="text-lg font-semibold">Edit Dweller</h3>
-          <span id="dwellerEditorStatus" class="hidden"></span>
-        </div>
-        <div class="card-body max-h-96 overflow-y-auto">
+      <div id="dwellerEditor" class="card pip-panel flex flex-col min-h-0 w-full h-[900px]">
+        <div class="pip-panel-title">Edit Dweller</div>
+        <div class="pip-panel-header px-4 pt-4 pb-2"><div class="sr-only">Edit Dweller</div></div>
+        <div class="flex-1 min-h-0 p-2 overflow-y-auto">
           <form id="dwellerForm">
             <fieldset id="dwellerFieldset" disabled>
               <!-- Basic Info -->
-              <h4 class="text-md font-semibold mb-4">Basic Information</h4>
+              <h4 class="text-md font-semibold mb-3">Basic Information</h4>
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                 <div class="form-group">
                   <label class="form-label">First Name</label>
@@ -66,7 +64,7 @@ export const createDwellersSectionTemplate = (): string => `
               </div>
 
               <!-- Health Section -->
-              <h4 class="text-md font-semibold mt-6 mb-4">Health & Status</h4>
+              <h4 class="text-md font-semibold mt-5 mb-3">Health & Status</h4>
               <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <div class="form-group">
                   <label class="form-label">Health</label>
@@ -117,35 +115,38 @@ export const createDwellersSectionTemplate = (): string => `
               </div>
 
               <!-- SPECIAL Stats -->
-              <h4 class="text-md font-semibold mt-6 mb-4">SPECIAL Stats</h4>
-              <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-6">
-                <div class="form-group">
-                  <label class="form-label">Strength</label>
-                  <input type="number" id="dwellerStrength" class="form-input special-input" min="${GAME_LIMITS.SPECIAL_MIN}" max="${GAME_LIMITS.SPECIAL_MAX}">
+              <div class="flex items-center justify-start gap-3 mt-4 mb-3">
+                <h4 class="text-md font-semibold">SPECIAL Stats</h4>
+                <button id="maxSpecial" class="btn btn-success btn-sm">Max SPECIAL</button>
+              </div>
+              <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-5">
+                <div class="form-group flex flex-col items-center">
+                  <label class="form-label text-center">Strength</label>
+                  <input type="range" id="dwellerStrength" class="special-slider dweller-field" min="1" max="10" step="1">
                 </div>
-                <div class="form-group">
-                  <label class="form-label">Perception</label>
-                  <input type="number" id="dwellerPerception" class="form-input special-input" min="${GAME_LIMITS.SPECIAL_MIN}" max="${GAME_LIMITS.SPECIAL_MAX}">
+                <div class="form-group flex flex-col items-center">
+                  <label class="form-label text-center">Perception</label>
+                  <input type="range" id="dwellerPerception" class="special-slider dweller-field" min="1" max="10" step="1">
                 </div>
-                <div class="form-group">
-                  <label class="form-label">Endurance</label>
-                  <input type="number" id="dwellerEndurance" class="form-input special-input" min="${GAME_LIMITS.SPECIAL_MIN}" max="${GAME_LIMITS.SPECIAL_MAX}">
+                <div class="form-group flex flex-col items-center">
+                  <label class="form-label text-center">Endurance</label>
+                  <input type="range" id="dwellerEndurance" class="special-slider dweller-field" min="1" max="10" step="1">
                 </div>
-                <div class="form-group">
-                  <label class="form-label">Charisma</label>
-                  <input type="number" id="dwellerCharisma" class="form-input special-input" min="${GAME_LIMITS.SPECIAL_MIN}" max="${GAME_LIMITS.SPECIAL_MAX}">
+                <div class="form-group flex flex-col items-center">
+                  <label class="form-label text-center">Charisma</label>
+                  <input type="range" id="dwellerCharisma" class="special-slider dweller-field" min="1" max="10" step="1">
                 </div>
-                <div class="form-group">
-                  <label class="form-label">Intelligence</label>
-                  <input type="number" id="dwellerIntelligence" class="form-input special-input" min="${GAME_LIMITS.SPECIAL_MIN}" max="${GAME_LIMITS.SPECIAL_MAX}">
+                <div class="form-group flex flex-col items-center">
+                  <label class="form-label text-center">Intelligence</label>
+                  <input type="range" id="dwellerIntelligence" class="special-slider dweller-field" min="1" max="10" step="1">
                 </div>
-                <div class="form-group">
-                  <label class="form-label">Agility</label>
-                  <input type="number" id="dwellerAgility" class="form-input special-input" min="${GAME_LIMITS.SPECIAL_MIN}" max="${GAME_LIMITS.SPECIAL_MAX}">
+                <div class="form-group flex flex-col items-center">
+                  <label class="form-label text-center">Agility</label>
+                  <input type="range" id="dwellerAgility" class="special-slider dweller-field" min="1" max="10" step="1">
                 </div>
-                <div class="form-group">
-                  <label class="form-label">Luck</label>
-                  <input type="number" id="dwellerLuck" class="form-input special-input" min="${GAME_LIMITS.SPECIAL_MIN}" max="${GAME_LIMITS.SPECIAL_MAX}">
+                <div class="form-group flex flex-col items-center">
+                  <label class="form-label text-center">Luck</label>
+                  <input type="range" id="dwellerLuck" class="special-slider dweller-field" min="1" max="10" step="1">
                 </div>
               </div>
 
