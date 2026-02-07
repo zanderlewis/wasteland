@@ -130,8 +130,19 @@ export class DwellerFormManager {
    * Get form field value
    */
   getFormValue(fieldId: string): string {
-    const element = document.getElementById(fieldId) as HTMLInputElement | HTMLSelectElement;
-    return element ? element.value : '';
+    const el = document.getElementById(fieldId) as
+      | HTMLInputElement
+      | HTMLSelectElement
+      | null;
+
+    if (!el) return '';
+
+    // Support checkboxes (Pregnant/Baby Ready)
+    if (el instanceof HTMLInputElement && el.type === 'checkbox') {
+      return el.checked ? 'true' : 'false';
+    }
+
+    return el.value;
   }
 
   /**

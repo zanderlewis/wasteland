@@ -191,7 +191,7 @@
   background: rgba(17, 24, 39, 0.6);
   box-shadow: 0 0 18px rgba(34, 197, 94, 0.18);
   border-radius: 14px;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .pip-panel-title {
@@ -224,16 +224,55 @@
 }
 
 /* Sort indicator chevrons (same width for up/down) */
+
 .dw-sort-indicator {
   position: absolute;
   left: 50%;
-  top: calc(100% - 5px); /* straddle the bottom border */
-  width: 18px;
-  height: 10px;
+  top: calc(100% - 2px); /* straddle the header bottom border */
+  width: 20px;
+  height: 12px;
   transform: translateX(-50%);
-  pointer-events: none;
   opacity: 0;
+  pointer-events: none;
+  z-index: 30;
 }
+
+.dw-sort-indicator.is-active {
+  opacity: 1;
+}
+
+/* Default chevron points DOWN (descending). */
+.dw-sort-indicator.desc {
+  transform: translateX(-50%) rotate(0deg);
+}
+
+/* Ascending chevron points UP. */
+.dw-sort-indicator.asc {
+  transform: translateX(-50%) rotate(180deg);
+}
+
+.dw-sort-indicator::before,
+.dw-sort-indicator::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  width: 12px;
+  height: 3px;
+  background: var(--pip-green);
+  border-radius: 2px;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.65);
+}
+
+.dw-sort-indicator::before {
+  left: 0;
+  transform: rotate(45deg);
+}
+
+.dw-sort-indicator::after {
+  right: 0;
+  transform: rotate(-45deg);
+}
+
 
 .dw-sort-indicator.is-active {
   opacity: 1;
@@ -455,4 +494,80 @@ input.special-slider {
   width: 2.25rem;
   height: 9.5rem;
   padding: 0;
+}
+
+
+/* Box title typography */
+.pip-panel-title h3,
+.pip-panel-title {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--pip-green);
+  text-shadow: 0 0 8px rgba(16, 185, 129, 0.55);
+}
+
+
+/* SPECIAL vertical sliders (green + thicker) */
+input[type="range"].special-slider {
+  writing-mode: bt-lr;
+  -webkit-appearance: slider-vertical;
+  appearance: slider-vertical;
+  display: block;
+  margin: 0 auto;
+  width: 3.0rem;      /* thicker */
+  height: 10.5rem;    /* a bit taller */
+  padding: 0;
+  accent-color: var(--pip-green);
+}
+
+input[type="range"].special-slider::-webkit-slider-runnable-track {
+  width: 14px;
+  background: rgba(16, 185, 129, 0.25);
+  border: 1px solid rgba(16, 185, 129, 0.45);
+  border-radius: 999px;
+  box-shadow: inset 0 0 10px rgba(16, 185, 129, 0.25);
+}
+
+input[type="range"].special-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 28px;
+  height: 18px;
+  border-radius: 999px;
+  background: var(--pip-green);
+  border: 1px solid rgba(0, 0, 0, 0.35);
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.8);
+}
+
+input[type="range"].special-slider::-moz-range-track {
+  width: 14px;
+  background: rgba(16, 185, 129, 0.25);
+  border: 1px solid rgba(16, 185, 129, 0.45);
+  border-radius: 999px;
+}
+
+input[type="range"].special-slider::-moz-range-thumb {
+  width: 28px;
+  height: 18px;
+  border-radius: 999px;
+  background: var(--pip-green);
+  border: 1px solid rgba(0, 0, 0, 0.35);
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.8);
+}
+
+
+/* Debug-style 1px green borders around elements in Edit Dweller */
+#dweller-section .pip-panel-body * {
+  outline: 1px solid rgba(16, 185, 129, 0.28);
+  outline-offset: -1px;
+}
+
+
+/* Green checkboxes */
+.pip-checkbox {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--pip-green);
 }
