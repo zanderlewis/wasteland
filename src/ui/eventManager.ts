@@ -43,12 +43,18 @@ export class EventManager {
     const dropZone = document.getElementById('dropZone');
 
     // File input change
-    fileInput?.addEventListener('change', (e) => {
-      const target = e.target as HTMLInputElement;
-      if (target.files && target.files.length > 0) {
-        this.handleFileSelect(target.files[0]);
-      }
-    });
+    
+fileInput?.addEventListener('change', async (e) => {
+  const target = e.target as HTMLInputElement;
+  try {
+    if (target.files && target.files.length > 0) {
+      await this.handleFileSelect(target.files[0]);
+    }
+  } finally {
+    // Allow selecting the same file again (and avoid "example loaded then select file doesn't load")
+    target.value = '';
+  }
+});
 
     // Select file button
     selectFileBtn?.addEventListener('click', () => {

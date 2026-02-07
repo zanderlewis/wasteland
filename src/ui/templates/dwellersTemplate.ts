@@ -19,9 +19,9 @@ export const createDwellersSectionTemplate = (): string => `
     </div>
 
     <!-- Full-width Editor above Full-width List -->
-    <div class="flex flex-col gap-6 w-full">
+    <div class="flex flex-col lg:flex-row gap-6 w-full">
       <!-- Editor FIRST (full width) -->
-      <div id="dwellerEditor" class="card w-full">
+      <div id="dwellerEditor" class="card w-full order-2 lg:order-2 lg:w-3/5">
         <div class="card-header">
           <h3 class="text-lg font-semibold">Edit Dweller</h3>
           <span id="dwellerEditorStatus" class="text-sm text-gray-500">Select a dweller to edit</span>
@@ -189,7 +189,7 @@ export const createDwellersSectionTemplate = (): string => `
       </div>
 
       <!-- List SECOND (full width) -->
-      <div id="dwellerListContainer" class="card w-full">
+      <div id="dwellerListContainer" class="card w-full order-1 lg:order-1 lg:w-2/5">
         <div class="card-header">
           <h3 class="text-lg font-semibold">Dwellers</h3>
         </div>

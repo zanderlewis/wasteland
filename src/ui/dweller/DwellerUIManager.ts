@@ -18,8 +18,8 @@ export class DwellerUIManager {
     | 'health' = 'name';
   private sortDir: 'asc' | 'desc' = 'asc';
 
-  // When sorting SPECIAL, we cycle S,P,E,C,I,A,L
-  private specialSortIndex = 0; // 0..6
+  // When sorting SPECIAL, we cycle: Strength asc, Strength desc, Perception asc, ... Luck desc
+  private specialCycleStep = 0; // 0..13 (idx=floor(step/2), dir=even asc / odd desc)
   private readonly specialNames = [
     'Strength',
     'Perception',
@@ -30,6 +30,14 @@ export class DwellerUIManager {
     'Luck'
   ];
   private readonly specialLetters = ['S', 'P', 'E', 'C', 'I', 'A', 'L'];
+
+  private getSpecialSortIndex(): number {
+    return Math.floor(this.specialCycleStep / 2);
+  }
+
+  private syncSortDirForSpecial(): void {
+    this.sortDir = this.specialCycleStep % 2 === 0 ? 'asc' : 'desc';
+  }
 
   setSelectedDweller(dweller: Dweller | null): void {
     this.selectedDweller = dweller;
@@ -127,46 +135,39 @@ export class DwellerUIManager {
     // Keep raw list for click selection
     (dwellersList as any).__dwellers = dwellers;
 
-    // Sort copy for rendering
-    const sorted = [...dwellers].sort((a, b) => this.compareDwellers(a, b));
+    
+// Sort copy for rendering
+const sorted = [...dwellers].sort((a, b) => this.compareDwellers(a, b));
 
-    const specialHeaderLabel =
-      this.sortKey === 'special'
-        ? this.specialNames[this.specialSortIndex]
-        : 'Special';
+const specialHeaderLabel =
+  this.sortKey === 'special'
+    ? this.specialNames[this.getSpecialSortIndex()]
+    : 'SPECIAL';
 
-    // NOTE: widths MUST match between header + rows to prevent drift.
-    const W_NAME = 'basis-[10%] shrink-0';
-    const W_GENDER = 'w-10 shrink-0';
-    const W_LEVEL = 'w-12 shrink-0';
-    const W_XP = 'w-[72px] shrink-0';
-    const W_HAPPY = 'w-[56px] shrink-0';
-    const W_SPECIAL = 'w-[140px] shrink-0';
-    const W_HEALTH = 'w-[90px] shrink-0';
+dwellersList.innerHTML = `
+  <div class="min-w-[1000px] pip-table">
 
-    dwellersList.innerHTML = `
-      <div class="min-w-[1100px] pip-table">
+    <!-- HEADER -->
+    <div class="hidden lg:grid dw-grid dw-header sticky top-0 z-20 bg-gray-900 border-b border-green-900/60">
+      ${this.renderHeaderCell('name', 'NAME', 'dw-cell dw-cell-name text-left pl-3')}
+      ${this.renderHeaderCell('gender', 'M/F', 'dw-cell dw-cell-gender text-center')}
+      ${this.renderHeaderCell('level', 'LVL', 'dw-cell dw-cell-lvl text-center')}
+      ${this.renderHeaderCell('xp', 'XP', 'dw-cell dw-cell-xp text-right pr-3')}
+      ${this.renderHeaderCell('happy', '😊', 'dw-cell dw-cell-happy text-right pr-3')}
+      ${this.renderHeaderCell('special', specialHeaderLabel, 'dw-cell dw-cell-special text-center')}
+      ${this.renderHeaderCell('health', 'HEALTH', 'dw-cell dw-cell-health text-center')}
+    </div>
 
-        <!-- HEADER -->
-        <div class="hidden lg:flex items-center gap-3 px-0 py-2 sticky top-0 z-20 bg-gray-900 border-b border-green-900/60">
-          ${this.renderHeaderCell('name', 'Name', `${W_NAME} pl-3 text-left`)}
-          ${this.renderHeaderCell('gender', 'M/F', `${W_GENDER} text-center`)}
-          ${this.renderHeaderCell('level', 'LVL', `${W_LEVEL} text-center`)}
-          ${this.renderHeaderCell('xp', 'XP', `${W_XP} text-center`)}
-          ${this.renderHeaderCell('happy', '😊', `${W_HAPPY} text-center`)}
-          ${this.renderHeaderCell('special', specialHeaderLabel, `${W_SPECIAL} text-center`)}
-          ${this.renderHeaderCell('health', 'Health', `${W_HEALTH} text-center`)}
-        </div>
+    <!-- ROWS -->
+    <div class="divide-y divide-green-900/50">
+      ${sorted.map((d) => this.renderDwellerRow(d)).join('')}
+    </div>
 
-        <!-- ROWS -->
-        <div class="divide-y divide-green-900/50">
-          ${sorted.map((d) => this.renderDwellerRow(d)).join('')}
-        </div>
+  </div>
+`;
 
-      </div>
-    `;
+// Bind header sorting once
 
-    // Bind header sorting once
     if (!(dwellersList as any).__dwellerSortBound) {
       (dwellersList as any).__dwellerSortBound = true;
 
@@ -201,146 +202,153 @@ export class DwellerUIManager {
    * - Clicking same column toggles asc/desc
    * - SPECIAL cycles S/P/E/C/I/A/L when clicked (and sets sort key to special)
    */
-  private onHeaderClick(key: string): void {
-    if (key === 'special') {
-      if (this.sortKey === 'special') {
-        // cycle special stat
-        this.specialSortIndex = (this.specialSortIndex + 1) % 7;
-        // keep direction as-is
-      } else {
-        // first click sets to SPECIAL sorting
-        this.sortKey = 'special';
-        this.sortDir = 'asc';
-        // keep current index
-      }
-      return;
-    }
-
-    // Normal columns
-    if (this.sortKey === key) {
-      this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc';
+  
+/**
+ * Header click behavior:
+ * - Clicking same column toggles asc/desc
+ * - SPECIAL cycles: Strength asc, Strength desc, Perception asc, ... Luck desc
+ */
+private onHeaderClick(key: string): void {
+  if (key === 'special') {
+    if (this.sortKey !== 'special') {
+      this.sortKey = 'special';
+      this.specialCycleStep = 0; // Strength asc
     } else {
-      this.sortKey = key as any;
-      this.sortDir = 'asc';
+      this.specialCycleStep = (this.specialCycleStep + 1) % 14;
     }
+    this.syncSortDirForSpecial();
+    return;
   }
 
-  private renderHeaderCell(
-    key:
-      | 'name'
-      | 'gender'
-      | 'level'
-      | 'xp'
-      | 'happy'
-      | 'special'
-      | 'health',
-    label: string,
-    extraClasses: string
-  ): string {
-    const active = this.sortKey === key;
-    const arrow = !active ? '' : this.sortDir === 'asc' ? '∧' : '∨';
+  // Normal columns
+  if (this.sortKey === key) {
+    this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc';
+  } else {
+    this.sortKey = key as any;
+    this.sortDir = 'asc';
+  }
+}
 
-    // Reserve indicator space with pr-5 always so headers to the right never shift
-    // Indicator is absolutely positioned and smaller via CSS (.dw-sort-indicator)
-    return `
-      <div
-        class="relative overflow-visible ${extraClasses} pr-5 cursor-pointer select-none text-green-200 hover:text-green-100"
-        data-sort="${key}"
-        role="button"
-        tabindex="0"
-      >
-        <span class="uppercase">${this.escapeHtml(label)}</span>
-        <span class="dw-sort-indicator ${active ? '' : 'opacity-0'}" style="position:absolute; left:50%; transform:translateX(-50%); bottom:-12px; line-height:1; font-size:14px; pointer-events:none;">${arrow}</span>
+
+private renderHeaderCell(
+  key:
+    | 'name'
+    | 'gender'
+    | 'level'
+    | 'xp'
+    | 'happy'
+    | 'special'
+    | 'health',
+  label: string,
+  extraClasses: string
+): string {
+  const active = this.sortKey === key;
+  const symbol = !active ? '' : this.sortDir === 'asc' ? '∧' : '∨';
+
+  return `
+    <div
+      class="relative ${extraClasses} cursor-pointer select-none pip-text"
+      data-sort="${key}"
+      role="button"
+      tabindex="0"
+    >
+      <span class="pip-header-label">${this.escapeHtml(label)}</span>
+      <span
+        class="pip-sort-indicator ${active ? '' : 'opacity-0'}"
+        aria-hidden="true"
+      >${symbol}</span>
+    </div>
+  `;
+}
+
+  
+private renderDwellerRow(dweller: Dweller): string {
+  const name = `${dweller.name} ${dweller.lastName || ''}`.trim();
+
+  // Gender symbols + pregnancy marker
+  const isFemale = dweller.gender === 1;
+  const genderSymbol = isFemale ? '♀' : '♂';
+  const isPregnant = this.isDwellerPregnant(dweller);
+  const genderText = isFemale && isPregnant ? `${genderSymbol}+` : genderSymbol;
+
+  const level = dweller.experience?.currentLevel ?? 1;
+  const xp = dweller.experience?.experienceValue ?? 0;
+
+  const happyRaw = dweller.happiness?.happinessValue ?? 50;
+  const happy = Math.round(happyRaw); // 0 decimals
+
+  const hp = dweller.health?.healthValue ?? 100;
+  const maxHp = dweller.health?.maxHealth ?? 100;
+  const rad = dweller.health?.radiationValue ?? 0;
+
+  return `
+    <div
+      class="dweller-row grid dw-grid items-center bg-gray-800 hover:bg-gray-700 cursor-pointer transition-colors pip-text"
+      data-dweller-id="${dweller.serializeId}"
+    >
+      <div class="dw-cell dw-cell-name text-left pl-3 truncate">
+        ${this.escapeHtml(name)}
       </div>
-    `;
-  }
 
-  private renderDwellerRow(dweller: Dweller): string {
-    const name = `${dweller.name} ${dweller.lastName || ''}`.trim();
-
-    // Gender: symbols, plus sign for pregnant female
-    const isFemale = dweller.gender === 1;
-    const genderSymbol = isFemale ? '♀' : '♂';
-    const isPregnant = this.isDwellerPregnant(dweller);
-    const genderText = isFemale && isPregnant ? `${genderSymbol}+` : genderSymbol;
-
-    const level = dweller.experience?.currentLevel ?? 1;
-    const xp = dweller.experience?.experienceValue ?? 0;
-
-    const happyRaw = dweller.happiness?.happinessValue ?? 50;
-    const happy = Math.round(happyRaw); // 0 decimals
-
-    const hp = dweller.health?.healthValue ?? 100;
-    const maxHp = dweller.health?.maxHealth ?? 100;
-    const rad = dweller.health?.radiationValue ?? 0;
-
-    return `
-      <div
-        class="dweller-row flex items-center gap-3 px-0 py-1 bg-gray-800 hover:bg-gray-700 cursor-pointer transition-colors text-green-200 font-normal"
-        data-dweller-id="${dweller.serializeId}"
-      >
-        <div class="basis-[10%] shrink-0 pl-3 text-green-200 truncate text-left">
-          ${this.escapeHtml(name)}
-        </div>
-
-        <div class="w-10 shrink-0 text-center text-green-200">
-          ${genderText}
-        </div>
-
-        <div class="w-12 shrink-0 text-center tabular-nums text-green-200">
-          ${level}
-        </div>
-
-        <div class="w-[72px] shrink-0 text-center tabular-nums text-green-200">
-          ${xp}
-        </div>
-
-        <div class="w-[56px] shrink-0 text-center tabular-nums text-green-200">
-          ${happy}%
-        </div>
-
-        <div class="w-[140px] shrink-0 flex justify-center">
-          ${this.renderSpecialMiniChart(dweller)}
-        </div>
-
-        <div class="w-[90px] shrink-0 flex justify-center">
-          ${this.renderHealthMiniBar(hp, maxHp, rad)}
-        </div>
+      <div class="dw-cell dw-cell-gender text-center text-xl leading-none">
+        ${genderText}
       </div>
-    `;
-  }
+
+      <div class="dw-cell dw-cell-lvl text-center tabular-nums">
+        ${level}
+      </div>
+
+      <div class="dw-cell dw-cell-xp text-right tabular-nums pr-3">
+        ${xp}
+      </div>
+
+      <div class="dw-cell dw-cell-happy text-right tabular-nums pr-3">
+        ${happy}%
+      </div>
+
+      <div class="dw-cell dw-cell-special flex justify-center">
+        ${this.renderSpecialMiniChart(dweller)}
+      </div>
+
+      <div class="dw-cell dw-cell-health flex justify-center">
+        ${this.renderHealthMiniBar(hp, maxHp, rad)}
+      </div>
+    </div>
+  `;
+}
 
   /**
    * SPECIAL: 7 vertical bars with labels S P E C I A L
    * Tooltip shows the value for the hovered stat only
    */
-  private renderSpecialMiniChart(dweller: Dweller): string {
-    const values = this.getSpecialValues(dweller);
-    const labels = this.specialLetters;
+  
+private renderSpecialMiniChart(dweller: Dweller): string {
+  const values = this.getSpecialValues(dweller);
+  const labels = this.specialLetters;
 
-return `
-  <div class="inline-flex items-end gap-1" aria-label="SPECIAL stats">
-    ${values
-      .map((v, i) => {
-        const clamped = this.clamp(v ?? 1, 0, 10);
-        const h = Math.round((clamped / 10) * 20);
-        const tooltip = `${labels[i]}: ${clamped}`;
+  return `
+    <div class="inline-flex items-end gap-[1px]" aria-label="SPECIAL stats">
+      ${values
+        .map((v, i) => {
+          const clamped = this.clamp(v ?? 1, 0, 10);
+          const h = Math.round((clamped / 10) * 24); // +4px overall
+          const tooltip = `${labels[i]}: ${clamped}`;
 
-        return `
-          <div class="cursor-default" title="${tooltip}">
-            <div class="h-[20px] w-2 bg-gray-700 rounded overflow-hidden">
-              <div
-                class="w-full bg-green-500"
-                style="height:${h}px; margin-top:${20 - h}px"
-              ></div>
+          return `
+            <div class="cursor-default" title="${tooltip}">
+              <div class="h-[24px] w-2 bg-gray-700 rounded overflow-hidden px-0">
+                <div
+                  class="w-full bg-green-500 pip-bar"
+                  style="height:${h}px; margin-top:${24 - h}px"
+                ></div>
+              </div>
             </div>
-          </div>
-        `;
-      })
-      .join('')}
-  </div>
-`;
-  }
+          `;
+        })
+        .join('')}
+    </div>
+  `;
+}
 
   /**
    * Health bar:
@@ -387,8 +395,8 @@ return `
     const aGender = a.gender ?? 1;
     const bGender = b.gender ?? 1;
 
-    const aSpecial = this.getSpecialValues(a)[this.specialSortIndex] ?? 1;
-    const bSpecial = this.getSpecialValues(b)[this.specialSortIndex] ?? 1;
+    const aSpecial = this.getSpecialValues(a)[this.getSpecialSortIndex()] ?? 1;
+    const bSpecial = this.getSpecialValues(b)[this.getSpecialSortIndex()] ?? 1;
 
     let cmp = 0;
 
