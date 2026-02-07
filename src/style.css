@@ -510,20 +510,46 @@ input.special-slider {
 
 
 /* SPECIAL vertical sliders (green + thicker) */
+
+/* SPECIAL slider bubble (value on handle) */
+.special-slider-wrap {
+  position: relative;
+  width: 3.4rem;
+  height: 6.3rem;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+}
+.special-slider-bubble {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0 8px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: #08110c;
+  background: var(--pip-green);
+  border-radius: 999px;
+  border: 1px solid rgba(0,0,0,0.35);
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.8);
+  pointer-events: none;
+  z-index: 3;
+}
 input[type="range"].special-slider {
   writing-mode: bt-lr;
   -webkit-appearance: slider-vertical;
   appearance: slider-vertical;
   display: block;
   margin: 0 auto;
-  width: 3.0rem;      /* thicker */
-  height: 10.5rem;    /* a bit taller */
+  width: 3.4rem;      /* wider */
+  height: 6.3rem;     /* ~60% height */    /* a bit taller */
   padding: 0;
   accent-color: var(--pip-green);
 }
 
 input[type="range"].special-slider::-webkit-slider-runnable-track {
-  width: 14px;
+  width: 18px;
   background: rgba(16, 185, 129, 0.25);
   border: 1px solid rgba(16, 185, 129, 0.45);
   border-radius: 999px;
@@ -533,8 +559,8 @@ input[type="range"].special-slider::-webkit-slider-runnable-track {
 input[type="range"].special-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 28px;
-  height: 18px;
+  width: 42px;
+  height: 22px;
   border-radius: 999px;
   background: var(--pip-green);
   border: 1px solid rgba(0, 0, 0, 0.35);
@@ -542,15 +568,15 @@ input[type="range"].special-slider::-webkit-slider-thumb {
 }
 
 input[type="range"].special-slider::-moz-range-track {
-  width: 14px;
+  width: 18px;
   background: rgba(16, 185, 129, 0.25);
   border: 1px solid rgba(16, 185, 129, 0.45);
   border-radius: 999px;
 }
 
 input[type="range"].special-slider::-moz-range-thumb {
-  width: 28px;
-  height: 18px;
+  width: 42px;
+  height: 22px;
   border-radius: 999px;
   background: var(--pip-green);
   border: 1px solid rgba(0, 0, 0, 0.35);
