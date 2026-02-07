@@ -5,11 +5,11 @@ export const createToolsSectionTemplate = (): string => `
   <div id="tools-section" class="tab-content hidden">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <!-- Quick Actions -->
-      <div class="card">
-        <div class="card-header">
+      <div class="pip-panel">
+        <div class="pip-panel-title">
           <h3 class="text-lg font-semibold">Quick Actions</h3>
         </div>
-        <div class="card-body">
+        <div class="card-body-tight">
           <div class="space-y-4">
             <button id="maxCaps" class="btn btn-primary w-full">Max Caps</button>
             <button id="maxResources" class="btn btn-primary w-full">Max All Resources</button>
@@ -24,11 +24,11 @@ export const createToolsSectionTemplate = (): string => `
       </div>
 
       <!-- Backup/Restore -->
-      <div class="card">
-        <div class="card-header">
+      <div class="pip-panel">
+        <div class="pip-panel-title">
           <h3 class="text-lg font-semibold">Backup & Export</h3>
         </div>
-        <div class="card-body">
+        <div class="card-body-tight">
           <div class="space-y-4">
             <button id="createBackup" class="btn btn-secondary w-full">Create Backup</button>
             <button id="exportJson" class="btn btn-secondary w-full">Export as JSON</button>
