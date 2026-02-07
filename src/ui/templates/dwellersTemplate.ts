@@ -4,27 +4,31 @@ import { GAME_LIMITS } from '../../constants/gameConstants';
 export const createDwellersSectionTemplate = (): string => `
   <!-- Dwellers Section -->
   <div id="dwellers-section" class="tab-content hidden text-green-200">
-    <!-- Batch Operations -->
-    <div class="card mb-6">
-      <div class="card-header">
-        <h3 class="text-lg font-semibold">Batch Operations</h3>
-      </div>
-      <div class="card-body">
-        <div class="flex flex-wrap gap-2">
-          <button id="maxHappinessAll" class="btn btn-success">Max All Happiness</button>
-          <button id="healAll" class="btn btn-success">Heal All Dwellers</button>
-          <button id="maxSpecialAll" class="btn btn-success">Max All SPECIAL</button>
+
+    <!-- Dwellers Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full items-stretch">
+      <!-- List LEFT -->
+      <div id="dwellerListContainer" class="card w-full">
+        <div class="card-header flex items-center justify-between gap-4">
+          <h3 class="text-lg font-semibold">Dwellers</h3>
+          <div class="flex flex-wrap gap-2 justify-end">
+            <button id="maxHappinessAll" class="btn btn-success btn-sm">Max All Happiness</button>
+            <button id="healAll" class="btn btn-success btn-sm">Heal All Dwellers</button>
+            <button id="maxSpecialAll" class="btn btn-success btn-sm">Max All SPECIAL</button>
+          </div>
+        </div>
+        <div id="dwellerList" class="card-body-tight bg-gray-900 overflow-hidden">
+          <div id="dwellerListScroll" class="h-full overflow-auto">
+            <!-- Dwellers will be populated here -->
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Full-width Editor above Full-width List -->
-    <div class="flex flex-col lg:flex-row gap-6 w-full">
-      <!-- Editor FIRST (full width) -->
-      <div id="dwellerEditor" class="card w-full order-2 lg:order-2 lg:w-3/5">
+      <!-- Editor RIGHT -->
+      <div id="dwellerEditor" class="card w-full">
         <div class="card-header">
           <h3 class="text-lg font-semibold">Edit Dweller</h3>
-          <span id="dwellerEditorStatus" class="text-sm text-gray-500">Select a dweller to edit</span>
+          <span id="dwellerEditorStatus" class="hidden"></span>
         </div>
         <div class="card-body max-h-96 overflow-y-auto">
           <form id="dwellerForm">
@@ -34,30 +38,30 @@ export const createDwellersSectionTemplate = (): string => `
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                 <div class="form-group">
                   <label class="form-label">First Name</label>
-                  <input type="text" id="dwellerName" class="form-input">
+                  <input type="text" id="dwellerName" class="form-input dweller-field">
                 </div>
                 <div class="form-group">
                   <label class="form-label">Last Name</label>
-                  <input type="text" id="dwellerLastName" class="form-input">
+                  <input type="text" id="dwellerLastName" class="form-input dweller-field">
                 </div>
                 <div class="form-group">
                   <label class="form-label">Gender</label>
-                  <select id="dwellerGender" class="form-input">
+                  <select id="dwellerGender" class="form-input dweller-field">
                     <option value="1">Female</option>
                     <option value="2">Male</option>
                   </select>
                 </div>
                 <div class="form-group">
                   <label class="form-label">Level</label>
-                  <input type="number" id="dwellerLevel" class="form-input" min="${GAME_LIMITS.LEVEL_MIN}" max="${GAME_LIMITS.LEVEL_MAX}">
+                  <input type="number" id="dwellerLevel" class="form-input dweller-field" min="${GAME_LIMITS.LEVEL_MIN}" max="${GAME_LIMITS.LEVEL_MAX}">
                 </div>
                 <div class="form-group">
                   <label class="form-label">Experience</label>
-                  <input type="number" id="dwellerExperience" class="form-input" min="0">
+                  <input type="number" id="dwellerExperience" class="form-input dweller-field" min="0">
                 </div>
                 <div class="form-group">
                   <label class="form-label">Happiness</label>
-                  <input type="number" id="dwellerHappiness" class="form-input" min="${GAME_LIMITS.HAPPINESS_MIN}" max="${GAME_LIMITS.HAPPINESS_MAX}">
+                  <input type="number" id="dwellerHappiness" class="form-input dweller-field" min="${GAME_LIMITS.HAPPINESS_MIN}" max="${GAME_LIMITS.HAPPINESS_MAX}">
                 </div>
               </div>
 
@@ -66,15 +70,15 @@ export const createDwellersSectionTemplate = (): string => `
               <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <div class="form-group">
                   <label class="form-label">Health</label>
-                  <input type="number" id="dwellerHealth" class="form-input" min="0">
+                  <input type="number" id="dwellerHealth" class="form-input dweller-field" min="0">
                 </div>
                 <div class="form-group">
                   <label class="form-label">Max Health</label>
-                  <input type="number" id="dwellerMaxHealth" class="form-input" min="0">
+                  <input type="number" id="dwellerMaxHealth" class="form-input dweller-field" min="0">
                 </div>
                 <div class="form-group">
                   <label class="form-label">Radiation</label>
-                  <input type="number" id="dwellerRadiation" class="form-input" min="${GAME_LIMITS.RADIATION_MIN}" max="${GAME_LIMITS.RADIATION_MAX}">
+                  <input type="number" id="dwellerRadiation" class="form-input dweller-field" min="${GAME_LIMITS.RADIATION_MIN}" max="${GAME_LIMITS.RADIATION_MAX}">
                 </div>
               </div>
 
@@ -83,11 +87,11 @@ export const createDwellersSectionTemplate = (): string => `
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <div class="form-group">
                   <label class="form-label">Skin Color</label>
-                  <input type="color" id="dwellerSkinColor" class="form-input" value="#FFDBAC" title="Skin Color">
+                  <input type="color" id="dwellerSkinColor" class="form-input dweller-field" value="#FFDBAC" title="Skin Color">
                 </div>
                 <div class="form-group">
                   <label class="form-label">Hair Color</label>
-                  <input type="color" id="dwellerHairColor" class="form-input" value="#8B4513" title="Hair Color">
+                  <input type="color" id="dwellerHairColor" class="form-input dweller-field" value="#8B4513" title="Hair Color">
                 </div>
               </div>
 
@@ -97,14 +101,14 @@ export const createDwellersSectionTemplate = (): string => `
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                   <div class="form-group">
                     <label class="form-label">Pregnant</label>
-                    <select id="dwellerPregnant" class="form-input">
+                    <select id="dwellerPregnant" class="form-input dweller-field">
                       <option value="false">No</option>
                       <option value="true">Yes</option>
                     </select>
                   </div>
                   <div class="form-group">
                     <label class="form-label">Baby Ready</label>
-                    <select id="dwellerBabyReadyTime" class="form-input" title="Whether baby is ready to be born">
+                    <select id="dwellerBabyReadyTime" class="form-input dweller-field" title="Whether baby is ready to be born">
                       <option value="false">Not Ready</option>
                       <option value="true">Ready</option>
                     </select>
@@ -150,14 +154,14 @@ export const createDwellersSectionTemplate = (): string => `
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <div class="form-group">
                   <label class="form-label">Weapon</label>
-                  <select id="dwellerWeapon" class="form-input">
+                  <select id="dwellerWeapon" class="form-input dweller-field">
                     <option value="">No Weapon</option>
                     <!-- Options will be populated dynamically -->
                   </select>
                 </div>
                 <div class="form-group">
                   <label class="form-label">Outfit</label>
-                  <select id="dwellerOutfit" class="form-input">
+                  <select id="dwellerOutfit" class="form-input dweller-field">
                     <option value="">No Outfit</option>
                     <!-- Options will be populated dynamically -->
                   </select>
@@ -169,7 +173,7 @@ export const createDwellersSectionTemplate = (): string => `
                 <h4 class="text-md font-semibold mb-4">Pet</h4>
                 <div class="form-group">
                   <label class="form-label">Pet</label>
-                  <select id="dwellerPet" class="form-input">
+                  <select id="dwellerPet" class="form-input dweller-field">
                     <option value="">No Pet</option>
                     <!-- Options will be populated dynamically -->
                   </select>
@@ -180,28 +184,15 @@ export const createDwellersSectionTemplate = (): string => `
               <div class="flex gap-4 pt-4 border-t border-gray-700">
                 <button type="submit" id="saveDwellerChanges" class="btn btn-primary">Save Changes</button>
                 <button type="button" id="resetDwellerForm" class="btn btn-secondary">Reset</button>
-                <button type="button" id="maxSpecial" class="btn btn-success">Max SPECIAL</button>
-                <button type="button" id="evictDweller" class="btn btn-danger">Evict Dweller</button>
+<button type="button" id="evictDweller" class="btn btn-danger">Evict Dweller</button>
               </div>
-            </fieldset>
+                        </fieldset>
           </form>
-        </div>
-      </div>
-
-      <!-- List SECOND (full width) -->
-      <div id="dwellerListContainer" class="card w-full order-1 lg:order-1 lg:w-2/5">
-        <div class="card-header">
-          <h3 class="text-lg font-semibold">Dwellers</h3>
-        </div>
-        <div id="dwellerList" class="bg-gray-900 p-0">
-          <div id="dwellerListScroll" class="max-h-96 overflow-auto overflow-x-auto">
-            <!-- Dwellers will be populated here -->
-          </div>
         </div>
       </div>
     </div>
 
-    <!-- Eviction Confirmation Modal -->
+<!-- Eviction Confirmation Modal -->
     <div id="evictionModal" class="modal modal-hidden" style="display:none;">
       <div class="modal-content">
         <div class="modal-header">
