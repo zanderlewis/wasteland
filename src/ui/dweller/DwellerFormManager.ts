@@ -262,7 +262,7 @@ private updateSpecialSliderBubble(slider: HTMLInputElement, bubble: HTMLElement 
   const pct = (val - min) / Math.max(1, max - min);
 
   // For slider-vertical, 0 is bottom, 1 is top visually
-  const thumbH = 22; // keep in sync with CSS thumb height
+  const thumbH = 32; // keep in sync with CSS thumb height
   const top = (1 - pct) * (h - thumbH);
 
   bubble.style.top = `${Math.round(top)}px`;

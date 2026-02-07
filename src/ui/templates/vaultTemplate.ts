@@ -8,7 +8,7 @@ export const createVaultSectionTemplate = (): string => `
       <div class="pip-panel-title">
         <h3 class="text-lg font-semibold">Vault Management</h3>
       </div>
-      <div class="card-body-tight">
+      <div class="pip-panel-body p-4">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="form-group">
             <label class="form-label">Vault Name</label>

@@ -335,7 +335,7 @@ return `
 
         return `
           <div class="cursor-default" title="${tooltip}">
-            <div class="h-[28px] w-[3px] bg-gray-700 rounded overflow-hidden">
+            <div class="h-[28px] w-[6px] bg-gray-700 rounded overflow-hidden">
               <div
                 class="w-full bg-green-500 pip-bar"
                 style="height:${h}px; margin-top:${this.SPECIAL_BAR_H - h}px"
