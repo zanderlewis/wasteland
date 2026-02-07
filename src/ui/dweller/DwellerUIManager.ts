@@ -31,17 +31,8 @@ export class DwellerUIManager {
   ];
   private readonly specialLetters = ['S', 'P', 'E', 'C', 'I', 'A', 'L'];
 
-  // Column width classes (must match between header and rows)
-  private readonly COL_NAME = 'basis-[15%]';
-  private readonly COL_GENDER = 'w-10';
-  private readonly COL_LVL = 'w-12';
-  private readonly COL_XP = 'w-[72px]';
-  private readonly COL_HAPPY = 'w-10';
-  private readonly COL_SPECIAL = 'w-[140px]';
-  private readonly COL_HEALTH = 'w-[90px]';
-
-  // Border class for visible column separators
-  private readonly COL_BORDER = 'border-r border-green-900/60';
+  // NOTE: Column widths are defined once (W_*) in updateDwellersList().
+  // Keep this class focused on behavior (sorting/selection), not layout constants.
 
   setSelectedDweller(dweller: Dweller | null): void {
     this.selectedDweller = dweller;
@@ -63,9 +54,10 @@ export class DwellerUIManager {
       formElements.forEach((element) => (element.disabled = false));
     }
 
+    // Status text is redundant (header already says "Edit Dweller")
     if (statusText) {
-      statusText.textContent = 'Editing dweller';
-      statusText.className = 'text-green-300';
+      statusText.textContent = '';
+      statusText.className = 'hidden';
     }
   }
 
