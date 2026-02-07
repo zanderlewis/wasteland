@@ -8,16 +8,17 @@ export const createDwellersSectionTemplate = (): string => `
     <!-- Dwellers Layout -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full items-stretch">
       <!-- List LEFT -->
-      <div id="dwellerListContainer" class="card w-full">
-        <div class="card-header flex items-center justify-between gap-4">
-          <h3 class="text-lg font-semibold">Dwellers</h3>
+      <div id="dwellerListContainer" class="card pip-panel flex flex-col min-h-0 w-full">
+        <div class="pip-panel-title">Dwellers</div>
+        <div class="pip-panel-header flex items-center justify-between gap-4 px-4 pt-6 pb-3">
+          <div class="sr-only">Dwellers</div>
           <div class="flex flex-wrap gap-2 justify-end">
             <button id="maxHappinessAll" class="btn btn-success btn-sm">Max All Happiness</button>
             <button id="maxSpecialAll" class="btn btn-success btn-sm">Max All SPECIAL</button>
             <button id="healAll" class="btn btn-success btn-sm">Heal All Dwellers</button>
           </div>
         </div>
-        <div id="dwellerList" class="card-body-tight bg-gray-900 overflow-hidden">
+        <div id="dwellerList" class="flex-1 min-h-0 bg-gray-900 overflow-hidden">
           <div id="dwellerListScroll" class="h-full overflow-auto">
             <!-- Dwellers will be populated here -->
           </div>
@@ -25,12 +26,10 @@ export const createDwellersSectionTemplate = (): string => `
       </div>
 
       <!-- Editor RIGHT -->
-      <div id="dwellerEditor" class="card w-full">
-        <div class="card-header">
-          <h3 class="text-lg font-semibold">Edit Dweller</h3>
-
-        </div>
-        <div class="p-3 max-h-96 overflow-y-auto">
+      <div id="dwellerEditor" class="card pip-panel flex flex-col min-h-0 w-full">
+        <div class="pip-panel-title">Edit Dweller</div>
+        <div class="pip-panel-header px-4 pt-6 pb-3"><div class="sr-only">Edit Dweller</div></div>
+        <div class="flex-1 min-h-0 p-2 overflow-y-auto">
           <form id="dwellerForm">
             <fieldset id="dwellerFieldset" disabled>
               <!-- Basic Info -->
