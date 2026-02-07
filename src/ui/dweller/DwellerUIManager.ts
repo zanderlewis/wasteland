@@ -32,11 +32,11 @@ export class DwellerUIManager {
   private readonly specialLetters = ['S', 'P', 'E', 'C', 'I', 'A', 'L'];
 
   // Column layout (header and rows MUST match)
-  private readonly COL_NAME = 'basis-[45%] shrink-0 pl-3 pr-2 text-left border-l border-green-900/60';
-  private readonly COL_SMALL = 'w-[56px] shrink-0 text-center px-1';
-  private readonly COL_XP = 'w-[72px] shrink-0 text-center px-1';
-  private readonly COL_SPECIAL = 'w-[140px] shrink-0 text-center px-1';
-  private readonly COL_HEALTH = 'w-[90px] shrink-0 text-center px-1';
+  private readonly COL_NAME = 'basis-[15%] shrink-0 pl-3 pr-2 text-left border-r border-green-700/60';
+  private readonly COL_SMALL = 'w-12 shrink-0 px-1 text-center border-r border-green-700/60';
+  private readonly COL_XP = 'w-16 shrink-0 px-1 text-center border-r border-green-700/60';
+  private readonly COL_SPECIAL = 'w-[110px] shrink-0 px-1 text-center border-r border-green-700/60';
+  private readonly COL_HEALTH = 'w-[90px] shrink-0 px-1 text-center';
   private readonly COL_BORDER = 'border-green-900/60 border-r';
 
   private readonly SPECIAL_BAR_H = 28; // px, must match h-[28px] in the SPECIAL mini chart
@@ -204,15 +204,17 @@ export class DwellerUIManager {
    * - Clicking same column toggles asc/desc
    * - SPECIAL cycles S/P/E/C/I/A/L when clicked (and sets sort key to special)
    */
+
   private onHeaderClick(key: string): void {
     if (key === 'special') {
-      // Cycle: Strength asc, Strength desc, Perception asc, Perception desc, ...
       if (this.sortKey !== 'special') {
         this.sortKey = 'special';
+        this.specialSortIndex = 0;
         this.sortDir = 'asc';
         return;
       }
 
+      // Cycle: Stat asc -> same Stat desc -> next Stat asc -> ...
       if (this.sortDir === 'asc') {
         this.sortDir = 'desc';
       } else {
@@ -222,7 +224,6 @@ export class DwellerUIManager {
       return;
     }
 
-    // Normal columns
     if (this.sortKey === key) {
       this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc';
     } else {
@@ -233,26 +234,32 @@ export class DwellerUIManager {
 
 
   private renderHeaderCell(
-    key: 'name' | 'gender' | 'level' | 'xp' | 'happy' | 'special' | 'health',
-    label: string,
-    extraClasses: string
-  ): string {
-    const active = this.sortKey === key;
-    const dirClass = this.sortDir === 'asc' ? 'asc' : 'desc';
+  key:
+    | 'name'
+    | 'gender'
+    | 'level'
+    | 'xp'
+    | 'happy'
+    | 'special'
+    | 'health',
+  label: string,
+  extraClasses: string
+): string {
+  const active = this.sortKey === key;
+  const desc = active && this.sortDir === 'desc';
 
-    // NOTE: indicator is an absolutely-positioned chevron that overlaps the bottom border
-    return `
-      <div
-        class="relative ${extraClasses} ${key === 'health' ? '' : this.COL_BORDER} cursor-pointer select-none text-green-500 hover:text-green-400"
-        data-sort="${key}"
-        role="button"
-        tabindex="0"
-      >
-        <span class="block w-full uppercase">${this.escapeHtml(label)}</span>
-        <span class="dw-sort-indicator ${active ? dirClass : 'opacity-0'}"></span>
-      </div>
-    `;
-  }
+  return `
+    <div
+      class="relative ${extraClasses} cursor-pointer select-none text-green-500 hover:text-green-400 pb-2"
+      data-sort="${key}"
+      role="button"
+      tabindex="0"
+    >
+      <div class="w-full uppercase ${key === 'name' ? 'text-left' : 'text-center'}">${this.escapeHtml(label)}</div>
+      <span class="dw-sort-indicator ${active ? 'is-active' : ''} ${desc ? 'desc' : ''}" aria-hidden="true"></span>
+    </div>
+  `;
+}
 
 
   private renderDwellerRow(dweller: Dweller): string {
@@ -328,7 +335,7 @@ return `
 
         return `
           <div class="cursor-default" title="${tooltip}">
-            <div class="h-[28px] w-3 bg-gray-700 rounded overflow-hidden">
+            <div class="h-[28px] w-4 bg-gray-700 rounded overflow-hidden">
               <div
                 class="w-full bg-green-500 pip-bar"
                 style="height:${h}px; margin-top:${this.SPECIAL_BAR_H - h}px"

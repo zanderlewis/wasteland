@@ -8,14 +8,14 @@ export const createDwellersSectionTemplate = (): string => `
     <!-- Dwellers Layout -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full items-stretch">
       <!-- List LEFT -->
-      <div id="dwellerListContainer" class="card pip-panel flex flex-col min-h-0 w-full">
+      <div id="dwellerListContainer" class="card pip-panel flex flex-col min-h-0 w-full h-[560px]">
         <div class="pip-panel-title">Dwellers</div>
         <div class="pip-panel-header flex items-center justify-between gap-4 px-4 pt-6 pb-3">
           <div class="sr-only">Dwellers</div>
-          <div class="flex flex-wrap gap-2 justify-end">
-            <button id="maxHappinessAll" class="btn btn-success btn-sm">Max All Happiness</button>
+          <div class="flex flex-wrap gap-2 justify-center">
+            <button id="healAll" class="btn btn-success btn-sm">Max All Health</button>
             <button id="maxSpecialAll" class="btn btn-success btn-sm">Max All SPECIAL</button>
-            <button id="healAll" class="btn btn-success btn-sm">Heal All Dwellers</button>
+            <button id="maxHappinessAll" class="btn btn-success btn-sm">Max All Happiness</button>
           </div>
         </div>
         <div id="dwellerList" class="flex-1 min-h-0 bg-gray-900 overflow-hidden">
@@ -26,7 +26,7 @@ export const createDwellersSectionTemplate = (): string => `
       </div>
 
       <!-- Editor RIGHT -->
-      <div id="dwellerEditor" class="card pip-panel flex flex-col min-h-0 w-full">
+      <div id="dwellerEditor" class="card pip-panel flex flex-col min-h-0 w-full h-[560px]">
         <div class="pip-panel-title">Edit Dweller</div>
         <div class="pip-panel-header px-4 pt-6 pb-3"><div class="sr-only">Edit Dweller</div></div>
         <div class="flex-1 min-h-0 p-2 overflow-y-auto">

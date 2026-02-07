@@ -230,6 +230,10 @@
   height: 10px;
   transform: translateX(-50%);
   pointer-events: none;
+  opacity: 0;
+}
+
+.dw-sort-indicator.is-active {
   opacity: 1;
 }
 
@@ -247,13 +251,13 @@
 .dw-sort-indicator::before {
   left: 0;
   transform-origin: left center;
-  transform: rotate(45deg);
+  transform: rotate(-45deg);
 }
 
 .dw-sort-indicator::after {
   right: 0;
   transform-origin: right center;
-  transform: rotate(-45deg);
+  transform: rotate(45deg);
 }
 
 .dw-sort-indicator.desc {
@@ -288,16 +292,6 @@
 
 .toast-close:hover {
   @apply bg-black bg-opacity-20;
-}
-
-/* Sort indicator (keeps header width stable) */
-.dw-sort-indicator {
-  /* Position is controlled inline in DwellerUIManager so it can overlap the header border
-     without changing header layout. */
-  font-size: 0.75em;
-  line-height: 1;
-  opacity: 0.9;
-  pointer-events: none;
 }
 
 /* Code block styling */
