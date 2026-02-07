@@ -46,12 +46,13 @@ export class EventManager {
     fileInput?.addEventListener('change', (e) => {
       const target = e.target as HTMLInputElement;
       if (target.files && target.files.length > 0) {
-        this.handleFileSelect(target.files[0]);
+        this.handleFileSelect(target.files[0]).finally(() => { (e.target as HTMLInputElement).value = ''; });
       }
     });
 
     // Select file button
     selectFileBtn?.addEventListener('click', () => {
+      if (fileInput) fileInput.value = '';
       fileInput?.click();
     });
 
