@@ -23,7 +23,7 @@
   }
 
   body {
-    @apply bg-gray-900 text-green-200;
+    @apply bg-gray-900 text-green-500;
     font-family: 'FuturaCondensed', system-ui, sans-serif;
     font-size: 22px;
     line-height: 1.15;
@@ -103,7 +103,7 @@
 }
 
 .form-label {
-  @apply block font-medium text-green-200/80 mb-1;
+  @apply block font-medium text-green-500/80 mb-1;
   font-size: 22px;
   line-height: 1.15;
 }
@@ -117,14 +117,14 @@
 }
 
 .tab {
-  @apply inline-block px-4 py-2 font-medium text-green-200/70 border-b-2 border-transparent
+  @apply inline-block px-4 py-2 font-medium text-green-500/70 border-b-2 border-transparent
     hover:text-green-100 hover:border-green-500 cursor-pointer transition-colors duration-200;
   font-size: 22px;
   line-height: 1.15;
 }
 
 .tab.active {
-  @apply text-green-200 border-green-400;
+  @apply text-green-500 border-green-400;
 }
 
 /* Upload section centering */
@@ -211,11 +211,11 @@
 
 /* Code block styling */
 code {
-  @apply inline bg-gray-800 text-green-400 font-mono px-1 rounded-sm;
+  @apply inline bg-gray-800 text-green-500 font-mono px-1 rounded-sm;
 }
 
 pre {
-  @apply block bg-gray-800 text-green-400 font-mono text-sm overflow-x-auto;
+  @apply block bg-gray-800 text-green-500 font-mono text-sm overflow-x-auto;
 }
 
 pre code {
@@ -223,11 +223,11 @@ pre code {
 }
 
 .code-block {
-  @apply bg-gray-800 font-mono text-sm text-green-400 overflow-x-auto;
+  @apply bg-gray-800 font-mono text-sm text-green-500 overflow-x-auto;
 }
 
 .inline-code {
-  @apply inline bg-gray-800 text-green-400 font-mono text-sm;
+  @apply inline bg-gray-800 text-green-500 font-mono text-sm;
 }
 
 .file-path {
@@ -236,6 +236,8 @@ pre code {
 
 /* Utilities */
 @layer utilities {
+  .dweller-field { width: 50%; }
+  @media (max-width: 768px) { .dweller-field { width: 100%; } }
   .bg-gray-750 {
     background-color: rgb(55, 65, 81);
   }
@@ -355,123 +357,4 @@ body::after {
 }
 .bg-green-500 {
   animation: barBloom 3.5s infinite;
-}
-
-
-
-/* =========================
-   Pip-Boy theme overrides
-   ========================= */
-
-:root {
-  --pip-green: rgb(34, 197, 94); /* tailwind green-500 */
-  --pip-green-glow: rgba(34, 197, 94, 0.55);
-  --pip-scanline: rgba(0, 0, 0, 0.18);
-}
-
-@layer base {
-  body {
-    color: var(--pip-green);
-    text-shadow: 0 0 10px var(--pip-green-glow);
-    animation: pip-flicker 6s infinite;
-  }
-}
-
-/* Force all UI text to the same Pip-Boy green (without affecting backgrounds) */
-body, body * {
-  color: var(--pip-green) !important;
-}
-
-/* CRT scanlines + vignette */
-body::before {
-  content: "";
-  pointer-events: none;
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  background:
-    repeating-linear-gradient(
-      to bottom,
-      rgba(0, 0, 0, 0.0) 0px,
-      rgba(0, 0, 0, 0.0) 2px,
-      var(--pip-scanline) 3px
-    );
-  opacity: 0.35;
-  mix-blend-mode: multiply;
-}
-
-body::after {
-  content: "";
-  pointer-events: none;
-  position: fixed;
-  inset: 0;
-  z-index: 9998;
-  background: radial-gradient(ellipse at center, rgba(0,0,0,0.0) 40%, rgba(0,0,0,0.45) 100%);
-}
-
-/* Subtle bloom on bars */
-.pip-bar {
-  box-shadow: 0 0 10px var(--pip-green-glow);
-  filter: saturate(1.25) brightness(1.05);
-}
-
-/* General card / section borders in Pip-Boy style */
-.card, .modal-content, .drop-zone {
-  border-color: rgba(34, 197, 94, 0.45) !important;
-  box-shadow: 0 0 18px rgba(34, 197, 94, 0.08);
-}
-
-/* Tabs/buttons/labels should not be smaller than row text */
-.tab, .btn, .form-label, .toast-message, #dropZone, #dropZone *, #testBuildBand, #testBuildBand * {
-  font-size: 1em !important;
-}
-
-/* Dweller list grid alignment */
-.dw-grid {
-  display: grid;
-  grid-template-columns:
-    minmax(150px, 1fr)  /* NAME (reduced) */
-    56px                /* M/F */
-    56px                /* LVL */
-    90px                /* XP */
-    70px                /* 😊 */
-    180px               /* SPECIAL */
-    140px;              /* HEALTH */
-  gap: 12px;
-}
-
-.dw-header {
-  padding: 4px 0;
-  font-weight: 400;
-}
-
-.dweller-row {
-  padding: 2px 0;
-  font-weight: 400;
-}
-
-/* Header label + sort indicator */
-.pip-header-label {
-  display: inline-block;
-  text-transform: uppercase;
-}
-
-.pip-sort-indicator {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%) scaleX(1.55);
-  bottom: -12px; /* sits over/through the bottom border line */
-  font-size: 18px;
-  line-height: 1;
-  color: var(--pip-green);
-  text-shadow: 0 0 10px var(--pip-green-glow);
-  pointer-events: none;
-}
-
-/* Flicker */
-@keyframes pip-flicker {
-  0%, 100% { filter: brightness(1) contrast(1.05); opacity: 1; }
-  47% { filter: brightness(0.98) contrast(1.08); opacity: 0.98; }
-  48% { filter: brightness(1.08) contrast(1.1); opacity: 0.95; }
-  49% { filter: brightness(1.0) contrast(1.06); opacity: 1; }
 }
