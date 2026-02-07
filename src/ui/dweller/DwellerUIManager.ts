@@ -31,19 +31,6 @@ export class DwellerUIManager {
   ];
   private readonly specialLetters = ['S', 'P', 'E', 'C', 'I', 'A', 'L'];
 
-  // Column layout (header and rows MUST match)
-  private readonly COL_NAME = 'basis-[15%] shrink-0 pl-3 pr-2 text-left border-r border-green-700/60';
-  private readonly COL_SMALL = 'w-12 shrink-0 px-1 text-center border-r border-green-700/60';
-  private readonly COL_XP = 'w-16 shrink-0 px-1 text-center border-r border-green-700/60';
-  private readonly COL_SPECIAL = 'w-[110px] shrink-0 px-1 text-center border-r border-green-700/60';
-  private readonly COL_HEALTH = 'w-[90px] shrink-0 px-1 text-center';
-  private readonly COL_BORDER = 'border-green-900/60 border-r';
-
-  private readonly SPECIAL_BAR_H = 28; // px, must match h-[28px] in the SPECIAL mini chart
-
-  // NOTE: Column widths are defined once (W_*) in updateDwellersList().
-  // Keep this class focused on behavior (sorting/selection), not layout constants.
-
   setSelectedDweller(dweller: Dweller | null): void {
     this.selectedDweller = dweller;
   }
@@ -64,10 +51,9 @@ export class DwellerUIManager {
       formElements.forEach((element) => (element.disabled = false));
     }
 
-    // Status text is redundant (header already says "Edit Dweller")
     if (statusText) {
-      statusText.textContent = '';
-      statusText.className = 'hidden';
+      statusText.textContent = 'Editing dweller';
+      statusText.className = 'text-green-300';
     }
   }
 
@@ -149,23 +135,34 @@ export class DwellerUIManager {
         ? this.specialNames[this.specialSortIndex]
         : 'Special';
 
+    // NOTE: widths MUST match between header + rows to prevent drift.
+    const W_NAME = 'basis-[5%] shrink-0 border-l border-r border-green-900/60';
+    const W_GENDER = 'w-10 shrink-0 border-r border-green-900/60';
+    const W_LEVEL = 'w-12 shrink-0';
+    const W_XP = 'w-[72px] shrink-0 border-r border-green-900/60';
+    const W_HAPPY = 'w-10 shrink-0 border-r border-green-900/60';
+    const W_SPECIAL = 'w-[140px] shrink-0 border-r border-green-900/60';
+    const W_HEALTH = 'w-[90px] shrink-0 border-r border-green-900/60';
+
     dwellersList.innerHTML = `
-      <div class="pip-table w-full">
+      <div class="min-w-[1100px] pip-table">
+
         <!-- HEADER -->
-        <div class="dw-header hidden lg:flex items-stretch px-0 py-2 sticky top-0 z-30 bg-gray-900 border-b border-green-900/60">
-          ${this.renderHeaderCell('name', 'Name', this.COL_NAME)}
-          ${this.renderHeaderCell('gender', 'M/F', this.COL_SMALL)}
-          ${this.renderHeaderCell('level', 'LVL', this.COL_SMALL)}
-          ${this.renderHeaderCell('xp', 'XP', this.COL_XP)}
-          ${this.renderHeaderCell('happy', '😊', this.COL_SMALL)}
-          ${this.renderHeaderCell('special', specialHeaderLabel, this.COL_SPECIAL)}
-          ${this.renderHeaderCell('health', 'Health', this.COL_HEALTH)}
+        <div class="hidden lg:flex items-center gap-0 px-0 py-2 sticky top-0 z-20 bg-gray-900 border-b border-green-900/60">
+          ${this.renderHeaderCell('name', 'Name', `${W_NAME} pl-3 text-left`)}
+          ${this.renderHeaderCell('gender', 'M/F', `${W_GENDER} text-center`)}
+          ${this.renderHeaderCell('level', 'LVL', `${W_LEVEL} text-center`)}
+          ${this.renderHeaderCell('xp', 'XP', `${W_XP} text-center`)}
+          ${this.renderHeaderCell('happy', '😊', `${W_HAPPY} text-center`)}
+          ${this.renderHeaderCell('special', specialHeaderLabel, `${W_SPECIAL} text-center`)}
+          ${this.renderHeaderCell('health', 'Health', `${W_HEALTH} text-center`)}
         </div>
 
         <!-- ROWS -->
-        <div class="dw-rows">
+        <div class="divide-y divide-green-900/50">
           ${sorted.map((d) => this.renderDwellerRow(d)).join('')}
         </div>
+
       </div>
     `;
 
@@ -204,26 +201,22 @@ export class DwellerUIManager {
    * - Clicking same column toggles asc/desc
    * - SPECIAL cycles S/P/E/C/I/A/L when clicked (and sets sort key to special)
    */
-
   private onHeaderClick(key: string): void {
     if (key === 'special') {
-      if (this.sortKey !== 'special') {
-        this.sortKey = 'special';
-        this.specialSortIndex = 0;
-        this.sortDir = 'asc';
-        return;
-      }
-
-      // Cycle: Stat asc -> same Stat desc -> next Stat asc -> ...
-      if (this.sortDir === 'asc') {
-        this.sortDir = 'desc';
-      } else {
-        this.sortDir = 'asc';
+      if (this.sortKey === 'special') {
+        // cycle special stat
         this.specialSortIndex = (this.specialSortIndex + 1) % 7;
+        // keep direction as-is
+      } else {
+        // first click sets to SPECIAL sorting
+        this.sortKey = 'special';
+        this.sortDir = 'asc';
+        // keep current index
       }
       return;
     }
 
+    // Normal columns
     if (this.sortKey === key) {
       this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc';
     } else {
@@ -232,40 +225,40 @@ export class DwellerUIManager {
     }
   }
 
-
   private renderHeaderCell(
-  key:
-    | 'name'
-    | 'gender'
-    | 'level'
-    | 'xp'
-    | 'happy'
-    | 'special'
-    | 'health',
-  label: string,
-  extraClasses: string
-): string {
-  const active = this.sortKey === key;
-  const desc = active && this.sortDir === 'desc';
+    key:
+      | 'name'
+      | 'gender'
+      | 'level'
+      | 'xp'
+      | 'happy'
+      | 'special'
+      | 'health',
+    label: string,
+    extraClasses: string
+  ): string {
+    const active = this.sortKey === key;
+    const arrow = !active ? '' : this.sortDir === 'asc' ? '∧' : '∨';
 
-  return `
-    <div
-      class="relative ${extraClasses} cursor-pointer select-none text-green-500 hover:text-green-400 pb-2"
-      data-sort="${key}"
-      role="button"
-      tabindex="0"
-    >
-      <div class="w-full uppercase ${key === 'name' ? 'text-left' : 'text-center'}">${this.escapeHtml(label)}</div>
-      <span class="dw-sort-indicator ${active ? 'is-active' : ''} ${desc ? 'desc' : ''}" aria-hidden="true"></span>
-    </div>
-  `;
-}
-
+    // Reserve indicator space with pr-5 always so headers to the right never shift
+    // Indicator is absolutely positioned and smaller via CSS (.dw-sort-indicator)
+    return `
+      <div
+        class="relative overflow-visible ${extraClasses} pr-5 cursor-pointer select-none text-green-500 hover:text-green-400"
+        data-sort="${key}"
+        role="button"
+        tabindex="0"
+      >
+        <span class="uppercase">${this.escapeHtml(label)}</span>
+        <span class="dw-sort-indicator ${active ? '' : 'opacity-0'}" style="position:absolute; left:50%; transform:translateX(-50%); bottom:-12px; line-height:1; font-size:14px; pointer-events:none;">${arrow}</span>
+      </div>
+    `;
+  }
 
   private renderDwellerRow(dweller: Dweller): string {
     const name = `${dweller.name} ${dweller.lastName || ''}`.trim();
 
-    // Gender: symbols, plus sign for pregnant female
+    // Gender symbols, plus sign for pregnant female
     const isFemale = dweller.gender === 1;
     const genderSymbol = isFemale ? '♀' : '♂';
     const isPregnant = this.isDwellerPregnant(dweller);
@@ -275,7 +268,7 @@ export class DwellerUIManager {
     const xp = dweller.experience?.experienceValue ?? 0;
 
     const happyRaw = dweller.happiness?.happinessValue ?? 50;
-    const happy = Math.round(happyRaw);
+    const happy = Math.round(happyRaw); // 0 decimals
 
     const hp = dweller.health?.healthValue ?? 100;
     const maxHp = dweller.health?.maxHealth ?? 100;
@@ -283,34 +276,34 @@ export class DwellerUIManager {
 
     return `
       <div
-        class="dweller-row flex items-center gap-0 px-0 py-1 bg-gray-800 hover:bg-gray-700 cursor-pointer transition-colors text-green-500 font-normal"
+        class="dweller-row flex items-center gap-0 px-0 py-0.5 bg-gray-800 hover:bg-gray-700 cursor-pointer transition-colors text-green-500 font-normal"
         data-dweller-id="${dweller.serializeId}"
       >
-        <div class="${this.COL_NAME} ${this.COL_BORDER}">
+        <div class="basis-[5%] shrink-0 pl-3 text-green-500 truncate text-left">
           ${this.escapeHtml(name)}
         </div>
 
-        <div class="${this.COL_SMALL} ${this.COL_BORDER}">
+        <div class="w-10 shrink-0 text-center text-green-500">
           ${genderText}
         </div>
 
-        <div class="${this.COL_SMALL} ${this.COL_BORDER} tabular-nums">
+        <div class="w-12 shrink-0 text-center tabular-nums text-green-500">
           ${level}
         </div>
 
-        <div class="${this.COL_XP} ${this.COL_BORDER} tabular-nums">
+        <div class="w-[72px] shrink-0 text-center tabular-nums text-green-500">
           ${xp}
         </div>
 
-        <div class="${this.COL_SMALL} ${this.COL_BORDER} tabular-nums">
+        <div class="w-[56px] shrink-0 text-center tabular-nums text-green-500">
           ${happy}%
         </div>
 
-        <div class="${this.COL_SPECIAL} ${this.COL_BORDER} flex justify-center">
+        <div class="w-[140px] shrink-0 flex justify-center">
           ${this.renderSpecialMiniChart(dweller)}
         </div>
 
-        <div class="${this.COL_HEALTH} flex justify-center">
+        <div class="w-[90px] shrink-0 flex justify-center">
           ${this.renderHealthMiniBar(hp, maxHp, rad)}
         </div>
       </div>
@@ -326,19 +319,19 @@ export class DwellerUIManager {
     const labels = this.specialLetters;
 
 return `
-  <div class="inline-flex items-end gap-px" aria-label="SPECIAL stats">
+  <div class="inline-flex items-end gap-1" aria-label="SPECIAL stats">
     ${values
       .map((v, i) => {
         const clamped = this.clamp(v ?? 1, 0, 10);
-        const h = Math.round((clamped / 10) * this.SPECIAL_BAR_H);
+        const h = Math.round((clamped / 10) * 24);
         const tooltip = `${labels[i]}: ${clamped}`;
 
         return `
           <div class="cursor-default" title="${tooltip}">
-            <div class="h-[28px] w-[3px] bg-gray-700 rounded overflow-hidden">
+            <div class="h-[24px] w-2 bg-gray-700 rounded overflow-hidden">
               <div
-                class="w-full bg-green-500 pip-bar"
-                style="height:${h}px; margin-top:${this.SPECIAL_BAR_H - h}px"
+                class="w-full bg-green-500"
+                style="height:${h}px; margin-top:${24 - h}px"
               ></div>
             </div>
           </div>

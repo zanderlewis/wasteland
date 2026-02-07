@@ -28,15 +28,6 @@
     font-size: 22px;
     line-height: 1.15;
   }
-
-  /* Force Pip-Boy green for headings and labels (override any leftover gray utility classes) */
-  h1, h2, h3, h4, h5, h6,
-  legend,
-  .card-header,
-  .form-label,
-  label {
-    color: rgb(34, 197, 94) !important; /* Tailwind green-500 */
-  }
 }
 
 /* ============================================================
@@ -106,7 +97,7 @@
 .form-input {
   @apply block w-full px-3 py-2 border border-green-900/50 rounded-md shadow-sm
     focus:outline-none focus:ring-green-500 focus:border-green-500
-    bg-gray-700 text-green-500 placeholder-green-500/30;
+    bg-gray-700 text-green-100 placeholder-green-200/40;
   font-size: 22px;
   line-height: 1.15;
 }
@@ -178,134 +169,6 @@
   display: none;
 }
 
-
-:root {
-  --pip-green: rgb(34, 197, 94); /* Tailwind green-500 */
-  --pip-bg: rgb(17, 24, 39);     /* Tailwind gray-900 */
-}
-
-/* Pip-Boy panels */
-.pip-panel {
-  border: 2px solid var(--pip-green);
-  position: relative;
-  background: rgba(17, 24, 39, 0.6);
-  box-shadow: 0 0 18px rgba(34, 197, 94, 0.18);
-  border-radius: 14px;
-  overflow: visible;
-}
-
-.pip-panel-title {
-  position: absolute;
-  top: -0.65em;
-  left: 1rem;
-  padding: 0 0.6rem;
-  background: var(--pip-bg);
-  color: var(--pip-green);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 1.05rem;
-  line-height: 1.1;
-  text-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
-}
-
-.pip-panel-header {
-  background: transparent;
-}
-
-/* Remove horizontal lines inside Pip panels */
-.pip-panel .border-b,
-.pip-panel .border-t {
-  border-bottom-width: 0 !important;
-  border-top-width: 0 !important;
-}
-
-.pip-panel .divide-y > :not([hidden]) ~ :not([hidden]) {
-  border-top-width: 0 !important;
-}
-
-/* Sort indicator chevrons (same width for up/down) */
-
-.dw-sort-indicator {
-  position: absolute;
-  left: 50%;
-  top: calc(100% - 2px); /* straddle the header bottom border */
-  width: 20px;
-  height: 12px;
-  transform: translateX(-50%);
-  opacity: 0;
-  pointer-events: none;
-  z-index: 30;
-}
-
-.dw-sort-indicator.is-active {
-  opacity: 1;
-}
-
-/* Default chevron points DOWN (descending). */
-.dw-sort-indicator.desc {
-  transform: translateX(-50%) rotate(0deg);
-}
-
-/* Ascending chevron points UP. */
-.dw-sort-indicator.asc {
-  transform: translateX(-50%) rotate(180deg);
-}
-
-.dw-sort-indicator::before,
-.dw-sort-indicator::after {
-  content: '';
-  position: absolute;
-  top: 4px;
-  width: 12px;
-  height: 3px;
-  background: var(--pip-green);
-  border-radius: 2px;
-  box-shadow: 0 0 8px rgba(16, 185, 129, 0.65);
-}
-
-.dw-sort-indicator::before {
-  left: 0;
-  transform: rotate(45deg);
-}
-
-.dw-sort-indicator::after {
-  right: 0;
-  transform: rotate(-45deg);
-}
-
-
-.dw-sort-indicator.is-active {
-  opacity: 1;
-}
-
-.dw-sort-indicator::before,
-.dw-sort-indicator::after {
-  content: '';
-  position: absolute;
-  top: 3px;
-  width: 12px;
-  height: 2px;
-  background: var(--pip-green);
-  box-shadow: 0 0 8px rgba(34, 197, 94, 0.55);
-}
-
-.dw-sort-indicator::before {
-  left: 0;
-  transform-origin: left center;
-  transform: rotate(-45deg);
-}
-
-.dw-sort-indicator::after {
-  right: 0;
-  transform-origin: right center;
-  transform: rotate(45deg);
-}
-
-.dw-sort-indicator.desc {
-  transform: translateX(-50%) rotate(180deg);
-}
-
-
 /* Toast Notifications */
 .toast {
   @apply min-w-80 max-w-sm p-4 rounded-lg border border-green-900/60 shadow-lg backdrop-blur-sm relative;
@@ -334,6 +197,9 @@
 .toast-close:hover {
   @apply bg-black bg-opacity-20;
 }
+
+/* Sort indicator (keeps header width stable) */
+
 
 /* Code block styling */
 code {
@@ -485,115 +351,21 @@ body::after {
   animation: barBloom 3.5s infinite;
 }
 
-/* SPECIAL vertical sliders in Edit Dweller */
-input.special-slider {
-  writing-mode: bt-lr; /* Firefox */
-  -webkit-appearance: slider-vertical; /* Chromium/Safari */
-  display: block;
-  margin: 0 auto;
-  width: 2.25rem;
-  height: 9.5rem;
-  padding: 0;
-}
 
-
-/* Box title typography */
-.pip-panel-title h3,
-.pip-panel-title {
-  font-size: 26px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--pip-green);
-  text-shadow: 0 0 8px rgba(16, 185, 129, 0.55);
-}
-
-
-/* SPECIAL vertical sliders (green + thicker) */
-
-/* SPECIAL slider bubble (value on handle) */
-.special-slider-wrap {
-  position: relative;
-  width: 3.4rem;
-  height: 6.3rem;
-  margin: 0 auto;
-  display: flex;
-  justify-content: center;
-  align-items: stretch;
-}
-.special-slider-bubble {
+/* Sort indicator (chevron under header, overlaps bottom border) */
+.dw-sort-indicator {
   position: absolute;
   left: 50%;
+  bottom: -6px; /* half in header, half below */
   transform: translateX(-50%);
-  padding: 0 8px;
-  font-size: 0.85rem;
-  line-height: 1.4;
-  color: #08110c;
-  background: var(--pip-green);
-  border-radius: 999px;
-  border: 1px solid rgba(0,0,0,0.35);
-  box-shadow: 0 0 14px rgba(16, 185, 129, 0.8);
+  line-height: 1;
+  font-size: 18px;
+  font-weight: 700;
+  color: rgb(34, 197, 94); /* Tailwind green-500 (matches health bar) */
+  opacity: 0;
   pointer-events: none;
-  z-index: 3;
 }
-input[type="range"].special-slider {
-  writing-mode: bt-lr;
-  -webkit-appearance: slider-vertical;
-  appearance: slider-vertical;
-  display: block;
-  margin: 0 auto;
-  width: 3.4rem;      /* wider */
-  height: 6.3rem;     /* ~60% height */    /* a bit taller */
-  padding: 0;
-  accent-color: var(--pip-green);
-}
+.dw-sort-indicator.is-active { opacity: 1; }
+.dw-sort-indicator::before { content: '∧'; display: block; }
+.dw-sort-indicator.desc::before { content: '∨'; }
 
-input[type="range"].special-slider::-webkit-slider-runnable-track {
-  width: 18px;
-  background: rgba(16, 185, 129, 0.25);
-  border: 1px solid rgba(16, 185, 129, 0.45);
-  border-radius: 999px;
-  box-shadow: inset 0 0 10px rgba(16, 185, 129, 0.25);
-}
-
-input[type="range"].special-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 42px;
-  height: 22px;
-  border-radius: 999px;
-  background: var(--pip-green);
-  border: 1px solid rgba(0, 0, 0, 0.35);
-  box-shadow: 0 0 14px rgba(16, 185, 129, 0.8);
-}
-
-input[type="range"].special-slider::-moz-range-track {
-  width: 18px;
-  background: rgba(16, 185, 129, 0.25);
-  border: 1px solid rgba(16, 185, 129, 0.45);
-  border-radius: 999px;
-}
-
-input[type="range"].special-slider::-moz-range-thumb {
-  width: 42px;
-  height: 22px;
-  border-radius: 999px;
-  background: var(--pip-green);
-  border: 1px solid rgba(0, 0, 0, 0.35);
-  box-shadow: 0 0 14px rgba(16, 185, 129, 0.8);
-}
-
-
-/* Debug-style 1px green borders around elements in Edit Dweller */
-#dweller-section .pip-panel-body * {
-  outline: 1px solid rgba(16, 185, 129, 0.28);
-  outline-offset: -1px;
-}
-
-
-/* Green checkboxes */
-.pip-checkbox {
-  width: 20px;
-  height: 20px;
-  accent-color: var(--pip-green);
-}
