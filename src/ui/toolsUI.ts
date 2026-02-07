@@ -108,6 +108,10 @@ export class ToolsUI {
 
         // Load into save editor (this should set internal filename/state)
         this.saveEditor.loadSave(data, fileName);
+
+        // Clear file input so selecting a file will always trigger change
+        const fileInput = document.getElementById('fileInput') as HTMLInputElement | null;
+        if (fileInput) fileInput.value = '';
         console.info(`Loaded example ${fileName}`);
         this.showMessage(`Loaded ${fileName}`, 'success');
 
