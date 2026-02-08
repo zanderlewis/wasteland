@@ -1,26 +1,31 @@
 // Dweller management interface template
 
 export const createDwellersTemplate = (): string => `
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+  <!--
+    Fixed-height two-column layout:
+    - Prevent the dweller list panel from growing taller than the editor.
+    - The dweller list scrolls inside its panel instead.
+  -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch h-[calc(100vh-260px)] min-h-[560px]">
 
     <!-- Dweller List + Quick Batch Ops -->
-    <div class="pip-panel h-fit">
+    <div class="pip-panel h-full flex flex-col min-h-0">
       <div class="pip-panel-title">Dwellers</div>
-      <div class="pip-panel-body p-3">
+      <div class="pip-panel-body p-3 flex flex-col flex-1 min-h-0">
         <div class="flex items-center justify-center gap-2 mb-3">
           <button id="maxSpecialAll" class="btn btn-success btn-sm">Max All SPECIAL</button>
           <button id="healAll" class="btn btn-success btn-sm">Heal All Dwellers</button>
           <button id="maxHappinessAll" class="btn btn-success btn-sm">Max All Happiness</button>
         </div>
 
-        <div id="dwellerListScroll" class="dweller-list"></div>
+        <div id="dwellerListScroll" class="dweller-list flex-1 min-h-0 overflow-y-auto relative"></div>
       </div>
     </div>
 
     <!-- Dweller Editor -->
-    <div class="pip-panel h-fit">
+    <div class="pip-panel h-full flex flex-col min-h-0">
       <div class="pip-panel-title">Edit Dweller</div>
-      <div class="pip-panel-body p-3">
+      <div class="pip-panel-body p-3 flex flex-col flex-1 min-h-0 overflow-y-auto">
         <div id="dwellerEditorStatus" class="text-green-200/80 mb-2">Select a dweller to edit</div>
 
         <form id="dwellerForm" class="space-y-2">
@@ -180,5 +185,12 @@ export const createDwellersTemplate = (): string => `
   </div>
 `;
 
-// Backwards-compatible alias (some modules still import the older name)
-export const createDwellersSectionTemplate = createDwellersTemplate;
+/**
+ * Tab wrapper so the Dwellers UI is only visible when the DWELLERS tab is active.
+ * (EventManager switches visibility by toggling `.hidden` on `.tab-content` sections.)
+ */
+export const createDwellersSectionTemplate = (): string => `
+  <div id="dwellers-section" class="tab-content hidden">
+    ${createDwellersTemplate()}
+  </div>
+`;

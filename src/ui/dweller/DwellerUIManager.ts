@@ -32,7 +32,8 @@ export class DwellerUIManager {
   private readonly specialLetters = ['S', 'P', 'E', 'C', 'I', 'A', 'L'];
 
   // Column layout (header and rows MUST match)
-  private readonly COL_NAME = 'basis-[15%] shrink-0 pl-3 pr-2 text-left border-r border-green-700/60';
+  // Name column: widen by ~60% (15% -> 24%)
+  private readonly COL_NAME = 'basis-[24%] shrink-0 pl-3 pr-2 text-left border-r border-green-700/60';
   private readonly COL_SMALL = 'w-12 shrink-0 px-1 text-center border-r border-green-700/60';
   private readonly COL_XP = 'w-16 shrink-0 px-1 text-center border-r border-green-700/60';
   private readonly COL_SPECIAL = 'w-[110px] shrink-0 px-1 text-center border-r border-green-700/60';
@@ -335,7 +336,7 @@ return `
 
         return `
           <div class="cursor-default" title="${tooltip}">
-            <div class="h-[28px] w-[6px] bg-gray-700 rounded overflow-hidden">
+            <div class="h-[28px] w-[9px] bg-gray-700 rounded overflow-hidden">
               <div
                 class="w-full bg-green-500 pip-bar"
                 style="height:${h}px; margin-top:${this.SPECIAL_BAR_H - h}px"
