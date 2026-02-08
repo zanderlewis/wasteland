@@ -146,7 +146,7 @@ export const OUTFIT_LIST = {
   "WastelandSurgeon_Doctor": 'Wasteland Doctor',
   "WastelandSurgeon_Settler": 'Wasteland Medic',
   "WorkDress": 'Rural Schoolmarm',
-  "WrestlerSpecial": 'Wrestler Outfit'
+  "WrestlerSpecial": 'Wrestler Outfit',
 
   "EnclaveSecurityOutfit": "Enclave Security Outfit",
   "HanksPowerArmor": "Hank's Power Armor",
