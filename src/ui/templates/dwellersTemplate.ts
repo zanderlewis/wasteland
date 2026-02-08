@@ -28,7 +28,7 @@ export const createDwellersTemplate = (): string => `
       <div class="pip-panel-body p-3 flex flex-col flex-1 min-h-0 overflow-y-auto">
         <div id="dwellerEditorStatus" class="text-green-200/80 mb-2">Select a dweller to edit</div>
 
-        <form id="dwellerForm" class="space-y-2">
+        <form id="dwellerForm" class="dweller-form space-y-2">
           <fieldset id="dwellerFieldset" disabled>
 
             <div class="grid grid-cols-2 gap-2">
@@ -78,18 +78,17 @@ export const createDwellersTemplate = (): string => `
 
               <!-- Pregnancy flags (checkboxes) -->
               <div class="form-group mb-2">
-                <div class="flex items-center justify-between">
-                  <label class="form-label mb-0" for="dwellerPregnant">Pregnant</label>
-                  <input id="dwellerPregnant" type="checkbox" class="pip-checkbox" />
-                </div>
-              </div>
-
-              <div class="form-group mb-2">
-                <div class="flex items-center justify-between">
-                  <label class="form-label mb-0" for="dwellerBabyReadyTime">Baby Ready</label>
-                  <input id="dwellerBabyReadyTime" type="checkbox" class="pip-checkbox" />
-                </div>
-              </div>
+  <div class="grid grid-cols-2 gap-3 items-center">
+    <div class="flex items-center justify-between">
+      <label for="dwellerPregnant" class="form-label mb-0">Pregnant</label>
+      <input id="dwellerPregnant" type="checkbox" class="pip-checkbox" />
+    </div>
+    <div class="flex items-center justify-between">
+      <label for="dwellerBabyReadyTime" class="form-label mb-0">Baby Ready</label>
+      <input id="dwellerBabyReadyTime" type="checkbox" class="pip-checkbox" />
+    </div>
+  </div>
+</div></div>
             </div>
 
             <!-- SPECIAL -->
@@ -102,49 +101,49 @@ export const createDwellersTemplate = (): string => `
               <div class="text-center">
                 <div class="text-green-200/80">S</div>
                 <div class="special-slider">
-                  <input id="dwellerStrength" type="range" min="1" max="10" value="1" class="special-slider-input" />
+                  <input id="dwellerStrength" type="range" min="1" max="10" value="1" class="special-slider" />
                   <div class="special-slider-bubble">1</div>
                 </div>
               </div>
               <div class="text-center">
                 <div class="text-green-200/80">P</div>
                 <div class="special-slider">
-                  <input id="dwellerPerception" type="range" min="1" max="10" value="1" class="special-slider-input" />
+                  <input id="dwellerPerception" type="range" min="1" max="10" value="1" class="special-slider" />
                   <div class="special-slider-bubble">1</div>
                 </div>
               </div>
               <div class="text-center">
                 <div class="text-green-200/80">E</div>
                 <div class="special-slider">
-                  <input id="dwellerEndurance" type="range" min="1" max="10" value="1" class="special-slider-input" />
+                  <input id="dwellerEndurance" type="range" min="1" max="10" value="1" class="special-slider" />
                   <div class="special-slider-bubble">1</div>
                 </div>
               </div>
               <div class="text-center">
                 <div class="text-green-200/80">C</div>
                 <div class="special-slider">
-                  <input id="dwellerCharisma" type="range" min="1" max="10" value="1" class="special-slider-input" />
+                  <input id="dwellerCharisma" type="range" min="1" max="10" value="1" class="special-slider" />
                   <div class="special-slider-bubble">1</div>
                 </div>
               </div>
               <div class="text-center">
                 <div class="text-green-200/80">I</div>
                 <div class="special-slider">
-                  <input id="dwellerIntelligence" type="range" min="1" max="10" value="1" class="special-slider-input" />
+                  <input id="dwellerIntelligence" type="range" min="1" max="10" value="1" class="special-slider" />
                   <div class="special-slider-bubble">1</div>
                 </div>
               </div>
               <div class="text-center">
                 <div class="text-green-200/80">A</div>
                 <div class="special-slider">
-                  <input id="dwellerAgility" type="range" min="1" max="10" value="1" class="special-slider-input" />
+                  <input id="dwellerAgility" type="range" min="1" max="10" value="1" class="special-slider" />
                   <div class="special-slider-bubble">1</div>
                 </div>
               </div>
               <div class="text-center">
                 <div class="text-green-200/80">L</div>
                 <div class="special-slider">
-                  <input id="dwellerLuck" type="range" min="1" max="10" value="1" class="special-slider-input" />
+                  <input id="dwellerLuck" type="range" min="1" max="10" value="1" class="special-slider" />
                   <div class="special-slider-bubble">1</div>
                 </div>
               </div>
