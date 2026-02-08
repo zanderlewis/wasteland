@@ -74,6 +74,7 @@ export class DwellerFormManager {
 
     // SPECIAL stats
     this.loadSpecialStats(dweller);
+    this.ensureSpecialSliderBubblesBound();
 
     // Set up gender change listener
     this.setupGenderChangeListener();
@@ -120,16 +121,9 @@ export class DwellerFormManager {
    * Set form field value
    */
   setFormValue(fieldId: string, value: string): void {
-    const element = document.getElementById(fieldId) as HTMLInputElement | HTMLSelectElement | null;
-    if (!element) return;
-    if ((element as HTMLInputElement).type === 'checkbox') {
-      (element as HTMLInputElement).checked = value === 'true' || value === '1';
-    } else {
+    const element = document.getElementById(fieldId) as HTMLInputElement | HTMLSelectElement;
+    if (element) {
       element.value = value;
-    }
-    // Update SPECIAL slider thumb values if present
-    if (element.classList?.contains('special-range')) {
-      this.updateSpecialThumb(element as HTMLInputElement);
     }
   }
 
@@ -137,12 +131,19 @@ export class DwellerFormManager {
    * Get form field value
    */
   getFormValue(fieldId: string): string {
-    const element = document.getElementById(fieldId) as HTMLInputElement | HTMLSelectElement | null;
-    if (!element) return '';
-    if ((element as HTMLInputElement).type === 'checkbox') {
-      return (element as HTMLInputElement).checked ? 'true' : 'false';
+    const el = document.getElementById(fieldId) as
+      | HTMLInputElement
+      | HTMLSelectElement
+      | null;
+
+    if (!el) return '';
+
+    // Support checkboxes (Pregnant/Baby Ready)
+    if (el instanceof HTMLInputElement && el.type === 'checkbox') {
+      return el.checked ? 'true' : 'false';
     }
-    return element.value ?? '';
+
+    return el.value;
   }
 
   /**
@@ -224,60 +225,46 @@ export class DwellerFormManager {
     ];
   }
 
-  /**
-   * If SPECIAL is rendered as range sliders, bind value badges to the slider thumbs.
-   * Safe to call even if the current template uses numeric inputs (no-op).
-   */
-  bindSpecialSliderBadges(): void {
-    const sliders = Array.from(
-      document.querySelectorAll<HTMLInputElement>('input.special-range[type="range"]')
-    );
 
-    sliders.forEach((slider) => {
-      // Initialize badge
-      this.updateSpecialThumb(slider);
+// --- SPECIAL slider bubbles (value on handle) ---
+private ensureSpecialSliderBubblesBound(): void {
+  const sliders = Array.from(
+    document.querySelectorAll('input[type="range"].special-slider[data-bubble]')
+  ) as HTMLInputElement[];
 
-      // Live updates
-      slider.addEventListener('input', () => {
-        this.updateSpecialThumb(slider);
-      });
-    });
-  }
+  sliders.forEach((slider) => {
+    if ((slider as any).__bubbleBound) return;
+    (slider as any).__bubbleBound = true;
 
-  /**
-   * Creates/updates a small badge over the slider showing its current numeric value.
-   */
-  private updateSpecialThumb(slider: HTMLInputElement): void {
-    const raw = Number(slider.value);
-    const min = Number(slider.min || '1');
-    const max = Number(slider.max || '10');
-    const val = Math.min(max, Math.max(min, isFinite(raw) ? raw : min));
+    const bubbleId = slider.dataset.bubble || '';
+    const bubble = document.getElementById(bubbleId) as HTMLElement | null;
 
-    // Keep aria in sync
-    slider.setAttribute('aria-valuemin', String(min));
-    slider.setAttribute('aria-valuemax', String(max));
-    slider.setAttribute('aria-valuenow', String(val));
+    const update = () => this.updateSpecialSliderBubble(slider, bubble);
+    slider.addEventListener('input', update);
+    slider.addEventListener('change', update);
 
-    // Badge element: either already exists, or we create one
-    const parent = slider.parentElement;
-    if (!parent) return;
+    // Initial position
+    update();
+  });
+}
 
-    let badge = parent.querySelector<HTMLSpanElement>('.special-thumb-badge');
-    if (!badge) {
-      // Ensure parent can position children
-      if (!parent.classList.contains('relative')) parent.classList.add('relative');
+private updateSpecialSliderBubble(slider: HTMLInputElement, bubble: HTMLElement | null): void {
+  if (!bubble) return;
 
-      badge = document.createElement('span');
-      badge.className =
-        'special-thumb-badge pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[12px] leading-none text-green-200';
-      parent.appendChild(badge);
-    }
+  const min = parseInt(slider.min || '1', 10) || 1;
+  const max = parseInt(slider.max || '10', 10) || 10;
+  const val = parseInt(slider.value || String(min), 10) || min;
 
-    badge.textContent = String(val);
+  bubble.textContent = String(val);
 
-    // Expose as CSS variable for optional styling/positioning in CSS
-    const pct = max === min ? 0 : (val - min) / (max - min);
-    slider.style.setProperty('--special-value', String(val));
-    slider.style.setProperty('--special-pct', String(pct));
-  }
+  // Position bubble along the slider track
+  const h = slider.offsetHeight || 1;
+  const pct = (val - min) / Math.max(1, max - min);
+
+  // For slider-vertical, 0 is bottom, 1 is top visually
+  const thumbH = 32; // keep in sync with CSS thumb height
+  const top = (1 - pct) * (h - thumbH);
+
+  bubble.style.top = `${Math.round(top)}px`;
+}
 }
