@@ -580,7 +580,7 @@ input.special-slider {
   justify-content: center;
   align-items: stretch;
 }
-.special-slider-bubble {
+..special-slider-bubble {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
