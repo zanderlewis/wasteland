@@ -272,7 +272,7 @@ export const petBonusMap: { [key: string]: { uniqueName: string; bonus: string; 
     "blueyellowmacaw_l2": { uniqueName: "Vinnie", bonus: "ObjectiveMultiplier", bonusValue: 2 },
     "scarletmacaw_c": { uniqueName: "Pirate Parrot", bonus: "Resistance", bonusValue: 22 },
     "scarletmacaw_r": { uniqueName: "Pirate Parrot", bonus: "Resistance", bonusValue: 38 },
-    "scarletmacaw_l": { uniqueName: "Wanderer", bonus: "Resistance", bonusValue: 48 }
+    "scarletmacaw_l": { uniqueName: "Wanderer", bonus: "Resistance", bonusValue: 48 },
 
     // Added from save analysis
     "Rollerbrain": { uniqueName: "Rollerbrain", bonus: "HappinessBoost", bonusValue: 98.0 },
