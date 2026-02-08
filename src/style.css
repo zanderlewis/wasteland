@@ -1,13 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'FuturaCondensed';
+  src: url('./assets/fonts/futura-condensed-pt-medium-589e44ed1e3a5.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer base {
+  html { color-scheme: dark; }
+  body {
+    background: #071007;
+    color: #22c55e;
+    font-family: 'FuturaCondensed', system-ui, sans-serif;
+    font-size: 22px;
+    line-height: 1.15;
+  }
+}
+
 /* ============================================================
    Pip-Boy / CRT Effects (global)
    ============================================================ */
 
 /* Overall CRT glow + slight green phosphor */
-body {
-  text-shadow:
-    0 0 6px rgba(34, 197, 94, 0.22),
-    0 0 14px rgba(34, 197, 94, 0.14);
-}
 
 /* Scanlines + vignette + subtle noise layer */
 body::before {
