@@ -223,4 +223,61 @@ export class DwellerFormManager {
       { type: 7, value: parseInt(this.getFormValue('dwellerLuck')) || 1 }
     ];
   }
+
+  /**
+   * If SPECIAL is rendered as range sliders, bind value badges to the slider thumbs.
+   * Safe to call even if the current template uses numeric inputs (no-op).
+   */
+  bindSpecialSliderBadges(): void {
+    const sliders = Array.from(
+      document.querySelectorAll<HTMLInputElement>('input.special-range[type="range"]')
+    );
+
+    sliders.forEach((slider) => {
+      // Initialize badge
+      this.updateSpecialThumb(slider);
+
+      // Live updates
+      slider.addEventListener('input', () => {
+        this.updateSpecialThumb(slider);
+      });
+    });
+  }
+
+  /**
+   * Creates/updates a small badge over the slider showing its current numeric value.
+   */
+  private updateSpecialThumb(slider: HTMLInputElement): void {
+    const raw = Number(slider.value);
+    const min = Number(slider.min || '1');
+    const max = Number(slider.max || '10');
+    const val = Math.min(max, Math.max(min, isFinite(raw) ? raw : min));
+
+    // Keep aria in sync
+    slider.setAttribute('aria-valuemin', String(min));
+    slider.setAttribute('aria-valuemax', String(max));
+    slider.setAttribute('aria-valuenow', String(val));
+
+    // Badge element: either already exists, or we create one
+    const parent = slider.parentElement;
+    if (!parent) return;
+
+    let badge = parent.querySelector<HTMLSpanElement>('.special-thumb-badge');
+    if (!badge) {
+      // Ensure parent can position children
+      if (!parent.classList.contains('relative')) parent.classList.add('relative');
+
+      badge = document.createElement('span');
+      badge.className =
+        'special-thumb-badge pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[12px] leading-none text-green-200';
+      parent.appendChild(badge);
+    }
+
+    badge.textContent = String(val);
+
+    // Expose as CSS variable for optional styling/positioning in CSS
+    const pct = max === min ? 0 : (val - min) / (max - min);
+    slider.style.setProperty('--special-value', String(val));
+    slider.style.setProperty('--special-pct', String(pct));
+  }
 }
