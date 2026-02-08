@@ -44,6 +44,9 @@ export class DwellerUI {
 
     // Start with form disabled
     this.uiManager.closeDwellerEditor();
+
+    // SPECIAL slider badges
+    this.formManager.bindSpecialSliderBadges();
   }
 
   /**
@@ -65,6 +68,9 @@ export class DwellerUI {
    */
   closeDwellerEditor(): void {
     this.uiManager.closeDwellerEditor();
+
+    // SPECIAL slider badges
+    this.formManager.bindSpecialSliderBadges();
     this.clearSelection();
     // Reset eviction button to default state
     this.updateEvictionButton(false);
