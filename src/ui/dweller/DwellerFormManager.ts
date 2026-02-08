@@ -75,6 +75,7 @@ export class DwellerFormManager {
     // SPECIAL stats
     this.loadSpecialStats(dweller);
     this.ensureSpecialSliderBubblesBound();
+    this.updateAllSpecialSliderBubbles();
 
     // Set up gender change listener
     this.setupGenderChangeListener();
@@ -233,6 +234,13 @@ export class DwellerFormManager {
 
 
 // --- SPECIAL slider bubbles (value on handle) ---
+
+
+private updateAllSpecialSliderBubbles(): void {
+  const sliders = document.querySelectorAll<HTMLInputElement>('input.special-slider[data-bubble]');
+  sliders.forEach((slider) => this.updateSpecialSliderBubble(slider));
+}
+
 private ensureSpecialSliderBubblesBound(): void {
   const sliders = Array.from(
     document.querySelectorAll('input[type="range"].special-slider[data-bubble]')
