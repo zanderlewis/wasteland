@@ -147,4 +147,14 @@ export const OUTFIT_LIST = {
   "WastelandSurgeon_Settler": 'Wasteland Medic',
   "WorkDress": 'Rural Schoolmarm',
   "WrestlerSpecial": 'Wrestler Outfit'
+
+  "EnclaveSecurityOutfit": "Enclave Security Outfit",
+  "HanksPowerArmor": "Hank's Power Armor",
+  "Incognito": "Incognito",
+  "MaJuneJacket": "Ma June Jacket",
+  "MojaveWastelandSurvivor": "Mojave Wasteland Survivor",
+  "MoldaversArmor": "Moldaver's Armor",
+  "RobCoRdSuit": "RobCo R&D Suit",
+  "Vault33Suit": "Vault 33 Suit",
+  "WilzigsTravelwear": "Wilzig's Travelwear",
 } as const;
