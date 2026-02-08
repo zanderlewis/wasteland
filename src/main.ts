@@ -37,6 +37,13 @@ class WastelandApp {
     }
 
     app.innerHTML = createMainTemplate();
+
+    // Defensive: remove any legacy top heading that might still say "Wasteland Editor"
+    // (Some older templates/branches included this extra row.)
+    const legacyHeadings = Array.from(document.querySelectorAll('h1,h2,h3,div,span'));
+    legacyHeadings
+      .filter((el) => (el.textContent || '').trim() === 'Wasteland Editor')
+      .forEach((el) => el.remove());
   }
 
   private bindEvents(): void {
