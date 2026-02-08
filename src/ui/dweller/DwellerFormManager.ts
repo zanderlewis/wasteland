@@ -121,10 +121,16 @@ export class DwellerFormManager {
    * Set form field value
    */
   setFormValue(fieldId: string, value: string): void {
-    const element = document.getElementById(fieldId) as HTMLInputElement | HTMLSelectElement;
-    if (element) {
-      element.value = value;
+    const element = document.getElementById(fieldId) as HTMLInputElement | HTMLSelectElement | null;
+    if (!element) return;
+
+    // Support checkboxes (used for Pregnant / Baby Ready)
+    if (element instanceof HTMLInputElement && element.type === 'checkbox') {
+      element.checked = value === 'true' || value === '1' || value === 'yes';
+      return;
     }
+
+    element.value = value;
   }
 
   /**
