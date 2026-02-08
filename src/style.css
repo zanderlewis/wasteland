@@ -110,6 +110,57 @@
   font-size: 22px;
   line-height: 1.15;
 }
+/* Tighter spacing specifically inside the Edit Dweller form */
+.dweller-form .form-input {
+  padding-top: 0.35rem;
+  padding-bottom: 0.35rem;
+}
+
+/* Vertical SPECIAL sliders (green) */
+.special-slider {
+  -webkit-appearance: slider-vertical;
+  appearance: slider-vertical;
+  writing-mode: bt-lr;
+  width: 1.75rem;      /* wider rail */
+  height: 7.5rem;      /* vertical height */
+  background: transparent;
+}
+
+.special-slider::-webkit-slider-runnable-track {
+  width: 0.6rem;
+  border-radius: 9999px;
+  background: rgba(16, 185, 129, 0.35); /* green-500-ish */
+  border: 1px solid rgba(16, 185, 129, 0.75);
+}
+
+.special-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 1.6rem;       /* bigger knob */
+  height: 1.2rem;
+  border-radius: 0.5rem;
+  background: rgba(16, 185, 129, 0.95);
+  border: 1px solid rgba(16, 185, 129, 1);
+  margin-left: -0.5rem; /* center knob over track */
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
+}
+
+.special-slider::-moz-range-track {
+  width: 0.6rem;
+  border-radius: 9999px;
+  background: rgba(16, 185, 129, 0.35);
+  border: 1px solid rgba(16, 185, 129, 0.75);
+}
+
+.special-slider::-moz-range-thumb {
+  width: 1.6rem;
+  height: 1.2rem;
+  border-radius: 0.5rem;
+  background: rgba(16, 185, 129, 0.95);
+  border: 1px solid rgba(16, 185, 129, 1);
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
+}
+
 
 .form-label {
   @apply block font-medium text-green-500/80 mb-1;
