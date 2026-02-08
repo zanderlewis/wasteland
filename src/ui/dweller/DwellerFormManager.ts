@@ -238,7 +238,11 @@ export class DwellerFormManager {
 
 private updateAllSpecialSliderBubbles(): void {
   const sliders = document.querySelectorAll<HTMLInputElement>('input.special-slider[data-bubble]');
-  sliders.forEach((slider) => this.updateSpecialSliderBubble(slider));
+  sliders.forEach((slider) => {
+    const bubbleId = slider.dataset.bubble || '';
+    const bubble = document.getElementById(bubbleId) as HTMLElement | null;
+    this.updateSpecialSliderBubble(slider, bubble);
+  });
 }
 
 private ensureSpecialSliderBubblesBound(): void {
