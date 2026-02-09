@@ -270,7 +270,6 @@ private updateSpecialSliderBubble(slider: HTMLInputElement, bubble: HTMLElement 
   if (!bubble) return;
 
   const min = parseInt(slider.min || '1', 10) || 1;
-  const max = parseInt(slider.max || '10', 10) || 10;
   const val = parseInt(slider.value || String(min), 10) || min;
 
   // Values are shown below each slider (no absolute positioning)
