@@ -273,16 +273,7 @@ private updateSpecialSliderBubble(slider: HTMLInputElement, bubble: HTMLElement 
   const max = parseInt(slider.max || '10', 10) || 10;
   const val = parseInt(slider.value || String(min), 10) || min;
 
+  // Values are shown below each slider (no absolute positioning)
   bubble.textContent = String(val);
-
-  // Position bubble along the slider track
-  const h = slider.offsetHeight || 1;
-  const pct = (val - min) / Math.max(1, max - min);
-
-  // For slider-vertical, 0 is bottom, 1 is top visually
-  const thumbH = 32; // keep in sync with CSS thumb height
-  const top = (1 - pct) * (h - thumbH);
-
-  bubble.style.top = `${Math.round(top)}px`;
 }
 }
