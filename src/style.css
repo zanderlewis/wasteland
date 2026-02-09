@@ -43,7 +43,8 @@
    App layout components
    ============================================================ */
 .container {
-  @apply max-w-6xl mx-auto px-4 py-8;
+  /* Make the whole page ~26% thinner (max-w-6xl -> max-w-4xl) */
+  @apply max-w-4xl mx-auto px-4 py-8;
 }
 
 .card {
@@ -176,7 +177,8 @@
 }
 
 .resource-grid {
-  @apply grid grid-cols-2 md:grid-cols-6 gap-4;
+  /* Always show resources on one row (6 items) */
+  @apply grid grid-cols-6 gap-4;
 }
 
 
@@ -574,26 +576,26 @@ input.special-slider {
 .special-slider-wrap {
   position: relative;
   width: 3.4rem;
-  height: 4.4rem;
+  /* 30% shorter than the old tall sliders, but still readable */
+  height: 6.6rem;
   margin: 0 auto;
   display: flex;
-  justify-content: center;
-  align-items: stretch;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.35rem;
 }
-..special-slider-bubble {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+/* Value displayed under each SPECIAL slider */
+.special-slider-value {
   padding: 0 8px;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   line-height: 1.4;
   color: #08110c;
   background: var(--pip-green);
   border-radius: 999px;
   border: 1px solid rgba(0,0,0,0.35);
   box-shadow: 0 0 14px rgba(16, 185, 129, 0.8);
-  pointer-events: none;
-  z-index: 3;
+  user-select: none;
 }
 input[type="range"].special-slider {
   writing-mode: bt-lr;
@@ -602,7 +604,7 @@ input[type="range"].special-slider {
   display: block;
   margin: 0 auto;
   width: 3.4rem;      /* wider */
-  height: 4.4rem;     /* ~60% height */    /* a bit taller */
+  height: 6.6rem;
   padding: 0;
   accent-color: var(--pip-green);
 }

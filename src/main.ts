@@ -31,7 +31,9 @@ class WastelandApp {
 
       const banner = document.createElement('div');
       banner.textContent = shortSha ? `TEST BUILD: ${channel} • ${shortSha}` : `TEST BUILD: ${channel}`;
-      banner.className = 'w-full bg-yellow-600 text-black text-center text-sm font-semibold py-2';
+      // Ensure the banner sits flush to the very top
+      banner.className = 'm-0 w-full bg-yellow-600 text-black text-center text-sm font-semibold py-2';
+      banner.style.marginTop = '0';
 
       app.parentElement?.insertBefore(banner, app);
     }

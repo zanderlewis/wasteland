@@ -9,7 +9,7 @@ export const createToolsSectionTemplate = (): string => `
         <div class="pip-panel-title">
           <h3 class="text-lg font-semibold">Quick Actions</h3>
         </div>
-        <div class="pip-panel-body">
+        <div class="pip-panel-body p-4">
           <div class="flex flex-wrap gap-3 justify-center">
             <button id="maxCaps" class="btn btn-success">Max Caps</button>
             <button id="maxResources" class="btn btn-success">Max All Resources</button>
@@ -28,7 +28,7 @@ export const createToolsSectionTemplate = (): string => `
         <div class="pip-panel-title">
           <h3 class="text-lg font-semibold">Backup & Export</h3>
         </div>
-        <div class="pip-panel-body">
+        <div class="pip-panel-body p-4">
           <div class="flex flex-wrap gap-3 justify-center">
             <button id="createBackup" class="btn btn-success">Create Backup</button>
             <button id="exportJson" class="btn btn-success">Export as JSON</button>
