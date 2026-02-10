@@ -86,8 +86,9 @@ export class EventManager {
     const tabs = document.querySelectorAll('.tab');
     tabs.forEach(tab => {
       tab.addEventListener('click', (e) => {
-        const target = e.target as HTMLElement;
-        const section = target.dataset.section;
+        // Tabs contain nested elements (e.g. span.tab-label). Always read from the tab button.
+        const button = e.currentTarget as HTMLElement;
+        const section = button.dataset.section;
         if (section) {
           this.switchTab(section);
         }
