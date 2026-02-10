@@ -12,7 +12,7 @@ type AggregatedRow = {
   id: string;
   name: string;
   qty: number;
-  attr: string;
+  attrs: string;
 };
 
 export class StorageUI {
@@ -25,7 +25,7 @@ export class StorageUI {
   }
 
   bindEvents(): void {
-    // Category buttons
+    // Sub-tabs in the title bar
     const subtabs = document.querySelectorAll('.storage-subtab');
     subtabs.forEach((btn) => {
       btn.addEventListener('click', (e) => {
@@ -35,87 +35,16 @@ export class StorageUI {
       });
     });
 
-    // Edit controls
-    const editSelect = document.getElementById('storageEditSelect') as HTMLSelectElement | null;
-    const editQty = document.getElementById('storageEditQty') as HTMLInputElement | null;
     const updateBtn = document.getElementById('storageUpdateBtn');
     const newBtn = document.getElementById('storageNewBtn');
 
-    newBtn?.addEventListener('click', () => {
-      this.selectedId = null;
-      if (editSelect) editSelect.value = '';
-      if (editQty) editQty.value = '1';
-      editSelect?.focus();
-    });
-
-    updateBtn?.addEventListener('click', () => {
-      if (!this.saveEditor.isLoaded()) {
-        this.showMessage('No save file loaded!', 'error');
-        return;
-      }
-
-      const id = (editSelect?.value || '').trim();
-      const qty = Math.max(0, parseInt(editQty?.value || '0', 10) || 0);
-      if (!id) {
-        this.showMessage('Please choose an item', 'info');
-        return;
-      }
-
-      // Junk: allow custom IDs
-      if (id === '__CUSTOM__') {
-        const custom = window.prompt('Enter Junk item ID');
-        if (!custom || !custom.trim()) return;
-        this.ensureCustomOption(custom.trim());
-        if (editSelect) editSelect.value = custom.trim();
-      }
-
-      const applied = this.saveEditor.setStorageItemQuantity(this.activeCategory, id, qty);
-      if (!applied) {
-        const usage = this.saveEditor.getStorageUsage();
-        const cap = this.saveEditor.getStorageCapacity();
-        const currentQty = this.saveEditor
-          .getStorageItems(this.activeCategory)
-          .filter((it) => it.id === id).length;
-        const newUsage = usage - currentQty + qty;
-
-        if (newUsage > cap) {
-          this.showMessage('Storage capacity exceeded. Action ignored.', 'error');
-        } else {
-          this.showMessage('No changes applied', 'info');
-        }
-      } else {
-        this.showMessage('Storage updated', 'success');
-      }
-
-      this.selectedId = id;
-      this.render();
-    });
-
-    // Click on rows to load into edit section
-    document.getElementById('storageList')?.addEventListener('click', (e) => {
-      const target = e.target as HTMLElement;
-      const row = target.closest('.storage-row') as HTMLElement | null;
-      if (!row) return;
-      const id = row.dataset.id || '';
-      if (!id) return;
-
-      this.selectedId = id;
-      if (editSelect) {
-        // Ensure option exists (custom ids)
-        this.ensureCustomOption(id);
-        editSelect.value = id;
-      }
-      if (editQty) {
-        const qtyStr = row.dataset.qty || '0';
-        editQty.value = qtyStr;
-      }
-    });
+    updateBtn?.addEventListener('click', () => this.handleUpdate());
+    newBtn?.addEventListener('click', () => this.clearSelection());
   }
 
   loadStorageData(): void {
-    // Populate select for the default category
     this.populateEditSelect();
-    this.render();
+    this.renderList();
   }
 
   private setActiveCategory(category: StorageCategory): void {
@@ -131,116 +60,77 @@ export class StorageUI {
       }
     });
 
-    // Reset edit controls
-    const editQty = document.getElementById('storageEditQty') as HTMLInputElement | null;
-    if (editQty) editQty.value = '1';
-
     this.populateEditSelect();
-    this.render();
+    this.renderList();
+  }
+
+  private clearSelection(): void {
+    this.selectedId = null;
+    const select = document.getElementById('storageEditSelect') as HTMLSelectElement | null;
+    const qty = document.getElementById('storageEditQty') as HTMLInputElement | null;
+    if (select) select.value = '';
+    if (qty) qty.value = '1';
+    this.updateEditHint();
+    this.renderList();
+  }
+
+  private updateEditHint(): void {
+    const hint = document.getElementById('storageEditHint');
+    if (!hint) return;
+    if (this.selectedId) hint.classList.add('hidden');
+    else hint.classList.remove('hidden');
+  }
+
+  private handleUpdate(): void {
+    if (!this.saveEditor.isLoaded()) {
+      this.showMessage('No save file loaded!', 'error');
+      return;
+    }
+
+    const select = document.getElementById('storageEditSelect') as HTMLSelectElement | null;
+    const qtyEl = document.getElementById('storageEditQty') as HTMLInputElement | null;
+    if (!select || !qtyEl) return;
+
+    const id = (select.value || '').trim();
+    if (!id) {
+      this.showMessage('Please choose an item', 'info');
+      return;
+    }
+
+    const desiredQty = Math.max(0, Math.floor(Number(qtyEl.value || '0') || 0));
+
+    const ok = this.saveEditor.setStorageItemQuantity(this.activeCategory, id, desiredQty);
+    if (!ok) {
+      const used = this.saveEditor.getStorageUsed();
+      const cap = this.saveEditor.getStorageCapacity();
+      this.showMessage(`Storage capacity exceeded (${used}/${cap}). Action ignored.`, 'error');
+      return;
+    }
+
+    this.selectedId = id;
+    this.populateEditSelect(); // keep list fresh and include any new items
+    this.renderList();
+
+    if (desiredQty === 0) {
+      this.showMessage('Item removed from storage', 'success');
+      this.clearSelection();
+      return;
+    }
+
+    this.showMessage('Storage updated', 'success');
   }
 
   private getDisplayNameById(id: string): string {
-    if (this.activeCategory === 'Weapon') {
-      return (WEAPON_LIST as any)[id] || id;
-    }
-    if (this.activeCategory === 'Outfit') {
-      return (OUTFIT_LIST as any)[id] || id;
-    }
-    if (this.activeCategory === 'Pet') {
-      return (PET_LIST as any)[id] || id;
-    }
+    if (this.activeCategory === 'Weapon') return (WEAPON_LIST as any)[id] || id;
+    if (this.activeCategory === 'Outfit') return (OUTFIT_LIST as any)[id] || id;
+    if (this.activeCategory === 'Pet') return (PET_LIST as any)[id] || id;
     return id;
   }
 
-  private getAttributeText(_item: ItemsItem): string {
-    // This project currently only stores ID/type for inventory items.
-    // (If future constants include stats, we can display them here.)
+  private getAttributesText(_id: string): string {
+    // Attributes aren't available in the current constants/types.
+    // Keep this placeholder so it can be wired later when metadata is added.
     return '—';
-  }
-
-  private aggregate(items: ItemsItem[]): AggregatedRow[] {
-    const map = new Map<string, { qty: number; sample: ItemsItem }>();
-    for (const it of items) {
-      const key = it.id;
-      const prev = map.get(key);
-      if (!prev) {
-        map.set(key, { qty: 1, sample: it });
-      } else {
-        prev.qty += 1;
-      }
-    }
-
-    const rows: AggregatedRow[] = [];
-    for (const [id, v] of map.entries()) {
-      rows.push({
-        id,
-        name: this.getDisplayNameById(id),
-        qty: v.qty,
-        attr: this.getAttributeText(v.sample),
-      });
-    }
-
-    // Sort by name for readability
-    rows.sort((a, b) => (a.name || a.id).localeCompare(b.name || b.id));
-    return rows;
-  }
-
-  private render(): void {
-    const list = document.getElementById('storageList');
-    const capText = document.getElementById('storageCapacityText');
-    if (!list) return;
-
-    if (!this.saveEditor.isLoaded()) {
-      list.innerHTML = '<div class="p-3 text-green-500/80">Load a save file to view storage.</div>';
-      if (capText) capText.textContent = '0/0';
-      return;
-    }
-
-    const usage = this.saveEditor.getStorageUsage();
-    const cap = this.saveEditor.getStorageCapacity();
-    if (capText) capText.textContent = `${usage}/${cap}`;
-
-    const items = this.saveEditor.getStorageItems(this.activeCategory);
-    const rows = this.aggregate(items);
-
-    if (rows.length === 0) {
-      list.innerHTML = '<div class="p-3 text-green-500/80">No items in this category.</div>';
-      return;
-    }
-
-    list.innerHTML = `
-      <div class="storage-table">
-        <div class="storage-header">
-          <div class="storage-cell storage-col-name">Item</div>
-          <div class="storage-cell storage-col-qty">Qty</div>
-          <div class="storage-cell storage-col-attr">Attributes</div>
-          <div class="storage-cell storage-col-id">ID</div>
-        </div>
-        <div class="storage-body">
-          ${rows
-            .map((r) => {
-              const isSel = this.selectedId === r.id;
-              return `
-                <div class="storage-row ${isSel ? 'is-selected' : ''}" data-id="${this.escapeHtml(
-                  r.id
-                )}" data-qty="${r.qty}">
-                  <div class="storage-cell storage-col-name" title="${this.escapeHtml(r.name)}">${this.escapeHtml(
-                    r.name
-                  )}</div>
-                  <div class="storage-cell storage-col-qty tabular-nums">${r.qty}</div>
-                  <div class="storage-cell storage-col-attr" title="${this.escapeHtml(r.attr)}">${this.escapeHtml(
-                    r.attr
-                  )}</div>
-                  <div class="storage-cell storage-col-id" title="${this.escapeHtml(r.id)}">${this.escapeHtml(
-                    r.id
-                  )}</div>
-                </div>
-              `;
-            })
-            .join('')}
-        </div>
-      </div>
-    `;
   }
 
   private populateEditSelect(): void {
@@ -262,11 +152,11 @@ export class StorageUI {
     } else if (this.activeCategory === 'Pet') {
       entries = Object.entries(PET_LIST as Record<string, string>);
     } else {
-      const opt = document.createElement('option');
-      opt.value = '__CUSTOM__';
-      opt.textContent = 'Custom Junk ID...';
-      select.appendChild(opt);
-      return;
+      // Junk: include what exists in the save first (plus allow custom IDs)
+      const existing = this.saveEditor.isLoaded()
+        ? Array.from(new Set(this.saveEditor.getStorageItems('Junk').map((it) => it.id)))
+        : [];
+      entries = existing.map((id) => [id, id]);
     }
 
     entries
@@ -277,17 +167,124 @@ export class StorageUI {
         opt.textContent = label;
         select.appendChild(opt);
       });
+
+    // Restore selection if possible
+    if (this.selectedId) {
+      select.value = this.selectedId;
+    }
+
+    // When user selects from dropdown, treat it as selection
+    select.onchange = () => {
+      const id = (select.value || '').trim();
+      this.selectedId = id || null;
+      const qtyEl = document.getElementById('storageEditQty') as HTMLInputElement | null;
+      if (qtyEl && id) {
+        const current = this.saveEditor.getStorageItemCount(this.activeCategory, id);
+        qtyEl.value = String(current);
+      }
+      this.updateEditHint();
+      this.renderList();
+    };
   }
 
-  private ensureCustomOption(id: string): void {
-    const select = document.getElementById('storageEditSelect') as HTMLSelectElement | null;
-    if (!select) return;
-    if ([...select.options].some((o) => o.value === id)) return;
-    const opt = document.createElement('option');
-    opt.value = id;
-    opt.textContent = id;
-    // Insert right after placeholder
-    select.insertBefore(opt, select.children[1] || null);
+  private aggregateRows(items: ItemsItem[]): AggregatedRow[] {
+    const map = new Map<string, AggregatedRow>();
+
+    items.forEach((it) => {
+      const id = it.id;
+      const row = map.get(id);
+      if (row) {
+        row.qty += 1;
+      } else {
+        map.set(id, {
+          id,
+          name: this.getDisplayNameById(id),
+          qty: 1,
+          attrs: this.getAttributesText(id),
+        });
+      }
+    });
+
+    return Array.from(map.values()).sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  private renderList(): void {
+    const container = document.getElementById('storageList');
+    if (!container) return;
+
+    const capText = document.getElementById('storageCapacityText');
+    if (capText && this.saveEditor.isLoaded()) {
+      capText.textContent = `${this.saveEditor.getStorageUsed()}/${this.saveEditor.getStorageCapacity()}`;
+    } else if (capText) {
+      capText.textContent = '0/0';
+    }
+
+    this.updateEditHint();
+
+    if (!this.saveEditor.isLoaded()) {
+      container.innerHTML = '<div class="p-3 text-green-500/80">Load a save file to view storage.</div>';
+      return;
+    }
+
+    const items = this.saveEditor.getStorageItems(this.activeCategory);
+    const rows = this.aggregateRows(items);
+
+    if (rows.length === 0) {
+      container.innerHTML = '<div class="p-3 text-green-500/80">No items in this category.</div>';
+      return;
+    }
+
+    const header = `
+      <table class="storage-table">
+        <thead>
+          <tr>
+            <th class="col-item">Item</th>
+            <th class="col-qty">Qty</th>
+            <th class="col-attrs">Attributes</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows
+            .map((r) => {
+              const selected = this.selectedId === r.id ? 'selected' : '';
+              const name = this.escapeHtml(r.name);
+              const attrs = this.escapeHtml(r.attrs);
+              const id = this.escapeHtml(r.id);
+              return `
+                <tr class="${selected}" data-id="${id}">
+                  <td title="${name}">${name}</td>
+                  <td>${r.qty}</td>
+                  <td title="${attrs}">${attrs}</td>
+                </tr>
+              `;
+            })
+            .join('')}
+        </tbody>
+      </table>
+    `;
+
+    container.innerHTML = header;
+
+    // Row click selection
+    const rowsEls = container.querySelectorAll('tbody tr[data-id]');
+    rowsEls.forEach((tr) => {
+      tr.addEventListener('click', () => {
+        const id = (tr as HTMLElement).dataset.id || '';
+        this.selectedId = id || null;
+
+        const select = document.getElementById('storageEditSelect') as HTMLSelectElement | null;
+        const qtyEl = document.getElementById('storageEditQty') as HTMLInputElement | null;
+
+        if (select) select.value = id;
+        if (qtyEl && id) {
+          const current = this.saveEditor.getStorageItemCount(this.activeCategory, id);
+          qtyEl.value = String(current);
+        }
+
+        this.updateEditHint();
+        this.renderList();
+      });
+    });
   }
 
   private escapeHtml(str: string): string {

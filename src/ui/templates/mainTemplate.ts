@@ -15,7 +15,7 @@ export const createMainTemplate = (): string => `
       <div class="pip-panel-title">
         <h2 class="text-xl font-semibold">UPLOAD SAVE FILE</h2>
       </div>
-      <div id="dropZone" class="pip-panel-body pt-[6px] flex flex-col items-center justify-center text-center gap-3">
+      <div id="dropZone" class="pip-panel-body flex flex-col items-center justify-center text-center gap-3">
           <p class="text-green-500 text-lg">Drag and drop your save file here or click to select</p>
           <input type="file" id="fileInput" class="hidden" accept=".sav,.json" />
           <button id="selectFileBtn" class="btn btn-primary mb-4">Select File</button>
@@ -52,10 +52,10 @@ export const createMainTemplate = (): string => `
     <!-- Save Editor Tabs -->
     <div id="editorSection" class="hidden">
       <div class="tab-container mb-4">
-        <button class="tab active" data-section="vault">VAULT</button>
-        <button class="tab" data-section="dwellers">DWELLERS</button>
-        <button class="tab" data-section="storage">STORAGE</button>
-        <button class="tab" data-section="tools">TOOLS</button>
+        <button class="tab active" data-section="vault"><span class="tab-label">VAULT</span></button>
+        <button class="tab" data-section="dwellers"><span class="tab-label">DWELLERS</span></button>
+        <button class="tab" data-section="storage"><span class="tab-label">STORAGE</span></button>
+        <button class="tab" data-section="tools"><span class="tab-label">TOOLS</span></button>
       </div>
 
       ${createVaultSectionTemplate()}

@@ -187,18 +187,110 @@
 
 
 .tab-container {
-  @apply border-b border-green-900/60 mb-6;
+  display: flex;
+  gap: 10px;
+  margin-bottom: 1.25rem;
+  padding-left: 2px;
 }
 
 .tab {
-  @apply inline-block px-4 py-2 font-medium text-green-500/70 border-b-2 border-transparent
-    hover:text-green-100 hover:border-green-500 cursor-pointer transition-colors duration-200;
-  font-size: 22px;
-  line-height: 1.15;
+  position: relative;
+  background: transparent;
+  color: var(--pip-green);
+  border: 2px solid var(--pip-green);
+  border-radius: 14px;
+  padding: 10px 22px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transform: skewX(-12deg);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.tab .tab-label {
+  display: inline-block;
+  transform: skewX(12deg);
+}
+
+.tab:hover {
+  box-shadow: 0 0 0 2px var(--pip-green-dark), inset 0 0 0 2px var(--pip-green-dark);
 }
 
 .tab.active {
-  @apply text-green-500 border-green-400;
+  background: rgba(5, 30, 10, 0.95);
+  box-shadow: 0 0 0 2px var(--pip-green-dark), inset 0 0 0 2px var(--pip-green-dark);
+}
+
+
+/* Storage panel title layout */
+.storage-title {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  max-width: calc(100% - 28px);
+}
+
+.storage-title-left {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.storage-capacity {
+  font-size: 0.95rem;
+  opacity: 0.85;
+}
+
+.storage-title-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 10px;
+}
+
+.storage-title-actions .storage-subtab {
+  font-size: 14px;
+  padding: 4px 10px;
+}
+
+/* Storage table */
+.storage-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.storage-table thead th {
+  color: var(--pip-green);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 14px;
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(57, 255, 20, 0.25);
+  white-space: nowrap;
+}
+
+.storage-table tbody td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(57, 255, 20, 0.12);
+}
+
+.storage-table tbody tr:hover {
+  background: rgba(57, 255, 20, 0.06);
+}
+
+.storage-table tbody tr.selected {
+  background: rgba(57, 255, 20, 0.10);
+}
+
+.storage-table .col-qty {
+  width: 90px;
+}
+
+.storage-table .col-attrs {
+  width: 220px;
 }
 
 /* Storage sub-tabs */
@@ -210,19 +302,6 @@
   white-space: nowrap;
 }
 
-/* Storage title actions (same pill styling as panel titles, anchored to the right) */
-.storage-title-actions {
-  left: auto;
-  right: 14px;
-  padding: 0 8px;
-}
-
-.storage-title-actions .storage-subtab {
-  /* Tighten so the buttons fit beside the title badge */
-  font-size: 14px;
-  padding: 4px 8px;
-}
-
 .storage-subtab.active {
   @apply text-green-500 border-green-400 bg-green-900/20;
 }
@@ -231,46 +310,25 @@
   @apply border border-green-900/60 rounded-lg bg-gray-750;
 }
 
-.storage-table {
-  width: 100%;
+.storage-list-row {
+  @apply flex items-center justify-between px-3 py-2 border-b border-green-900/40;
 }
 
-.storage-header {
-  @apply flex items-center px-3 py-2 border-b border-green-900/60 text-green-500/90;
-  font-weight: 700;
-}
-
-.storage-body {
-  max-height: 420px;
-  overflow-y: auto;
-}
-
-.storage-row {
-  @apply flex items-center px-3 py-2 border-b border-green-900/40 cursor-pointer;
-}
-
-.storage-row:hover {
-  @apply bg-green-900/10;
-}
-
-.storage-row.is-selected {
-  @apply bg-green-900/20;
-}
-
-.storage-row:last-child {
+.storage-list-row:last-child {
   border-bottom: none;
 }
 
-.storage-cell {
+.storage-item-name {
+  @apply text-green-200;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.storage-col-name { width: 44%; @apply text-green-200; }
-.storage-col-qty { width: 10%; @apply text-green-200 text-center; }
-.storage-col-attr { width: 28%; @apply text-green-500/90; }
-.storage-col-id { width: 18%; @apply text-green-500/70 text-sm; }
+.storage-item-id {
+  @apply text-green-500/70 text-sm;
+  white-space: nowrap;
+}
 
 /* Upload section centering */
 #dropZone {
@@ -334,25 +392,7 @@
   overflow: visible;
 }
 
-.pip-panel-title {
-  position: absolute;
-  top: -14px;
-  left: 14px;
-  padding: 0 10px;
-  background: rgba(5, 30, 10, 0.95);
-  color: var(--pip-green);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  border: 2px solid var(--pip-green);
-  border-radius: 10px;
-  box-shadow: 0 0 0 2px var(--pip-green-dark), inset 0 0 0 2px var(--pip-green-dark);
-  white-space: nowrap;
-}
-
-.pip-panel-title * {
-  white-space: nowrap;
-}
+/* (moved) pip-panel-title styles are defined in the Box title typography section below */
 
 .pip-panel-header {
   background: transparent;
@@ -645,7 +685,6 @@ input.special-slider {
 
 
 /* Box title typography */
-.pip-panel-title h3,
 .pip-panel-title {
   position: absolute;
   top: -14px;
@@ -659,8 +698,19 @@ input.special-slider {
   border: 2px solid var(--pip-green);
   border-radius: 10px;
   box-shadow: 0 0 0 2px var(--pip-green-dark), inset 0 0 0 2px var(--pip-green-dark);
+  white-space: nowrap;
 }
 
+.pip-panel-title h1,
+.pip-panel-title h2,
+.pip-panel-title h3 {
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  white-space: nowrap;
+}
 
 /* SPECIAL vertical sliders (green + thicker) */
 
