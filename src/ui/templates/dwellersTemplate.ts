@@ -72,26 +72,23 @@ export const createDwellersTemplate = (): string => `
                 <label class="form-label" for="dwellerMaxHealth">Max Health</label>
                 <input id="dwellerMaxHealth" class="form-input" type="number" min="1" />
               </div>
+              <div class="grid grid-cols-3 gap-3">
+                <div class="form-group mb-2">
+                  <label class="form-label" for="dwellerRadiation">Radiation</label>
+                  <input id="dwellerRadiation" class="form-input" type="number" min="0" />
+                </div>
 
-              <div class="form-group mb-2">
-                <label class="form-label" for="dwellerRadiation">Radiation</label>
-                <input id="dwellerRadiation" class="form-input" type="number" min="0" />
-              </div>
+                <div class="form-group mb-2 flex flex-col items-center justify-center">
+                  <label for="dwellerPregnant" class="form-label mb-1">Pregnant</label>
+                  <input id="dwellerPregnant" type="checkbox" class="pip-checkbox" />
+                </div>
 
-              <!-- Pregnancy flags (checkboxes) -->
-              <div class="form-group mb-2">
-                <div class="grid grid-cols-2 gap-3">
-                  <div class="flex flex-col items-center">
-                    <label for="dwellerPregnant" class="form-label mb-1">Pregnant</label>
-                    <input id="dwellerPregnant" type="checkbox" class="pip-checkbox" />
-                  </div>
-                  <div class="flex flex-col items-center">
-                    <label for="dwellerBabyReadyTime" class="form-label mb-1">Baby Ready</label>
-                    <input id="dwellerBabyReadyTime" type="checkbox" class="pip-checkbox" />
-                  </div>
+                <div class="form-group mb-2 flex flex-col items-center justify-center">
+                  <label for="dwellerBabyReadyTime" class="form-label mb-1">Baby Ready</label>
+                  <input id="dwellerBabyReadyTime" type="checkbox" class="pip-checkbox" />
                 </div>
               </div>
-            </div>
+
 
             
           <!-- APPEARANCE -->
