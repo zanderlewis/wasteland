@@ -113,10 +113,6 @@ export class EventManager {
     this.storageUI.bindEvents();
   }
 
-  private bindStorageEvents(): void {
-    this.storageUI.bindEvents();
-  }
-
   private bindToolsEvents(): void {
     this.toolsUI.bindEvents();
   }
@@ -139,7 +135,6 @@ export class EventManager {
       this.loadVaultData();
       this.loadDwellersList();
       this.loadStorageData();
-      this.loadStorageList();
       
     } catch (error) {
       console.error('Error loading file:', error);
@@ -221,14 +216,6 @@ export class EventManager {
   }
 
   private loadStorageData(): void {
-    this.storageUI.loadStorageData();
-  }
-
-  private loadStorageData(): void {
-    this.storageUI.loadStorageData();
-  }
-
-  private loadStorageList(): void {
     this.storageUI.loadStorageData();
   }
 
