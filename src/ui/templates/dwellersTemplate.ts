@@ -11,7 +11,7 @@ export const createDwellersTemplate = (): string => `
     <!-- Dweller List + Quick Batch Ops -->
     <div class="pip-panel h-full flex flex-col min-h-0">
       <div class="pip-panel-title"><h3 class="text-lg font-semibold whitespace-nowrap">Dwellers</h3></div>
-      <div class="pip-panel-body p-3 flex flex-col flex-1 min-h-0">
+      <div class="pip-panel-body p-3 pt-[18px] flex flex-col flex-1 min-h-0">
         <div class="flex items-center justify-center gap-2 mb-3">
           <button id="maxSpecialAll" class="btn btn-success btn-sm">Max All SPECIAL</button>
           <button id="healAll" class="btn btn-success btn-sm">Heal All Dwellers</button>
@@ -25,7 +25,7 @@ export const createDwellersTemplate = (): string => `
     <!-- Dweller Editor -->
     <div class="pip-panel h-full flex flex-col min-h-0">
       <div class="pip-panel-title"><h3 class="text-lg font-semibold whitespace-nowrap">Edit Dweller</h3></div>
-      <div class="pip-panel-body p-3 flex flex-col flex-1 min-h-0 overflow-y-auto">
+      <div class="pip-panel-body p-3 pt-[18px] flex flex-col flex-1 min-h-0 overflow-y-auto">
         <div id="dwellerEditorStatus" class="text-green-200/80 mb-2">Select a dweller to edit</div>
 
         <form id="dwellerForm" class="dweller-form space-y-2">

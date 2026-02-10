@@ -33,13 +33,15 @@ export class DwellerUIManager {
 
   // Column layout (header and rows MUST match)
   // Name column: widen by ~60% (15% -> 24%)
-  private readonly COL_NAME = 'basis-[24%] shrink-0 pl-3 pr-2 text-left border-r border-green-700/60';
+  // Remove left padding and give the column that same space back in width.
+  private readonly COL_NAME = 'basis-[calc(24%+12px)] shrink-0 pl-0 pr-2 text-left border-r border-green-700/60';
   // Width tweaks (requested):
   // - Gender/Level/Happiness/Special: -20px
   // - XP: -10px
   // Also reduce horizontal padding to hit the tighter widths.
   private readonly COL_SMALL = 'w-7 shrink-0 px-0.5 text-center border-r border-green-700/60';
-  private readonly COL_XP = 'w-[54px] shrink-0 px-0.5 text-center border-r border-green-700/60';
+  // XP column +10px
+  private readonly COL_XP = 'w-[64px] shrink-0 px-0.5 text-center border-r border-green-700/60';
   private readonly COL_SPECIAL = 'w-[90px] shrink-0 px-0.5 text-center border-r border-green-700/60';
   private readonly COL_HEALTH = 'w-[90px] shrink-0 px-1 text-center';
   private readonly COL_BORDER = 'border-green-900/60 border-r';
@@ -269,11 +271,17 @@ export class DwellerUIManager {
 
   private renderDwellerRow(dweller: Dweller): string {
     const fullName = `${dweller.name} ${dweller.lastName || ''}`.trim();
-    // Abbreviate first name to initial more aggressively to avoid wrapping.
-    const name =
-      dweller.name && dweller.lastName && fullName.length > 13
-        ? `${dweller.name.trim().charAt(0)}. ${dweller.lastName}`
-        : fullName;
+    // Abbreviate first name to initial aggressively to avoid wrapping.
+    let name = fullName;
+    if (dweller.name && dweller.lastName) {
+      const firstInitial = dweller.name.trim().charAt(0);
+      name = fullName.length > 12 ? `${firstInitial}. ${dweller.lastName}` : fullName;
+      if (name.length > 18) {
+        // Still too long? Fall back to initials.
+        const lastInitial = dweller.lastName.trim().charAt(0);
+        name = `${firstInitial}. ${lastInitial}.`;
+      }
+    }
 
     // Gender: symbols, plus sign for pregnant female
     const isFemale = dweller.gender === 1;
@@ -293,7 +301,7 @@ export class DwellerUIManager {
 
     return `
       <div
-        class="dweller-row flex items-center gap-0 px-0 py-1 bg-gray-800 hover:bg-gray-700 cursor-pointer transition-colors text-green-500 font-normal"
+        class="dweller-row flex items-center gap-0 px-0 py-1 bg-transparent hover:bg-gray-800/40 cursor-pointer transition-colors text-green-500 font-normal"
         data-dweller-id="${dweller.serializeId}"
       >
         <div class="${this.COL_NAME} ${this.COL_BORDER} whitespace-nowrap overflow-hidden text-ellipsis">
@@ -426,7 +434,10 @@ return `
         cmp = aHappy - bHappy;
         break;
       case 'health':
-        cmp = aHp - bHp;
+        // Sort by proportion of HP to Max HP.
+        const aMax = Math.max(1, a.health?.maxHealth ?? 100);
+        const bMax = Math.max(1, b.health?.maxHealth ?? 100);
+        cmp = (aHp / aMax) - (bHp / bMax);
         break;
       case 'special':
         cmp = aSpecial - bSpecial;

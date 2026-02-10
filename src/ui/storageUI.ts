@@ -8,16 +8,24 @@ import { toastManager } from './toastManager';
 
 type StorageCategory = 'Weapon' | 'Outfit' | 'Junk' | 'Pet';
 
+type AggregatedRow = {
+  id: string;
+  name: string;
+  qty: number;
+  attr: string;
+};
+
 export class StorageUI {
   private saveEditor: SaveEditor;
   private activeCategory: StorageCategory = 'Weapon';
+  private selectedId: string | null = null;
 
   constructor(saveEditor: SaveEditor) {
     this.saveEditor = saveEditor;
   }
 
   bindEvents(): void {
-    // Sub-tabs
+    // Category buttons
     const subtabs = document.querySelectorAll('.storage-subtab');
     subtabs.forEach((btn) => {
       btn.addEventListener('click', (e) => {
@@ -27,58 +35,92 @@ export class StorageUI {
       });
     });
 
-    // Add button + form
-    const addBtn = document.getElementById('storageAddBtn');
-    const addForm = document.getElementById('storageAddForm');
-    const addSelect = document.getElementById('storageAddSelect') as HTMLSelectElement | null;
-    const addQty = document.getElementById('storageAddQty') as HTMLInputElement | null;
-    const addConfirm = document.getElementById('storageAddConfirm');
-    const addCancel = document.getElementById('storageAddCancel');
+    // Edit controls
+    const editSelect = document.getElementById('storageEditSelect') as HTMLSelectElement | null;
+    const editQty = document.getElementById('storageEditQty') as HTMLInputElement | null;
+    const updateBtn = document.getElementById('storageUpdateBtn');
+    const newBtn = document.getElementById('storageNewBtn');
 
-    addBtn?.addEventListener('click', () => {
-      addForm?.classList.remove('hidden');
-      addBtn.classList.add('hidden');
-      this.populateAddSelect();
-      addSelect?.focus();
+    newBtn?.addEventListener('click', () => {
+      this.selectedId = null;
+      if (editSelect) editSelect.value = '';
+      if (editQty) editQty.value = '1';
+      editSelect?.focus();
     });
 
-    addCancel?.addEventListener('click', () => {
-      addForm?.classList.add('hidden');
-      addBtn?.classList.remove('hidden');
-    });
-
-    addConfirm?.addEventListener('click', () => {
+    updateBtn?.addEventListener('click', () => {
       if (!this.saveEditor.isLoaded()) {
         this.showMessage('No save file loaded!', 'error');
         return;
       }
 
-      const qty = Math.max(1, parseInt(addQty?.value || '1', 10) || 1);
-      const selected = addSelect?.value || '';
-      if (!selected) {
-        this.showMessage('Please choose an item to add', 'info');
+      const id = (editSelect?.value || '').trim();
+      const qty = Math.max(0, parseInt(editQty?.value || '0', 10) || 0);
+      if (!id) {
+        this.showMessage('Please choose an item', 'info');
         return;
       }
 
-      for (let i = 0; i < qty; i++) {
-        this.saveEditor.addStorageItem(this.activeCategory, selected);
+      // Junk: allow custom IDs
+      if (id === '__CUSTOM__') {
+        const custom = window.prompt('Enter Junk item ID');
+        if (!custom || !custom.trim()) return;
+        this.ensureCustomOption(custom.trim());
+        if (editSelect) editSelect.value = custom.trim();
       }
 
-      this.showMessage(`Added ${qty} item${qty === 1 ? '' : 's'} to storage`, 'success');
-      this.renderList();
+      const applied = this.saveEditor.setStorageItemQuantity(this.activeCategory, id, qty);
+      if (!applied) {
+        const usage = this.saveEditor.getStorageUsage();
+        const cap = this.saveEditor.getStorageCapacity();
+        const currentQty = this.saveEditor
+          .getStorageItems(this.activeCategory)
+          .filter((it) => it.id === id).length;
+        const newUsage = usage - currentQty + qty;
 
-      // Hide the form after add
-      addForm?.classList.add('hidden');
-      addBtn?.classList.remove('hidden');
+        if (newUsage > cap) {
+          this.showMessage('Storage capacity exceeded. Action ignored.', 'error');
+        } else {
+          this.showMessage('No changes applied', 'info');
+        }
+      } else {
+        this.showMessage('Storage updated', 'success');
+      }
+
+      this.selectedId = id;
+      this.render();
+    });
+
+    // Click on rows to load into edit section
+    document.getElementById('storageList')?.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      const row = target.closest('.storage-row') as HTMLElement | null;
+      if (!row) return;
+      const id = row.dataset.id || '';
+      if (!id) return;
+
+      this.selectedId = id;
+      if (editSelect) {
+        // Ensure option exists (custom ids)
+        this.ensureCustomOption(id);
+        editSelect.value = id;
+      }
+      if (editQty) {
+        const qtyStr = row.dataset.qty || '0';
+        editQty.value = qtyStr;
+      }
     });
   }
 
   loadStorageData(): void {
-    this.renderList();
+    // Populate select for the default category
+    this.populateEditSelect();
+    this.render();
   }
 
   private setActiveCategory(category: StorageCategory): void {
     this.activeCategory = category;
+    this.selectedId = null;
 
     // Toggle active state on buttons
     const subtabs = document.querySelectorAll('.storage-subtab');
@@ -89,18 +131,15 @@ export class StorageUI {
       }
     });
 
-    // Reset add form state
-    const addForm = document.getElementById('storageAddForm');
-    const addBtn = document.getElementById('storageAddBtn');
-    addForm?.classList.add('hidden');
-    addBtn?.classList.remove('hidden');
+    // Reset edit controls
+    const editQty = document.getElementById('storageEditQty') as HTMLInputElement | null;
+    if (editQty) editQty.value = '1';
 
-    this.renderList();
+    this.populateEditSelect();
+    this.render();
   }
 
-  private getDisplayName(item: ItemsItem): string {
-    const id = item.id;
-
+  private getDisplayNameById(id: string): string {
     if (this.activeCategory === 'Weapon') {
       return (WEAPON_LIST as any)[id] || id;
     }
@@ -110,13 +149,102 @@ export class StorageUI {
     if (this.activeCategory === 'Pet') {
       return (PET_LIST as any)[id] || id;
     }
-
-    // Junk (no canonical list in this project yet)
     return id;
   }
 
-  private populateAddSelect(): void {
-    const select = document.getElementById('storageAddSelect') as HTMLSelectElement | null;
+  private getAttributeText(_item: ItemsItem): string {
+    // This project currently only stores ID/type for inventory items.
+    // (If future constants include stats, we can display them here.)
+    return '—';
+  }
+
+  private aggregate(items: ItemsItem[]): AggregatedRow[] {
+    const map = new Map<string, { qty: number; sample: ItemsItem }>();
+    for (const it of items) {
+      const key = it.id;
+      const prev = map.get(key);
+      if (!prev) {
+        map.set(key, { qty: 1, sample: it });
+      } else {
+        prev.qty += 1;
+      }
+    }
+
+    const rows: AggregatedRow[] = [];
+    for (const [id, v] of map.entries()) {
+      rows.push({
+        id,
+        name: this.getDisplayNameById(id),
+        qty: v.qty,
+        attr: this.getAttributeText(v.sample),
+      });
+    }
+
+    // Sort by name for readability
+    rows.sort((a, b) => (a.name || a.id).localeCompare(b.name || b.id));
+    return rows;
+  }
+
+  private render(): void {
+    const list = document.getElementById('storageList');
+    const capText = document.getElementById('storageCapacityText');
+    if (!list) return;
+
+    if (!this.saveEditor.isLoaded()) {
+      list.innerHTML = '<div class="p-3 text-green-500/80">Load a save file to view storage.</div>';
+      if (capText) capText.textContent = '0/0';
+      return;
+    }
+
+    const usage = this.saveEditor.getStorageUsage();
+    const cap = this.saveEditor.getStorageCapacity();
+    if (capText) capText.textContent = `${usage}/${cap}`;
+
+    const items = this.saveEditor.getStorageItems(this.activeCategory);
+    const rows = this.aggregate(items);
+
+    if (rows.length === 0) {
+      list.innerHTML = '<div class="p-3 text-green-500/80">No items in this category.</div>';
+      return;
+    }
+
+    list.innerHTML = `
+      <div class="storage-table">
+        <div class="storage-header">
+          <div class="storage-cell storage-col-name">Item</div>
+          <div class="storage-cell storage-col-qty">Qty</div>
+          <div class="storage-cell storage-col-attr">Attributes</div>
+          <div class="storage-cell storage-col-id">ID</div>
+        </div>
+        <div class="storage-body">
+          ${rows
+            .map((r) => {
+              const isSel = this.selectedId === r.id;
+              return `
+                <div class="storage-row ${isSel ? 'is-selected' : ''}" data-id="${this.escapeHtml(
+                  r.id
+                )}" data-qty="${r.qty}">
+                  <div class="storage-cell storage-col-name" title="${this.escapeHtml(r.name)}">${this.escapeHtml(
+                    r.name
+                  )}</div>
+                  <div class="storage-cell storage-col-qty tabular-nums">${r.qty}</div>
+                  <div class="storage-cell storage-col-attr" title="${this.escapeHtml(r.attr)}">${this.escapeHtml(
+                    r.attr
+                  )}</div>
+                  <div class="storage-cell storage-col-id" title="${this.escapeHtml(r.id)}">${this.escapeHtml(
+                    r.id
+                  )}</div>
+                </div>
+              `;
+            })
+            .join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  private populateEditSelect(): void {
+    const select = document.getElementById('storageEditSelect') as HTMLSelectElement | null;
     if (!select) return;
 
     select.innerHTML = '';
@@ -134,33 +262,13 @@ export class StorageUI {
     } else if (this.activeCategory === 'Pet') {
       entries = Object.entries(PET_LIST as Record<string, string>);
     } else {
-      // Junk: allow manual ID entry by providing a single "Custom" option
-      // and prompting the user; keeps UI simple without a dedicated junk constants list.
       const opt = document.createElement('option');
       opt.value = '__CUSTOM__';
       opt.textContent = 'Custom Junk ID...';
       select.appendChild(opt);
-
-      select.addEventListener('change', () => {
-        if (select.value === '__CUSTOM__') {
-          const id = window.prompt('Enter Junk item ID');
-          if (id && id.trim()) {
-            const custom = document.createElement('option');
-            custom.value = id.trim();
-            custom.textContent = id.trim();
-            // Insert custom option right after placeholder
-            select.insertBefore(custom, select.children[1] || null);
-            select.value = custom.value;
-          } else {
-            select.value = '';
-          }
-        }
-      }, { once: true });
-
       return;
     }
 
-    // Sort by label for easier scanning
     entries
       .sort((a, b) => (a[1] || a[0]).localeCompare(b[1] || b[0]))
       .forEach(([id, label]) => {
@@ -171,34 +279,15 @@ export class StorageUI {
       });
   }
 
-  private renderList(): void {
-    const container = document.getElementById('storageList');
-    if (!container) return;
-
-    if (!this.saveEditor.isLoaded()) {
-      container.innerHTML = '<div class="p-3 text-green-500/80">Load a save file to view storage.</div>';
-      return;
-    }
-
-    const items = this.saveEditor.getStorageItems(this.activeCategory);
-
-    if (items.length === 0) {
-      container.innerHTML = '<div class="p-3 text-green-500/80">No items in this category.</div>';
-      return;
-    }
-
-    container.innerHTML = items
-      .map((item) => {
-        const name = this.escapeHtml(this.getDisplayName(item));
-        const id = this.escapeHtml(item.id);
-        return `
-          <div class="storage-list-row">
-            <div class="storage-item-name" title="${name}">${name}</div>
-            <div class="storage-item-id" title="${id}">${id}</div>
-          </div>
-        `;
-      })
-      .join('');
+  private ensureCustomOption(id: string): void {
+    const select = document.getElementById('storageEditSelect') as HTMLSelectElement | null;
+    if (!select) return;
+    if ([...select.options].some((o) => o.value === id)) return;
+    const opt = document.createElement('option');
+    opt.value = id;
+    opt.textContent = id;
+    // Insert right after placeholder
+    select.insertBefore(opt, select.children[1] || null);
   }
 
   private escapeHtml(str: string): string {
