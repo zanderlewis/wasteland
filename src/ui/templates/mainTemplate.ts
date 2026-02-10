@@ -1,6 +1,7 @@
 // Main application template
 import { createVaultSectionTemplate } from './vaultTemplate';
 import { createDwellersSectionTemplate } from './dwellersTemplate';
+import { createStorageSectionTemplate } from './storageTemplate';
 import { createToolsSectionTemplate } from './toolsTemplate';
 import { createStatusTemplate } from './statusTemplate';
 import { createMessageModalTemplate } from './messageModalTemplate';
@@ -53,11 +54,13 @@ export const createMainTemplate = (): string => `
       <div class="tab-container mb-4">
         <button class="tab active" data-section="vault">VAULT</button>
         <button class="tab" data-section="dwellers">DWELLERS</button>
+        <button class="tab" data-section="storage">STORAGE</button>
         <button class="tab" data-section="tools">TOOLS</button>
       </div>
 
       ${createVaultSectionTemplate()}
       ${createDwellersSectionTemplate()}
+      ${createStorageSectionTemplate()}
       ${createToolsSectionTemplate()}
     </div>
 

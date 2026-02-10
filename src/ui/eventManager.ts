@@ -2,6 +2,7 @@
 import { SaveEditor } from '../core/SaveEditor';
 import { DwellerUI } from './dwellerUI';
 import { VaultUI } from './vaultUI';
+import { StorageUI } from './storageUI';
 import { ToolsUI } from './toolsUI';
 import { messageModal } from './messageModal';
 import { toastManager } from './toastManager';
@@ -10,16 +11,19 @@ export class EventManager {
   private saveEditor: SaveEditor;
   private dwellerUI: DwellerUI;
   private vaultUI: VaultUI;
+  private storageUI: StorageUI;
   private toolsUI: ToolsUI;
 
   constructor(saveEditor: SaveEditor) {
     this.saveEditor = saveEditor;
     this.dwellerUI = new DwellerUI(saveEditor);
     this.vaultUI = new VaultUI(saveEditor);
+    this.storageUI = new StorageUI(saveEditor);
     this.toolsUI = new ToolsUI(
       saveEditor, 
       this.vaultUI, 
-      this.dwellerUI
+      this.dwellerUI,
+      this.storageUI
     );
   }
 
@@ -34,6 +38,7 @@ export class EventManager {
     this.bindTabEvents();
     this.bindVaultEvents();
     this.bindDwellerEvents();
+    this.bindStorageEvents();
     this.bindToolsEvents();
   }
 
@@ -104,6 +109,14 @@ export class EventManager {
     });
   }
 
+  private bindStorageEvents(): void {
+    this.storageUI.bindEvents();
+  }
+
+  private bindStorageEvents(): void {
+    this.storageUI.bindEvents();
+  }
+
   private bindToolsEvents(): void {
     this.toolsUI.bindEvents();
   }
@@ -125,6 +138,8 @@ export class EventManager {
       this.showEditorSection();
       this.loadVaultData();
       this.loadDwellersList();
+      this.loadStorageData();
+      this.loadStorageList();
       
     } catch (error) {
       console.error('Error loading file:', error);
@@ -203,6 +218,18 @@ export class EventManager {
 
   private loadDwellersList(): void {
     this.dwellerUI.loadDwellersList();
+  }
+
+  private loadStorageData(): void {
+    this.storageUI.loadStorageData();
+  }
+
+  private loadStorageData(): void {
+    this.storageUI.loadStorageData();
+  }
+
+  private loadStorageList(): void {
+    this.storageUI.loadStorageData();
   }
 
   private showStatus(message: string, type: 'success' | 'error' | 'info'): void {

@@ -1,11 +1,14 @@
 import type {
   FalloutShelterSave,
-  DwellersItem as Dweller
+  DwellersItem as Dweller,
+  ItemsItem
 } from '../types/saveFile';
 
 type Actor = any;
 
 type SpecialStatType = number;
+
+type StorageCategory = 'Weapon' | 'Outfit' | 'Junk' | 'Pet';
 
 type ResourceTypeValue =
   | 'Caps'
@@ -245,6 +248,66 @@ export class SaveEditor implements ISaveEditor {
 
   removeAllRadiation(): void {
     this.dwellerMixin.removeAllRadiation();
+  }
+
+  // ============================================================================
+  // STORAGE OPERATIONS
+  // ============================================================================
+
+  /**
+   * Return items currently in vault storage inventory for the given category.
+   * NOTE: Fallout Shelter represents stored items as entries in vault.inventory.items.
+   */
+  getStorageItems(category: StorageCategory): ItemsItem[] {
+    const save = this.save;
+    if (!save) return [];
+
+    const items = save.vault?.inventory?.items || [];
+    const wanted = category.toLowerCase();
+
+    // Be tolerant of different casing/wording across platform versions.
+    return items.filter((it) => {
+      const t = (it.type || '').toLowerCase();
+      if (!t) return false;
+      if (wanted === 'weapon') return t === 'weapon' || t === 'weapons';
+      if (wanted === 'outfit') return t === 'outfit' || t === 'outfits';
+      if (wanted === 'pet') return t === 'pet' || t === 'pets';
+      if (wanted === 'junk') return t === 'junk' || t === 'scrap' || t === 'item';
+      return false;
+    });
+  }
+
+  /**
+   * Add a single item to vault storage inventory.
+   */
+  addStorageItem(category: StorageCategory, id: string): void {
+    if (!this.save) return;
+
+    // Ensure inventory exists
+    if (!this.save.vault.inventory) {
+      // @ts-expect-error - older/partial save typings
+      this.save.vault.inventory = { items: [] };
+    }
+    if (!Array.isArray(this.save.vault.inventory.items)) {
+      this.save.vault.inventory.items = [];
+    }
+
+    const item: ItemsItem = {
+      id,
+      type: category,
+      hasBeenAssigned: false,
+      hasRandonWeaponBeenAssigned: false,
+      extraData: {
+        partsCollectedCount: 0,
+        IsCraftingInProgress: false,
+        IsCrafted: false,
+        IsClaimed: false,
+        IsClaimedInCraftingRoom: false,
+        IsNew: true,
+      },
+    };
+
+    this.save.vault.inventory.items.push(item);
   }
 
   // ============================================================================
