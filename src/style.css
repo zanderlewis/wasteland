@@ -201,6 +201,43 @@
   @apply text-green-500 border-green-400;
 }
 
+/* Storage sub-tabs */
+.storage-subtab {
+  @apply px-3 py-1 rounded-md font-medium text-green-500/70 border border-green-900/60
+    hover:text-green-100 hover:border-green-500 transition-colors duration-200;
+  font-size: 16px;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+.storage-subtab.active {
+  @apply text-green-500 border-green-400 bg-green-900/20;
+}
+
+.storage-list {
+  @apply border border-green-900/60 rounded-lg bg-gray-750;
+}
+
+.storage-list-row {
+  @apply flex items-center justify-between px-3 py-2 border-b border-green-900/40;
+}
+
+.storage-list-row:last-child {
+  border-bottom: none;
+}
+
+.storage-item-name {
+  @apply text-green-200;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.storage-item-id {
+  @apply text-green-500/70 text-sm;
+  white-space: nowrap;
+}
+
 /* Upload section centering */
 #dropZone {
   @apply flex flex-col items-center justify-center text-center;
@@ -569,10 +606,10 @@ input.special-slider {
 
 
 /* Box title typography */
+.pip-panel-title h3,
 .pip-panel-title {
   position: absolute;
-  /* lift the badge slightly so it doesn't sit as low on the border */
-  top: -20px;
+  top: -14px;
   left: 14px;
   padding: 0 10px;
   background: var(--pip-bg);
@@ -583,14 +620,7 @@ input.special-slider {
   border: 2px solid var(--pip-green);
   border-radius: 10px;
   box-shadow: 0 0 0 2px var(--pip-green-dark), inset 0 0 0 2px var(--pip-green-dark);
-  white-space: nowrap;
 }
-
-.pip-panel-title h3 {
-  margin: 0;
-  white-space: nowrap;
-}
-
 
 
 /* SPECIAL vertical sliders (green + thicker) */
@@ -619,18 +649,6 @@ input.special-slider {
   border: 1px solid rgba(0,0,0,0.35);
   box-shadow: 0 0 14px rgba(16, 185, 129, 0.8);
   user-select: none;
-}
-
-/* Keep SPECIAL letters centered above each vertical slider */
-.special-letter {
-  width: 3.4rem; /* match .special-slider-wrap width */
-  margin: 0 auto;
-  text-align: center;
-}
-
-/* Match select height to adjacent numeric inputs (fixes taller Gender menu in some browsers) */
-#dwellerGender.form-input {
-  height: 42px;
 }
 input[type="range"].special-slider {
   writing-mode: bt-lr;
