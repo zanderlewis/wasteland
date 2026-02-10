@@ -210,6 +210,19 @@
   white-space: nowrap;
 }
 
+/* Storage title actions (same pill styling as panel titles, anchored to the right) */
+.storage-title-actions {
+  left: auto;
+  right: 14px;
+  padding: 0 8px;
+}
+
+.storage-title-actions .storage-subtab {
+  /* Tighten so the buttons fit beside the title badge */
+  font-size: 14px;
+  padding: 4px 8px;
+}
+
 .storage-subtab.active {
   @apply text-green-500 border-green-400 bg-green-900/20;
 }
@@ -218,25 +231,46 @@
   @apply border border-green-900/60 rounded-lg bg-gray-750;
 }
 
-.storage-list-row {
-  @apply flex items-center justify-between px-3 py-2 border-b border-green-900/40;
+.storage-table {
+  width: 100%;
 }
 
-.storage-list-row:last-child {
+.storage-header {
+  @apply flex items-center px-3 py-2 border-b border-green-900/60 text-green-500/90;
+  font-weight: 700;
+}
+
+.storage-body {
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+.storage-row {
+  @apply flex items-center px-3 py-2 border-b border-green-900/40 cursor-pointer;
+}
+
+.storage-row:hover {
+  @apply bg-green-900/10;
+}
+
+.storage-row.is-selected {
+  @apply bg-green-900/20;
+}
+
+.storage-row:last-child {
   border-bottom: none;
 }
 
-.storage-item-name {
-  @apply text-green-200;
+.storage-cell {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.storage-item-id {
-  @apply text-green-500/70 text-sm;
-  white-space: nowrap;
-}
+.storage-col-name { width: 44%; @apply text-green-200; }
+.storage-col-qty { width: 10%; @apply text-green-200 text-center; }
+.storage-col-attr { width: 28%; @apply text-green-500/90; }
+.storage-col-id { width: 18%; @apply text-green-500/70 text-sm; }
 
 /* Upload section centering */
 #dropZone {
@@ -313,6 +347,11 @@
   border: 2px solid var(--pip-green);
   border-radius: 10px;
   box-shadow: 0 0 0 2px var(--pip-green-dark), inset 0 0 0 2px var(--pip-green-dark);
+  white-space: nowrap;
+}
+
+.pip-panel-title * {
+  white-space: nowrap;
 }
 
 .pip-panel-header {

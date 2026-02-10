@@ -278,10 +278,121 @@ export class SaveEditor implements ISaveEditor {
   }
 
   /**
+   * Total number of items currently occupying storage.
+   * (Fallout Shelter represents stored items as entries in vault.inventory.items.)
+   */
+  getStorageUsage(): number {
+    const save = this.save;
+    if (!save) return 0;
+    return (save.vault?.inventory?.items || []).length;
+  }
+
+  /**
+   * Compute storage capacity.
+   * Base capacity is 10, plus for each storage room:
+   *   5 x Size x (Level + 1)
+   * Where Size is 1..3 (mergeLevel + 1) and Level is 1..3.
+   */
+  getStorageCapacity(): number {
+    const save = this.save;
+    if (!save) return 0;
+
+    const base = 10;
+    const rooms = save.vault?.rooms || [];
+
+    const storageRooms = rooms.filter((r) => {
+      const t = (r.type || '').toLowerCase();
+      return t.includes('storage');
+    });
+
+    const roomCapacity = storageRooms.reduce((sum, room) => {
+      const size = Math.min(3, Math.max(1, (room.mergeLevel ?? 0) + 1));
+      const level = Math.min(3, Math.max(1, room.level ?? 1));
+      return sum + (5 * size * (level + 1));
+    }, 0);
+
+    return base + roomCapacity;
+  }
+
+  /**
+   * Set the quantity for a given item in storage.
+   * - If qty is 0, the item is removed.
+   * - If qty increases, capacity must not be exceeded (otherwise no change is applied).
+   */
+  setStorageItemQuantity(category: StorageCategory, id: string, qty: number): boolean {
+    if (!this.save) return false;
+
+    // Ensure inventory exists
+    if (!this.save.vault.inventory) {
+      (this.save.vault as any).inventory = { items: [] };
+    }
+    if (!Array.isArray(this.save.vault.inventory.items)) {
+      this.save.vault.inventory.items = [];
+    }
+
+    const items = this.save.vault.inventory.items;
+    const currentIndexes: number[] = [];
+    items.forEach((it, idx) => {
+      if (it.id === id && (it.type || '').toLowerCase() === category.toLowerCase()) {
+        currentIndexes.push(idx);
+      }
+    });
+
+    const currentQty = currentIndexes.length;
+    const targetQty = Math.max(0, Math.floor(qty));
+
+    // Capacity check for net increase
+    const usage = this.getStorageUsage();
+    const capacity = this.getStorageCapacity();
+    const newUsage = usage - currentQty + targetQty;
+    if (newUsage > capacity) {
+      return false;
+    }
+
+    // Remove all occurrences if setting to 0
+    if (targetQty === 0) {
+      this.save.vault.inventory.items = items.filter(
+        (it) => !(it.id === id && (it.type || '').toLowerCase() === category.toLowerCase())
+      );
+      return currentQty > 0;
+    }
+
+    // Reduce quantity
+    if (targetQty < currentQty) {
+      const toRemove = currentQty - targetQty;
+      let removed = 0;
+      this.save.vault.inventory.items = items.filter((it) => {
+        if (removed < toRemove && it.id === id && (it.type || '').toLowerCase() === category.toLowerCase()) {
+          removed++;
+          return false;
+        }
+        return true;
+      });
+      return true;
+    }
+
+    // Increase quantity
+    if (targetQty > currentQty) {
+      const toAdd = targetQty - currentQty;
+      for (let i = 0; i < toAdd; i++) {
+        this.addStorageItem(category, id);
+      }
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
    * Add a single item to vault storage inventory.
    */
-  addStorageItem(category: StorageCategory, id: string): void {
-    if (!this.save) return;
+  addStorageItem(category: StorageCategory, id: string): boolean {
+    if (!this.save) return false;
+
+    // Capacity guard
+    if (this.getStorageUsage() >= this.getStorageCapacity()) {
+      return false;
+    }
 
     // Ensure inventory exists
     if (!this.save.vault.inventory) {
@@ -309,6 +420,7 @@ export class SaveEditor implements ISaveEditor {
     };
 
     this.save.vault.inventory.items.push(item);
+    return true;
   }
 
   // ============================================================================
