@@ -34,9 +34,13 @@ export class DwellerUIManager {
   // Column layout (header and rows MUST match)
   // Name column: widen by ~60% (15% -> 24%)
   private readonly COL_NAME = 'basis-[24%] shrink-0 pl-3 pr-2 text-left border-r border-green-700/60';
-  private readonly COL_SMALL = 'w-12 shrink-0 px-1 text-center border-r border-green-700/60';
-  private readonly COL_XP = 'w-16 shrink-0 px-1 text-center border-r border-green-700/60';
-  private readonly COL_SPECIAL = 'w-[110px] shrink-0 px-1 text-center border-r border-green-700/60';
+  // Width tweaks (requested):
+  // - Gender/Level/Happiness/Special: -20px
+  // - XP: -10px
+  // Also reduce horizontal padding to hit the tighter widths.
+  private readonly COL_SMALL = 'w-7 shrink-0 px-0.5 text-center border-r border-green-700/60';
+  private readonly COL_XP = 'w-[54px] shrink-0 px-0.5 text-center border-r border-green-700/60';
+  private readonly COL_SPECIAL = 'w-[90px] shrink-0 px-0.5 text-center border-r border-green-700/60';
   private readonly COL_HEALTH = 'w-[90px] shrink-0 px-1 text-center';
   private readonly COL_BORDER = 'border-green-900/60 border-r';
 
@@ -265,9 +269,9 @@ export class DwellerUIManager {
 
   private renderDwellerRow(dweller: Dweller): string {
     const fullName = `${dweller.name} ${dweller.lastName || ''}`.trim();
-    // If the name would likely wrap in the narrower column, abbreviate the first name.
+    // Abbreviate first name to initial more aggressively to avoid wrapping.
     const name =
-      fullName.length > 16 && dweller.name && dweller.lastName
+      dweller.name && dweller.lastName && fullName.length > 13
         ? `${dweller.name.trim().charAt(0)}. ${dweller.lastName}`
         : fullName;
 
@@ -292,7 +296,7 @@ export class DwellerUIManager {
         class="dweller-row flex items-center gap-0 px-0 py-1 bg-gray-800 hover:bg-gray-700 cursor-pointer transition-colors text-green-500 font-normal"
         data-dweller-id="${dweller.serializeId}"
       >
-        <div class="${this.COL_NAME} ${this.COL_BORDER}">
+        <div class="${this.COL_NAME} ${this.COL_BORDER} whitespace-nowrap overflow-hidden text-ellipsis">
           ${this.escapeHtml(name)}
         </div>
 
