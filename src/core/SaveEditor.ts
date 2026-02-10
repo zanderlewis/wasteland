@@ -323,9 +323,11 @@ export class SaveEditor implements ISaveEditor {
   }
 
   /**
-   * Storage capacity is based on storage rooms plus a base capacity of 10.
-   * Storage per storage room = 5 x Size x (Level + 1)
+   * Storage capacity is based on Storage Rooms + Warehouses, plus a base capacity of 10.
+   * Storage per room = 5 x Size x (Level + 1)
    * Size is 1..3 (mergeLevel + 1), Level is 1..3.
+   *
+   * Note: In save files, room.level is commonly 0-based (0..2), so we convert to 1..3.
    */
   getStorageCapacity(): number {
     const save = this.save;
@@ -335,17 +337,24 @@ export class SaveEditor implements ISaveEditor {
     const rooms = save.vault?.rooms || [];
     if (!Array.isArray(rooms)) return base;
 
-    const isStorageRoom = (r: any): boolean => {
+    const isStorageRoomOrWarehouse = (r: any): boolean => {
       const t = String(r?.type || '').toLowerCase();
       const c = String(r?.class || '').toLowerCase();
-      return t.includes('storage') || c.includes('storage');
+      // Fallout Shelter has both Storage Rooms and Warehouses contributing to capacity.
+      return (
+        t.includes('storage') ||
+        c.includes('storage') ||
+        t.includes('warehouse') ||
+        c.includes('warehouse')
+      );
     };
 
     const roomCap = rooms
-      .filter(isStorageRoom)
+      .filter(isStorageRoomOrWarehouse)
       .reduce((sum: number, r: any) => {
         const size = Math.min(3, Math.max(1, (Number(r?.mergeLevel) || 0) + 1));
-        const level = Math.min(3, Math.max(1, Number(r?.level) || 1));
+        // Save file often stores level 0..2 (representing in-game levels 1..3)
+        const level = Math.min(3, Math.max(1, (Number(r?.level) || 0) + 1));
         return sum + 5 * size * (level + 1);
       }, 0);
 
