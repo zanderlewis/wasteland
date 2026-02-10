@@ -191,6 +191,9 @@
   @apply mb-6;
   border-bottom: 2px solid rgba(34, 197, 94, 0.35);
   padding-bottom: 0;
+  position: relative;
+  z-index: 60;
+  overflow: visible;
 }
 
 .tab {
@@ -212,6 +215,7 @@
 
   position: relative;
   top: 2px; /* overlap the container line */
+  z-index: 61;
 }
 
 .tab .tab-label {
@@ -342,6 +346,40 @@
   border: 2px solid var(--pip-green);
   border-radius: 10px;
   box-shadow: 0 0 0 2px var(--pip-green-dark), inset 0 0 0 2px var(--pip-green-dark);
+
+  /* Prevent wrapping + allow right-aligned header actions in specific panels */
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+  flex-wrap: nowrap;
+  overflow: visible;
+}
+
+/* Ensure inner title text never wraps (Vault Management, Quick Actions, Backup & Export, etc.) */
+.pip-panel-title > * {
+  white-space: nowrap;
+}
+
+/* Storage title bar needs room for usage + category buttons on the same line */
+.pip-panel-title.storage-title {
+  right: 14px;
+  width: calc(100% - 28px);
+  justify-content: space-between;
+}
+
+.pip-panel-title.storage-title .storage-title-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.pip-panel-title.storage-title .storage-title-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
 }
 
 .pip-panel-header {
@@ -634,21 +672,14 @@ input.special-slider {
 }
 
 
-/* Box title typography */
-.pip-panel-title h3,
-.pip-panel-title {
-  position: absolute;
-  top: -14px;
-  left: 14px;
-  padding: 0 10px;
-  background: var(--pip-bg);
-  color: var(--pip-green);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  border: 2px solid var(--pip-green);
-  border-radius: 10px;
-  box-shadow: 0 0 0 2px var(--pip-green-dark), inset 0 0 0 2px var(--pip-green-dark);
+/* Ensure headings inside title badges never introduce borders/lines */
+.pip-panel-title h1,
+.pip-panel-title h2,
+.pip-panel-title h3 {
+  border: 0 !important;
+  margin: 0;
+  padding: 0;
+  white-space: nowrap;
 }
 
 
