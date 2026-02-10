@@ -285,8 +285,9 @@ export class SaveEditor implements ISaveEditor {
 
     // Ensure inventory exists
     if (!this.save.vault.inventory) {
-      // @ts-expect-error - older/partial save typings
-      this.save.vault.inventory = { items: [] };
+      // Some save-file variants/older typings may not include inventory.
+      // Mutate via a loose cast to keep runtime behaviour while satisfying TS.
+      (this.save.vault as any).inventory = { items: [] };
     }
     if (!Array.isArray(this.save.vault.inventory.items)) {
       this.save.vault.inventory.items = [];
