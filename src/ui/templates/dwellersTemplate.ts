@@ -10,7 +10,7 @@ export const createDwellersTemplate = (): string => `
 
     <!-- Dweller List + Quick Batch Ops -->
     <div class="pip-panel h-full flex flex-col min-h-0">
-      <div class="pip-panel-title">Dwellers</div>
+      <div class="pip-panel-title"><h3 class="text-lg font-semibold whitespace-nowrap">Dwellers</h3></div>
       <div class="pip-panel-body p-3 flex flex-col flex-1 min-h-0">
         <div class="flex items-center justify-center gap-2 mb-3">
           <button id="maxSpecialAll" class="btn btn-success btn-sm">Max All SPECIAL</button>
@@ -24,13 +24,14 @@ export const createDwellersTemplate = (): string => `
 
     <!-- Dweller Editor -->
     <div class="pip-panel h-full flex flex-col min-h-0">
-      <div class="pip-panel-title">Edit Dweller</div>
+      <div class="pip-panel-title"><h3 class="text-lg font-semibold whitespace-nowrap">Edit Dweller</h3></div>
       <div class="pip-panel-body p-3 flex flex-col flex-1 min-h-0 overflow-y-auto">
         <div id="dwellerEditorStatus" class="text-green-200/80 mb-2">Select a dweller to edit</div>
 
         <form id="dwellerForm" class="dweller-form space-y-2">
           <fieldset id="dwellerFieldset" disabled>
 
+            <!-- BASIC INFO -->
             <div class="grid grid-cols-2 gap-2">
               <div class="form-group mb-2">
                 <label class="form-label" for="dwellerName">First Name</label>
@@ -72,37 +73,37 @@ export const createDwellersTemplate = (): string => `
                 <label class="form-label" for="dwellerMaxHealth">Max Health</label>
                 <input id="dwellerMaxHealth" class="form-input" type="number" min="1" />
               </div>
-              <div class="grid grid-cols-3 gap-3">
-                <div class="form-group mb-2">
-                  <label class="form-label" for="dwellerRadiation">Radiation</label>
-                  <input id="dwellerRadiation" class="form-input" type="number" min="0" />
-                </div>
+            </div>
 
-                <div class="form-group mb-2 flex flex-col items-center justify-center">
-                  <label for="dwellerPregnant" class="form-label mb-1">Pregnant</label>
-                  <input id="dwellerPregnant" type="checkbox" class="pip-checkbox" />
-                </div>
-
-                <div class="form-group mb-2 flex flex-col items-center justify-center">
-                  <label for="dwellerBabyReadyTime" class="form-label mb-1">Baby Ready</label>
-                  <input id="dwellerBabyReadyTime" type="checkbox" class="pip-checkbox" />
-                </div>
+            <!-- STATUS -->
+            <div class="grid grid-cols-3 gap-3">
+              <div class="form-group mb-2">
+                <label class="form-label" for="dwellerRadiation">Radiation</label>
+                <input id="dwellerRadiation" class="form-input" type="number" min="0" />
               </div>
 
+              <div class="form-group mb-2 flex flex-col items-center justify-center">
+                <label for="dwellerPregnant" class="form-label mb-1 whitespace-nowrap">Pregnant</label>
+                <input id="dwellerPregnant" type="checkbox" class="pip-checkbox" />
+              </div>
 
-            
-          <!-- APPEARANCE -->
-          <!-- Appearance heading removed (color pickers remain below) -->
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="form-label">Hair Colour</label>
-              <input id="dwellerHairColor" type="color" class="pip-color" />
+              <div class="form-group mb-2 flex flex-col items-center justify-center">
+                <label for="dwellerBabyReadyTime" class="form-label mb-1 whitespace-nowrap">Baby Ready</label>
+                <input id="dwellerBabyReadyTime" type="checkbox" class="pip-checkbox" />
+              </div>
             </div>
-            <div>
-              <label class="form-label">Skin Colour</label>
-              <input id="dwellerSkinColor" type="color" class="pip-color" />
+
+            <!-- APPEARANCE -->
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="form-label whitespace-nowrap">Hair Colour</label>
+                <input id="dwellerHairColor" type="color" class="pip-color" />
+              </div>
+              <div>
+                <label class="form-label whitespace-nowrap">Skin Colour</label>
+                <input id="dwellerSkinColor" type="color" class="pip-color" />
+              </div>
             </div>
-          </div>
 
 <!-- SPECIAL -->
             <div class="flex items-center justify-between mt-3">
@@ -112,49 +113,49 @@ export const createDwellersTemplate = (): string => `
 
             <div class="grid grid-cols-7 gap-2 mt-2">
               <div class="text-center">
-                <div class="pip-green-text text-center">S</div>
+                <div class="pip-green-text special-letter">S</div>
                 <div class="special-slider-wrap">
                   <input id="dwellerStrength" type="range" min="1" max="10" value="1" data-bubble="specialBubbleS" class="special-slider special-slider-vertical" />
                   <div id="specialBubbleS" class="special-slider-value">1</div>
                 </div>
               </div>
               <div class="text-center">
-                <div class="pip-green-text text-center">P</div>
+                <div class="pip-green-text special-letter">P</div>
                 <div class="special-slider-wrap">
                   <input id="dwellerPerception" type="range" min="1" max="10" value="1" data-bubble="specialBubbleP" class="special-slider special-slider-vertical" />
                   <div id="specialBubbleP" class="special-slider-value">1</div>
                 </div>
               </div>
               <div class="text-center">
-                <div class="pip-green-text text-center">E</div>
+                <div class="pip-green-text special-letter">E</div>
                 <div class="special-slider-wrap">
                   <input id="dwellerEndurance" type="range" min="1" max="10" value="1" data-bubble="specialBubbleE" class="special-slider special-slider-vertical" />
                   <div id="specialBubbleE" class="special-slider-value">1</div>
                 </div>
               </div>
               <div class="text-center">
-                <div class="pip-green-text text-center">C</div>
+                <div class="pip-green-text special-letter">C</div>
                 <div class="special-slider-wrap">
                   <input id="dwellerCharisma" type="range" min="1" max="10" value="1" data-bubble="specialBubbleC" class="special-slider special-slider-vertical" />
                   <div id="specialBubbleC" class="special-slider-value">1</div>
                 </div>
               </div>
               <div class="text-center">
-                <div class="pip-green-text text-center">I</div>
+                <div class="pip-green-text special-letter">I</div>
                 <div class="special-slider-wrap">
                   <input id="dwellerIntelligence" type="range" min="1" max="10" value="1" data-bubble="specialBubbleI" class="special-slider special-slider-vertical" />
                   <div id="specialBubbleI" class="special-slider-value">1</div>
                 </div>
               </div>
               <div class="text-center">
-                <div class="pip-green-text text-center">A</div>
+                <div class="pip-green-text special-letter">A</div>
                 <div class="special-slider-wrap">
                   <input id="dwellerAgility" type="range" min="1" max="10" value="1" data-bubble="specialBubbleA" class="special-slider special-slider-vertical" />
                   <div id="specialBubbleA" class="special-slider-value">1</div>
                 </div>
               </div>
               <div class="text-center">
-                <div class="pip-green-text text-center">L</div>
+                <div class="pip-green-text special-letter">L</div>
                 <div class="special-slider-wrap">
                   <input id="dwellerLuck" type="range" min="1" max="10" value="1" data-bubble="specialBubbleL" class="special-slider special-slider-vertical" />
                   <div id="specialBubbleL" class="special-slider-value">1</div>
