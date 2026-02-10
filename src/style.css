@@ -335,7 +335,9 @@
 
 .pip-panel-title {
   position: absolute;
-  top: -14px;
+  /* Center the title badge vertically on the panel's top border */
+  top: 0;
+  transform: translateY(-50%);
   left: 14px;
   padding: 0 10px;
   background: rgba(5, 30, 10, 0.95);
