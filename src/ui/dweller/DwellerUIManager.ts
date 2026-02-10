@@ -267,7 +267,7 @@ export class DwellerUIManager {
     const fullName = `${dweller.name} ${dweller.lastName || ''}`.trim();
     // If the name would likely wrap in the narrower column, abbreviate the first name.
     const name =
-      fullName.length > 20 && dweller.name && dweller.lastName
+      fullName.length > 16 && dweller.name && dweller.lastName
         ? `${dweller.name.trim().charAt(0)}. ${dweller.lastName}`
         : fullName;
 

@@ -27,6 +27,7 @@
     font-family: 'FuturaCondensed', system-ui, sans-serif;
     font-size: 22px;
     line-height: 1.15;
+    margin: 0;
   }
 
   /* Force Pip-Boy green for headings and labels (override any leftover gray utility classes) */
@@ -45,6 +46,8 @@
 .container {
   /* Make the whole page ~26% thinner (max-w-6xl -> max-w-4xl) */
   @apply max-w-4xl mx-auto px-4 py-8;
+
+  max-width: 53.2rem;
 }
 
 .card {
@@ -61,6 +64,7 @@
 
 .card-body {
   @apply p-6 max-h-[calc(100vh-200px)] overflow-y-auto;
+  margin: 0;
 }
 
 .card-body-tight {
@@ -243,6 +247,7 @@
 :root {
   --pip-green: rgb(34, 197, 94); /* Tailwind green-500 */
   --pip-bg: rgb(17, 24, 39);     /* Tailwind gray-900 */
+  --pip-green-dark: rgba(16, 90, 28, 0.9);
 }
 
 /* Pip-Boy panels */
@@ -250,23 +255,27 @@
   border: 2px solid var(--pip-green);
   position: relative;
   background: rgba(17, 24, 39, 0.6);
-  box-shadow: 0 0 18px rgba(34, 197, 94, 0.18);
+  box-shadow:
+    0 0 0 2px var(--pip-green-dark),
+    inset 0 0 0 2px var(--pip-green-dark),
+    0 0 18px rgba(0, 255, 90, 0.08);
   border-radius: 14px;
   overflow: visible;
 }
 
 .pip-panel-title {
   position: absolute;
-  top: -0.65em;
-  left: 1rem;
-  padding: 0 0.6rem;
-  background: var(--pip-bg);
+  top: -14px;
+  left: 14px;
+  padding: 0 10px;
+  background: rgba(5, 30, 10, 0.95);
   color: var(--pip-green);
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 1.05rem;
-  line-height: 1.1;
-  text-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+  letter-spacing: 0.06em;
+  border: 2px solid var(--pip-green);
+  border-radius: 10px;
+  box-shadow: 0 0 0 2px var(--pip-green-dark), inset 0 0 0 2px var(--pip-green-dark);
 }
 
 .pip-panel-header {
@@ -464,8 +473,9 @@ pre code {
   }
 
   .container {
-    @apply px-2;
-  }
+  @apply px-2;
+  max-width: 53rem; /* ~5% thinner than 4xl */
+}
 }
 
 /* ============================================================
@@ -561,12 +571,18 @@ input.special-slider {
 /* Box title typography */
 .pip-panel-title h3,
 .pip-panel-title {
-  font-size: 26px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  position: absolute;
+  top: -14px;
+  left: 14px;
+  padding: 0 10px;
+  background: var(--pip-bg);
   color: var(--pip-green);
-  text-shadow: 0 0 8px rgba(16, 185, 129, 0.55);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border: 2px solid var(--pip-green);
+  border-radius: 10px;
+  box-shadow: 0 0 0 2px var(--pip-green-dark), inset 0 0 0 2px var(--pip-green-dark);
 }
 
 
@@ -672,3 +688,32 @@ input[type="range"].special-slider::-moz-range-thumb {
 }
 .pip-color::-webkit-color-swatch-wrapper{padding:0.15rem;}
 .pip-color::-webkit-color-swatch{border:none;border-radius:0.25rem;}
+
+
+/* SPECIAL slider column alignment */
+.special-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.special-column .pip-green-text {
+  color: var(--pip-green);
+  text-align: center;
+  width: 100%;
+  margin-bottom: 6px;
+  z-index: 2;
+}
+
+
+/* Special slider label stacking */
+.special-column { align-items: center; }
+.special-column > .pip-green-text { position: relative; z-index: 2; text-align: center; margin-bottom: 6px; color: var(--pip-green); }
+
+
+/* Ensure SPECIAL letters sit above vertical sliders */
+.special-column .pip-green-text {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  margin-bottom: 4px;
+}
