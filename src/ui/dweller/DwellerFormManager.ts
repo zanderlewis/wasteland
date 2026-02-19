@@ -189,7 +189,6 @@ export class DwellerFormManager {
       childCheckbox.addEventListener('change', this.boundChildChangeHandler);
     }
   }
-  }
 
   /**
    * Handle gender change event
