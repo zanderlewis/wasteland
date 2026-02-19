@@ -161,603 +161,162 @@ export const OUTFIT_LIST = {
 
 export type OutfitSpecial = { S: number; P: number; E: number; C: number; I: number; A: number; L: number };
 
-// Outfit SPECIAL bonuses source data (tab-separated), embedded from Outfits.txt.
-const OUTFITS_TSV = `Collected?	Image	Name	Rarity Rarity	Outfit value in caps Value	S	P	E	C	I	A	L	Total	Sex	Craftable		
-
-
-FoS armored vault suit	Armored vault suit	Common	10		+3						3		Yes		
-
-
-FoS armored vault suit	Sturdy vault suit	Rare	100		+5						5		Yes		
-
-
-FoS armored vault suit	Heavy vault suit	Legendary	500		+7						7		Yes		
-
-
-FoS battle armor	Battle armor	Common	10	+2		+1					3		Yes		
-
-
-FoS battle armor	Sturdy battle armor	Rare	100	+3		+2					5		Yes		
-
-
-FoS battle armor	Heavy battle armor	Legendary	500	+4		+3					7		Yes		
-
-
-FoS combat armor	Combat armor	Common	10	+2					+1		3		Yes		
-
-
-FoS combat armor	Sturdy combat armor	Rare	100	+3					+2		5		Yes		
-
-
-FoS combat armor	Heavy combat armor	Legendary	500	+4					+3		7		Yes		
-
-
-FoS formal wear	Formal wear	Common	10							+3	3		Yes		
-
-
-FoS formal wear	Fancy formal wear	Rare	100							+5	5		Yes		
-
-
-FoS formal wear	Lucky formal wear	Legendary	500							+7	7		Yes		
-
-
-FoS handyman jumpsuit	Handyman jumpsuit	Common	10						+3		3		Yes		
-
-
-FoS handyman jumpsuit	Advanced jumpsuit	Rare	100						+5		5		Yes		
-
-
-FoS handyman jumpsuit	Expert jumpsuit	Legendary	500						+7		7		Yes		
-
-
-FoS lab coat	Lab coat	Common	10					+3			3		Yes		
-
-
-FoS lab coat	Advanced lab coat	Rare	100					+5			5		Yes		
-
-
-FoS lab coat	Expert lab coat	Legendary	500					+7			7		Yes		
-
-
-FoS leather armor	Leather armor	Common	10	+1		+2					3		Yes		
-
-
-FoS leather armor	Sturdy leather armor	Rare	100	+2		+3					5		Yes		
-
-
-FoS leather armor	Heavy leather armor	Legendary	500	+3		+4					7		Yes		
-
-
-FoS merc gear	Merc gear	Common	10		+1				+1	+1	3		Yes		
-
-
-FoS merc gear	Sturdy merc gear	Rare	100		+1				+2	+2	5		Yes		
-
-
-FoS merc gear	Heavy merc gear	Legendary	500		+2				+3	+2	7		Yes		
-
-
-FoS military fatigues	Military fatigues	Common	10	+3							3		Yes		
-
-
-FoS military fatigues	Officer fatigues	Rare	100	+5							5		Yes		
-
-
-FoS military fatigues	Commander fatigues	Legendary	500	+7							7		Yes		
-
-
-FoS nightwear	Nightwear	Common	10				+3				3		Yes		
-
-
-FoS nightwear	Naughty nightwear	Rare	100				+5				5		Yes		
-
-
-FoS nightwear	Lucky nightwear	Legendary	500				+7				7		Yes		
-
-
-FoS officer uniform	Junior officer uniform	Common	10				+1	+2			3		Yes		
-
-
-FoS officer uniform	Officer uniform	Rare	100				+2	+3			5		Yes		
-
-
-FoS officer uniform	Commander uniform	Legendary	500				+3	+4			7		Yes		
-
-
-FoS radiation suit	Radiation suit	Common	10		+1	+2					3		Yes		
-
-
-FoS radiation suit	Advanced radiation suit	Rare	100		+2	+3					5		Yes		
-
-
-FoS radiation suit	Expert radiation suit	Legendary	500		+3	+4					7		Yes		
-
-
-FoS raider armor	Raider armor	Common	10		+1				+2		3		Yes		
-
-
-FoS raider armor	Sturdy raider armor	Rare	100		+2				+3		5		Yes		
-
-
-FoS raider armor	Heavy raider armor	Legendary	500		+3				+4		7		Yes		
-
-
-FoS Initiate robe	Initiate robe	Common	10				+2		+1		3		Yes		
-
-
-FoS Initiate robe	Scribe robe	Rare	100				+3		+2		5		Yes		
-
-
-FoS wasteland gear	Wasteland gear	Common	10			+3					3		Yes		
-
-
-FoS wasteland gear	Sturdy wasteland gear	Rare	100			+5					5		Yes		
-
-
-FoS wasteland gear	Heavy wasteland gear	Legendary	500			+7					7		Yes		
-
-
-FoS wasteland medic	Wasteland medic	Common	10		+2					+1	3		Yes		
-
-
-FoS wasteland medic	Wasteland doctor	Rare	100		+3					+2	5		Yes		
-
-
-FoS wasteland medic	Wasteland surgeon	Legendary	500		+4					+3	7		Yes		
-
-
-FoS hunter gear	Treasure hunter gear	Common	10	+2	+1						3		Yes		
-
-
-FoS hunter gear	Bounty hunter gear	Rare	100	+3	+2						5		Yes		
-
-
-FoS hunter gear	Mutant hunter gear	Legendary	500	+4	+3						7		Yes		
-
-
-FoS flight suit	Flight suit	Common	10			+1			+2		3		Yes		
-
-
-FoS flight suit	Advanced flight suit	Rare	100			+2			+3		5		Yes		
-
-
-FoS flight suit	Expert flight suit	Legendary	500			+3			+4		7		Yes		
-
-
-FoS BoS uniform	BoS uniform	Common	10		+2		+1				3		Yes		
-
-
-FoS advanced BoS uniform	Advanced BoS uniform	Rare	100		+3		+2				5		Yes		
-
-
-FoS expert BoS uniform	Expert BoS uniform	Legendary	500		+4		+3				7		Yes		
-
-
-FoS metal armor	Sturdy metal armor	Rare	100	+3						+2	5		Yes		
-
-
-FoS metal armor	Heavy metal armor	Legendary	500	+4						+3	7		Yes		
-
-
-FoS Institute jumper	Advanced Institute jumper	Rare	100					+3	+2		5		Yes		
-
-
-FoS Institute jumper	Expert Institute jumper	Legendary	500					+4	+3		7		Yes		
-Common outfits
-Collected?	Image	Name	Rarity Rarity	Outfit value in caps Value	S	P	E	C	I	A	L	Total	Sex	Craftable		
-
-
-FoS Mechanic jumpsuit	Mechanic jumpsuit	Common	10	+1			+1				2	M	Yes		
-
-
-FoS RobCo factory uniform	RobCo factory uniform	Common	10			+2				+2	4		No		
-
-
-FoS Polka dot sundress	Polka dot sundress	Common	10	+1				+1			2	F	Yes		
-
-
-FoS Pre-war suburbanite	Pre-War suburbanite	Common	10		+1			+1			2	M	Yes		
-
-
-Rural schoolmarm	Rural schoolmarm	Common	10		+1	+1					2	F	Yes		
-
-
-FoS Spring casualwear	Spring casualwear	Common	10			+1			+1		2	M	Yes		
-
-
-FoS Vault socialite	Vault socialite	Common	10				+1		+1		2	F	Yes		
-
-
-FoS Accountant outfit	Accountant outfit	Common	10		+4						4	M	No		
-
-
-FoS Agent provocateur	Agent provocateur	Common	10					+4			4	F	No		
-
-
-FoS Bespoke attire	Bespoke attire	Common	10			+4					4	M	No		
-
-
-FoS Business suit	Business suit	Common	10				+4				4	M	No		
-
-
-FoS Country girl	Country girl	Common	10	+4							4	F	No		
-
-
-FoS Waitress uniform	Waitress uniform	Common	10						+4		4	F	No		
-Rare outfits
-Collected?	Image	Name	Rarity Rarity	Outfit value in caps Value	S	P	E	C	I	A	L	Total	Sex	Craftable		
-
-
-FOS BOS casual	BOS casual	Rare	100			+2			+2		4		Yes		
-
-
-FoS NCR Ranger outfit	NCR Ranger outfit	Rare	100		+4		+2				6		Yes		
-
-
-FoS RobCo R&D suit	RobCo R&D suit	Rare	100			+2		+4			6		No		
-
-
-FoS Robot armor	Robot armor	Rare	100	+2		+2				+2	6		Yes		
-
-
-FoS Bowling shirt	Bowling shirt	Rare	100		+6						6	M	No		
-
-
-FoS clergy outfit	Clergy outfit	Rare	100				+4			+1	5	M	Yes		
-
-
-FoS Swing dress	Swing dress	Rare	100						+6		6	F	No		
-
-
-FoS Comedian Outfit	Comedian outfit	Rare	100		+2		+2			+1	5	M	Yes		
-
-
-FoS Doo-wop singer	Doo-wop singer	Rare	100	+1			+1		+1	+1	4	F	Yes		
-
-
-FoS Drag racer	Drag racer	Rare	100	+1		+1			+1	+1	4	M	Yes		
-
-
-FoS Post-war Casanova	Post-War Casanova	Rare	100		+1		+1	+1		+1	4	M	Yes		
-
-
-FoS Soda fountain dress	Soda fountain dress	Rare	100		+1	+1		+1		+1	4	F	Yes		
-
-
-FoS elf outfit	Elf outfit	Rare	100					+3		+2	5		No		
-
-
-FOS Enclave Security Uniform	Enclave security outfit	Rare	100	+2		+2					4		Yes		
-
-
-FoS engineer outfit	Engineer outfit	Rare	100			+2		+2		+1	5	F	Yes		
-
-
-FoS ghost costume	Ghost costume	Rare	100			+2			+3		5		No		
-
-
-FoS Greaser outfit	Greaser outfit	Rare	100				+2		+2	+1	5	M	Yes		
-
-
-FoS horror fan outfit	Horror fan outfit	Rare	100			+4				+1	5	M	Yes		
-
-
-FoS Knight armor	Knight armor	Rare	100	+2	+2					+1	5	M	Yes		
-
-
-FoS librarian outfit	Librarian outfit	Rare	100					+4		+1	5	F	Yes		
-
-
-FoS mayor outfit	Mayor outfit	Rare	100				+2	+2		+1	5	M	Yes		
-
-
-FoS medieval ruler outfit	Medieval ruler outfit	Rare	100		+2		+2			+1	5	M	Yes		
-
-
-FoS Motorcycle jacket	Motorcycle jacket	Rare	100	+6							6		No		
-
-
-FoS movie fan outfit	Movie fan outfit	Rare	100		+4					+1	5	F	Yes		
-
-
-FoS ninja outfit	Ninja outfit	Rare	100						+4	+1	5	M	Yes		
-
-
-FoS nobility outfit	Nobility outfit	Rare	100			+2		+2		+1	5	M	Yes		
-
-
-FoS pilgrim outfit	Pilgrim outfit	Rare	100				+3	+2			5		No		
-
-
-FoS professor outfit	Professor outfit	Rare	100					+4		+1	5	M	Yes		
-
-
-FoS republic robes	Republic robes	Rare	100				+4			+1	5	F	Yes		
-
-
-FoS santa suit	Santa suit	Rare	100		+3		+2				5		No		
-
-
-FoS sci-fi fan outfit	Sci-fi fan outfit	Rare	100					+2	+2	+1	5	M	Yes		
-
-
-FoS skeleton costume	Skeleton costume	Rare	100	+2						+3	5		No		
-
-
-FoS soldier uniform	Soldier uniform	Rare	100	+2		+2				+1	5	F	Yes		
-
-
-FoS sports fan outfit	Sports fan outfit	Rare	100	+4						+1	5	M	Yes		
-
-
-FoS surgeon outfit	Surgeon outfit	Rare	100		+2				+2	+1	5	F	Yes		
-
-
-Survivor armor	Survivor armor	Rare	100	+2					+2	+1	5	M	Yes		
-
-
-FoS wrestler outfit	Wrestler outfit	Rare	100	+2		+2				+1	5	M	Yes		
-
-
-FoS baseball uniform	Baseball uniform	Rare	100						+4	+1	5		Yes		
-
-
-FoS lifeguard outfit	Lifeguard outfit	Rare	100		+4					+1	5		Yes		
-
-
-FoS swimsuit	Swimsuit	Rare	100			+2	+2			+1	5		Yes		
-
-
-FoS Vault 33 suit
-Vault 33 suit	Rare	100		+3					+2	5		Yes		
-
-
-FOS Ma June jacket	Ma June jacket	Rare	100		+2					+2	4		Yes		
-
-
-FOS Sleazy suit	Sleazy suit	Rare	100				+2	+2			4		Yes		
-
-
-FOS Prewar cowboy costume	Prewar cowboy costume	Rare	100				+2		+2		4		Yes		
-
-
-FOS Wedding dress	Wedding dress	Rare	100				+2			+2	4		Yes		
-
-
-FOS Action wedding dress	Action wedding dress	Rare	100						+2	+2	4		Yes		
-
-
-FOS Vault Security Outfit	Vault security outfit	Rare	100			+2				+2	4		Yes		
-Legendary outfits
-Collected?	Image	Name	Worn by	Rarity Rarity	Outfit value in caps Value	S	P	E	C	I	A	L	Total	Sex	Craftable		
-
-
-FoS Legate armor	Legate armor		Legendary	500	+4		+6	+4						Yes		
-
-
-FOS Lucy New Vegas Mojave Outfit	Mojave wasteland survivor	Lucy MacLean	Legendary	500		+1	+5				+2	8		No		
-
-
-FoS Sheriffs duster	Sheriff's duster	Lucas Simms	Legendary	500		+2	+5					7	M	Yes		
-
-
-FoS synth armor	Heavy synth armor		Legendary	500			+4		+3			7		Yes		
-
-
-FOS Moldavers armor	Moldaver's armor		Legendary	500	+2	+2	+4				+4	12		Yes		
-
-
-FoS Colonel Autums uniform	Detective outfit		Legendary	500		+4	+4		+4		+4	16	M	No		
-
-
-FoS Motorcycle jacket	Death's jacket		Legendary	500		+4	+4			+4	+4	16		No		
-
-
-FoS Elder robe	Famine's vestment		Legendary	500	+4		+4		+4		+4	16		No		
-
-
-FoS synth armor	Pestilence's plating		Legendary	500			+4	+4	+4	+4		16		No		
-
-
-FoS santa suit	Original Santa suit		Legendary	500		+4	+3	+4				11		No		
-
-
-FoS Tattered Longcoat	Tattered longcoat	Old Longfellow	Legendary	500	+2		+2	+2			+2	8	M	No		
-
-
-FoS Colonel Autums uniform	Autumn's uniform	Augustus Autumn	Legendary	500	+2	+2	+2	+1				7	M	Yes		
-
-
-FoS Bittercups outfit	Bittercup's outfit	Bittercup	Legendary	500	+2	+2	+2	+1				7	F	Yes		
-
-
-Confessor Cromwells rags	Confessor Cromwell's rags	Confessor Cromwell	Legendary	500		+2	+2		+1		+2	7	M	Yes		
-
-
-FOS Lucys vault suit	Lucy's vault suit	Lucy MacLean	Legendary	500		+3	+2				+3	8		Yes		
-
-
-FOS Piper Outfit	Piper's outfit	Piper	Legendary	500		+2	+2			+2	+2	8	F	Yes		
-
-
-FOS The Ghouls coat	The Ghoul's coat		Legendary	500			+2	+2	+2		+2	8		Yes		
-
-
-FOS Wilzig's Travelwear	Wilzig's travelwear		Legendary	500		+4	+2			+2	+4	12		Yes		
-
-
-FoS Abraham's relaxedwear	Abraham's relaxedwear	Abraham Washington	Legendary	500			+1		+2	+2	+2	7	M	Yes		
-
-
-FoS Initiate robe	Scribe Rothchild's robe	Scribe Rothchild	Legendary	500		+2	+1	+2	+2			7	M	Yes		
-
-
-FoS Tunnel Snakes outfit	Tunnel Snakes' outfit	Butch	Legendary	500		+2	+1	+2		+2		7	M	Yes		
-
-
-FoS Alien space suit	Alien space suit (variant)		Legendary	500			+1		+2	+2	+2	7		No		
-
-
-FoS Elder robe	Elder robe	Elder Lyons	Legendary	500				+4		+3		7		Yes		
-
-
-Eulogy Jones outfit	Eulogy Jones' suit	Eulogy Jones	Legendary	500		+2		+2	+1		+2	7	M	Yes		
-
-
-FoS incognito leisurewear	Incognito leisurewear		Legendary	500				+2	+2	+2	+2	8		Yes		
-
-
-FoS Preston Garveys outfit	Minuteman uniform	Preston Garvey	Legendary	500	+2	+2			+2	+2		8	M	Yes		
-
-
-FOS Cooper's Suit	Sleek suit	Cooper Howard	Legendary	500				+2	+2	+4	+4	12		Yes		
-
-
-FoS Tenpennys suit	Tenpenny's suit	Allistair Tenpenny	Legendary	500		+2		+2	+2		+1	7	M	Yes		
-
-
-FoS Three Dogs outfit	Three Dog's outfit	Three Dog	Legendary	500		+2		+5				7	M	Yes		
-
-
-FoS baseball uniform	Rackie Jobinson's Jersey		Legendary	500	+4	+4		+4		+4		16		No		
-
-
-FoS Alien space suit	Alien space suit		Legendary	500		+2			+4	+2		8		No		
-
-
-FoS Lucy's yellow dress	Lucy's yellow dress		Legendary	500										Yes		
-
-
-FoS Mr. House's suit	Mr. House's suit		Legendary	500				+4	+2		+2			Yes		
-
-
-FoS Maximus's jacket	Maximus's jacket		Legendary	500	+2			+2		+4	+4			Yes		
-
-
-FoS BoS paladin jacket	Brotherhood of Steel paladin jacket		Legendary	500	+2	+4		+2						Yes		
-
-
-FoS Prison Rocker	Prison Rocker		Legendary	500						+4	+4			Yes		
-Power armor
-Collected?	Image	Name	Rarity Rarity	Outfit value in caps Value	S	P	E	C	I	A	L	Total	Gender	Craftable		
-
-FoS T-45 power armor	T-45a power armor	Legendary	500	+2	+3						5		Yes		
-
-
-FoS T-45 power armor	T-45d power armor	Legendary	500	+2	+4						6		Yes		
-
-
-FoS T-45 power armor	T-45f power armor	Legendary	500	+2	+5						7		Yes		
-
-
-FoS T-51 power armor	T-51a power armor	Legendary	500	+3	+1						4		Yes		
-
-
-FoS T-51 power armor	T-51d power armor	Legendary	500	+3	+2						5		Yes		
-
-
-FoS T-51 power armor	T-51f power armor	Legendary	500	+4	+3						7		Yes		
-
-
-FoS T-60 power armor	T-60a power armor	Legendary	500	+2		+3					5		Yes		
-
-
-FoS T-60 power armor	T-60d power armor	Legendary	500	+2		+4					6		Yes		
-
-
-FoS T-60 power armor	T-60f power armor	Legendary	500	+1	+1	+5					7		Yes		
-
-
-FoS T-60 power armor	War's armor	Legendary	500	+4	+4	+4	+4				16		No		
-
-
-FOS Scarred power armor	Scarred power armor	Legendary	500	+4	+2	+4	+2				12		Yes		
-
-
-FoS X-01 Mk IV power armor	X-01 Mk I power armor	Legendary	500	+3	+1	+1					5		Yes		
-
-
-FoS X-01 Mk IV power armor	X-01 Mk IV power armor	Legendary	500	+4	+1	+1					6		Yes		
-
-
-FoS X-01 Mk IV power armor	X-01 Mk VI power armor	Legendary	500	+5	+1	+1					7		Yes	
-
-
-FoS NCR power armor	NCR power armor	Legendary	500	+1	+2	+4	+2				9		No	
-
-
-FoS Hank's power armor	Hank's power armor	Legendary	500	+2		+3	+2				7		No	`;
-
-function normOutfitName(s: string): string {
-  return s
-    .toLowerCase()
-    .replace(/[’']/g, '')
-    .replace(/[^a-z0-9]+/g, '');
-}
-
-function parseOutfitsTsv(tsv: string): Record<string, OutfitSpecial> {
-  const byName: Record<string, OutfitSpecial> = {};
-  const lines = tsv.split(/\r?\n/);
-
-  for (const line of lines) {
-    const trimmed = line.trim();
-    if (!trimmed) continue;
-
-    const lower = trimmed.toLowerCase();
-    // Skip section headers and column headings
-    if (
-      lower === 'common outfits' ||
-      lower === 'rare outfits' ||
-      lower === 'legendary outfits' ||
-      lower === 'power armor' ||
-      lower.startsWith('collected?\t')
-    ) {
-      continue;
-    }
-
-    const parts = trimmed.split('\t');
-    // Expected columns (from Outfits.txt):
-    // 0 Collected?, 1 Image, 2 Name, 3 Rarity, 4 Value, 5 S, 6 P, 7 E, 8 C, 9 I, 10 A, 11 L, ...
-    if (parts.length < 12) continue;
-
-    const name = (parts[2] || '').trim();
-    if (!name) continue;
-
-    const get = (idx: number) => {
-      const v = (parts[idx] || '').trim();
-      if (!v) return 0;
-      const n = parseInt(v.replace('+', ''), 10);
-      return Number.isFinite(n) ? n : 0;
-    };
-
-    const special: OutfitSpecial = {
-      S: get(5),
-      P: get(6),
-      E: get(7),
-      C: get(8),
-      I: get(9),
-      A: get(10),
-      L: get(11),
-    };
-
-    byName[normOutfitName(name)] = special;
-  }
-
-  return byName;
-}
-
-const OUTFITS_BY_NAME = parseOutfitsTsv(OUTFITS_TSV);
-
-/**
- * Outfit SPECIAL bonuses keyed by outfit ID (keys in OUTFIT_LIST).
- * Matched by display name from OUTFIT_LIST.
- */
-export const OUTFIT_SPECIAL_BONUSES: Record<string, OutfitSpecial> = Object.fromEntries(
-  Object.entries(OUTFIT_LIST).map(([id, displayName]) => {
-    const special = OUTFITS_BY_NAME[normOutfitName(displayName)];
-    return [
-      id,
-      special || { S: 0, P: 0, E: 0, C: 0, I: 0, A: 0, L: 0 },
-    ];
-  })
-);
+export const OUTFIT_SPECIAL_BONUSES: Record<string, OutfitSpecial> = {
+  "AbrahamSpecial": { S: 0, P: 0, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "AlistairSpecial": { S: 0, P: 0, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "AllNightware": { S: 0, P: 0, E: 0, C: 3, I: 0, A: 0, L: 0 },
+  "AllNightware_Lucky": { S: 0, P: 0, E: 0, C: 7, I: 0, A: 0, L: 0 },
+  "AllNightware_Naughty": { S: 0, P: 0, E: 0, C: 5, I: 0, A: 0, L: 0 },
+  "AmataSpecial": { S: 0, P: 0, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "ArgyleSweater": { S: 4, P: 0, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "BaseballUniform": { S: 0, P: 0, E: 0, C: 0, I: 0, A: 4, L: 1 },
+  "BattleArmor": { S: 2, P: 0, E: 1, C: 0, I: 0, A: 0, L: 0 },
+  "BattleArmor_Heavy": { S: 4, P: 0, E: 3, C: 0, I: 0, A: 0, L: 0 },
+  "BattleArmor_Sturdy": { S: 3, P: 0, E: 2, C: 0, I: 0, A: 0, L: 0 },
+  "BishopSpecial": { S: 0, P: 0, E: 0, C: 4, I: 0, A: 0, L: 1 },
+  "BittercupSpecial": { S: 0, P: 0, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "BOSUniform": { S: 2, P: 0, E: 1, C: 0, I: 0, A: 0, L: 0 },
+  "BOSUniform_Advanced": { S: 3, P: 0, E: 2, C: 0, I: 0, A: 0, L: 0 },
+  "BOSUniform_Expert": { S: 4, P: 0, E: 3, C: 0, I: 0, A: 0, L: 0 },
+  "BowlingShirt": { S: 1, P: 0, E: 1, C: 0, I: 0, A: 1, L: 1 },
+  "BusinessDress": { S: 0, P: 0, E: 0, C: 0, I: 4, A: 0, L: 0 },
+  "BusinessSuit": { S: 0, P: 0, E: 0, C: 4, I: 0, A: 0, L: 0 },
+  "ButchSpecial": { S: 0, P: 0, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "CheckeredShirt": { S: 1, P: 0, E: 0, C: 1, I: 0, A: 2, L: 0 },
+  "ColonelSpecial": { S: 0, P: 0, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "CombatArmor": { S: 2, P: 0, E: 0, C: 0, I: 0, A: 1, L: 0 },
+  "CombatArmor_Heavy": { S: 4, P: 0, E: 0, C: 0, I: 0, A: 3, L: 0 },
+  "CombatArmor_Sturdy": { S: 3, P: 0, E: 0, C: 0, I: 0, A: 2, L: 0 },
+  "ComedianSpecial": { S: 2, P: 0, E: 2, C: 0, I: 0, A: 1, L: 0 },
+  "CromwellSpecial": { S: 0, P: 0, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "Detective": { S: 0, P: 0, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "DooWopOutfit": { S: 1, P: 0, E: 0, C: 1, I: 0, A: 1, L: 1 },
+  "DrLiSpecial": { S: 0, P: 0, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "ElderLyonsSpecial": { S: 0, P: 0, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "EmpressSpecial": { S: 0, P: 0, E: 0, C: 4, I: 0, A: 0, L: 1 },
+  "EngineerSpecial": { S: 2, P: 0, E: 2, C: 0, I: 1, A: 5, L: 0 },
+  "EulogyJonesSpecial": { S: 0, P: 0, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "FarHarborSpecial": { S: 0, P: 0, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "FlightSuit": { S: 1, P: 0, E: 0, C: 2, I: 0, A: 3, L: 0 },
+  "FlightSuit_Advanced": { S: 2, P: 0, E: 0, C: 3, I: 0, A: 5, L: 0 },
+  "FlightSuit_Expert": { S: 3, P: 0, E: 0, C: 4, I: 0, A: 7, L: 0 },
+  "FormalWear": { S: 0, P: 0, E: 0, C: 0, I: 0, A: 0, L: 3 },
+  "FormalWear_Fancy": { S: 0, P: 0, E: 0, C: 0, I: 0, A: 0, L: 5 },
+  "FormalWear_Lucky": { S: 0, P: 0, E: 0, C: 0, I: 0, A: 0, L: 7 },
+  "GreaserSpecial": { S: 0, P: 0, E: 0, C: 2, I: 0, A: 2, L: 1 },
+  "HandymanJumpsuit": { S: 0, P: 0, E: 0, C: 0, I: 0, A: 3, L: 0 },
+  "HandymanJumpsuit_Advanced": { S: 0, P: 0, E: 0, C: 0, I: 0, A: 5, L: 0 },
+  "HandymanJumpsuit_Expert": { S: 0, P: 0, E: 0, C: 0, I: 0, A: 7, L: 0 },
+  "HarknessSpecial": { S: 0, P: 0, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "HazmatSuit": { S: 3, P: 0, E: 0, C: 0, I: 0, A: 3, L: 0 },
+  "HazmatSuit_Heavy": { S: 7, P: 0, E: 0, C: 0, I: 0, A: 7, L: 0 },
+  "HazmatSuit_Sturdy": { S: 5, P: 0, E: 0, C: 0, I: 0, A: 5, L: 0 },
+  "HunterGear_Bounty": { S: 3, P: 2, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "HunterGear_Mutant": { S: 4, P: 3, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "HunterGear_Treasure": { S: 2, P: 1, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "InstituteJumper_Advanced": { S: 0, P: 0, E: 0, C: 0, I: 3, A: 2, L: 0 },
+  "InstituteJumper_Expert": { S: 0, P: 0, E: 0, C: 0, I: 4, A: 3, L: 0 },
+  "JacketTshirt": { S: 6, P: 0, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "JamesSpecial": { S: 0, P: 0, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "JerichoSpecial": { S: 0, P: 0, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "JobinsonsJersey": { S: 0, P: 0, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "jumpsuit": { S: 0, P: 0, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "KingSpecial": { S: 2, P: 0, E: 2, C: 0, I: 0, A: 1, L: 0 },
+  "KnightSpecial": { S: 2, P: 2, E: 0, C: 0, I: 0, A: 0, L: 1 },
+  "LabCoat": { S: 0, P: 0, E: 0, C: 0, I: 3, A: 0, L: 0 },
+  "LabCoat_Advanced": { S: 0, P: 0, E: 0, C: 0, I: 5, A: 0, L: 0 },
+  "LabCoat_Expert": { S: 0, P: 0, E: 0, C: 0, I: 7, A: 0, L: 0 },
+  "LibrarianSpecial": { S: 0, P: 0, E: 0, C: 0, I: 4, A: 0, L: 1 },
+  "LifeguardOutfit": { S: 4, P: 0, E: 0, C: 0, I: 0, A: 1, L: 0 },
+  "LoungeShirt": { S: 6, P: 0, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "LucasSpecial": { S: 0, P: 0, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "MayorSpecial": { S: 0, P: 0, E: 0, C: 2, I: 2, A: 0, L: 1 },
+  "MechanicJumpsuit": { S: 1, P: 0, E: 0, C: 1, I: 0, A: 0, L: 0 },
+  "MetalArmor_Heavy": { S: 4, P: 0, E: 0, C: 0, I: 0, A: 0, L: 3 },
+  "MetalArmor_Sturdy": { S: 3, P: 0, E: 0, C: 0, I: 0, A: 0, L: 2 },
+  "MilitaryJumpsuit": { S: 3, P: 0, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "MilitaryJumpsuit_Commander": { S: 7, P: 0, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "MilitaryJumpsuit_Officer": { S: 5, P: 0, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "MoiraSpecial": { S: 0, P: 0, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "MoviefanSpecial": { S: 4, P: 0, E: 0, C: 0, I: 0, A: 1, L: 0 },
+  "MrBurkeSpecial": { S: 0, P: 0, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "NinjaSuit": { S: 0, P: 0, E: 0, C: 0, I: 0, A: 4, L: 1 },
+  "PiperSpecial": { S: 0, P: 0, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "PolkaDotDress": { S: 1, P: 0, E: 0, C: 0, I: 1, A: 0, L: 0 },
+  "PowerArmor": { S: 2, P: 3, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "PowerArmor_51a": { S: 3, P: 1, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "PowerArmor_51d": { S: 3, P: 2, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "PowerArmor_51f": { S: 4, P: 3, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "PowerArmor_MkI": { S: 3, P: 1, E: 1, C: 0, I: 0, A: 0, L: 0 },
+  "PowerArmor_MkIV": { S: 4, P: 1, E: 1, C: 0, I: 0, A: 0, L: 0 },
+  "PowerArmor_MkVI": { S: 5, P: 1, E: 1, C: 0, I: 0, A: 0, L: 0 },
+  "PowerArmor_T45d": { S: 2, P: 4, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "PowerArmor_T45f": { S: 2, P: 5, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "PowerArmor_T60a": { S: 2, P: 0, E: 3, C: 0, I: 0, A: 0, L: 0 },
+  "PowerArmor_T60d": { S: 2, P: 0, E: 4, C: 0, I: 0, A: 0, L: 0 },
+  "PowerArmor_T60f": { S: 1, P: 1, E: 5, C: 0, I: 0, A: 0, L: 0 },
+  "PrestonSpecial": { S: 0, P: 0, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "PrinceSpecial": { S: 2, P: 0, E: 2, C: 0, I: 1, A: 5, L: 0 },
+  "ProfessorSpecial": { S: 0, P: 0, E: 0, C: 0, I: 4, A: 0, L: 1 },
+  "RadiationSuit": { S: 1, P: 2, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "RadiationSuit_Advanced": { S: 2, P: 3, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "RadiationSuit_Expert": { S: 3, P: 4, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "RaiderArmor": { S: 1, P: 0, E: 0, C: 0, I: 2, A: 0, L: 0 },
+  "RaiderArmor_Heavy": { S: 3, P: 0, E: 0, C: 0, I: 4, A: 0, L: 0 },
+  "RaiderArmor_Sturdy": { S: 2, P: 0, E: 0, C: 0, I: 3, A: 0, L: 0 },
+  "RiotGear": { S: 1, P: 0, E: 0, C: 0, I: 1, A: 1, L: 0 },
+  "RiotGear_Heavy": { S: 2, P: 0, E: 0, C: 0, I: 3, A: 2, L: 0 },
+  "RiotGear_Sturdy": { S: 1, P: 0, E: 0, C: 0, I: 2, A: 2, L: 0 },
+  "RothchildSpecial": { S: 0, P: 0, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "SantaSuit_Original": { S: 0, P: 0, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "SarahSpecial": { S: 0, P: 0, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "ScientistScrubs": { S: 0, P: 0, E: 0, C: 1, I: 2, A: 0, L: 0 },
+  "ScientistScrubs_Commander": { S: 0, P: 0, E: 0, C: 3, I: 4, A: 0, L: 0 },
+  "ScientistScrubs_Officer": { S: 0, P: 0, E: 0, C: 2, I: 3, A: 0, L: 0 },
+  "ScifiSpecial": { S: 0, P: 0, E: 0, C: 0, I: 2, A: 2, L: 1 },
+  "ScribeRobe": { S: 0, P: 0, E: 0, C: 3, I: 0, A: 2, L: 0 },
+  "ScribeRobe_Elder": { S: 0, P: 0, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "ScribeRobe_Initiate": { S: 0, P: 0, E: 0, C: 2, I: 0, A: 1, L: 0 },
+  "SequinDress": { S: 0, P: 0, E: 0, C: 1, I: 0, A: 1, L: 0 },
+  "SlasherSpecial": { S: 4, P: 0, E: 0, C: 0, I: 1, A: 5, L: 0 },
+  "SodaFountainDress": { S: 1, P: 1, E: 0, C: 1, I: 0, A: 1, L: 0 },
+  "SoldierSpecial": { S: 2, P: 0, E: 2, C: 0, I: 0, A: 0, L: 1 },
+  "SpecialThemeHalloween": { S: 2, P: 0, E: 0, C: 3, I: 0, A: 5, L: 0 },
+  "SpecialThemeHalloween2": { S: 2, P: 0, E: 0, C: 0, I: 0, A: 0, L: 3 },
+  "SpecialThemeThanksGiving": { S: 0, P: 0, E: 0, C: 3, I: 2, A: 0, L: 0 },
+  "SpecialThemeXmas": { S: 3, P: 0, E: 2, C: 0, I: 0, A: 0, L: 0 },
+  "SpecialThemeXmas2": { S: 0, P: 0, E: 0, C: 0, I: 3, A: 0, L: 2 },
+  "SportsfanSpecial": { S: 4, P: 0, E: 0, C: 0, I: 0, A: 0, L: 1 },
+  "StarPaladinSpecial": { S: 0, P: 0, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "SurgeonSpecial": { S: 2, P: 0, E: 0, C: 0, I: 2, A: 1, L: 0 },
+  "SurvivorSpecial": { S: 2, P: 0, E: 0, C: 0, I: 0, A: 2, L: 1 },
+  "Suspenders": { S: 4, P: 0, E: 0, C: 0, I: 0, A: 4, L: 0 },
+  "SweaterVest": { S: 1, P: 0, E: 0, C: 1, I: 0, A: 0, L: 0 },
+  "Swimsuit": { S: 2, P: 2, E: 0, C: 0, I: 1, A: 5, L: 0 },
+  "SwingDress": { S: 0, P: 0, E: 0, C: 0, I: 0, A: 6, L: 0 },
+  "SynthArmor_Heavy": { S: 0, P: 0, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "ThreedogSpecial": { S: 0, P: 0, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "TiedBlouse": { S: 4, P: 0, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "UtilityJumpsuit": { S: 3, P: 0, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "UtilityJumpsuit_Heavy": { S: 7, P: 0, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "UtilityJumpsuit_Sturdy": { S: 5, P: 0, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "Vest": { S: 1, P: 0, E: 1, C: 1, I: 0, A: 1, L: 0 },
+  "WaitressUniform": { S: 0, P: 0, E: 0, C: 0, I: 0, A: 4, L: 0 },
+  "WandererArmor": { S: 1, P: 0, E: 2, C: 0, I: 0, A: 0, L: 0 },
+  "WandererArmor_Heavy": { S: 3, P: 0, E: 4, C: 0, I: 0, A: 0, L: 0 },
+  "WandererArmor_Sturdy": { S: 2, P: 0, E: 3, C: 0, I: 0, A: 0, L: 0 },
+  "WastelandSurgeon": { S: 4, P: 0, E: 0, C: 0, I: 0, A: 3, L: 0 },
+  "WastelandSurgeon_Doctor": { S: 3, P: 0, E: 0, C: 0, I: 0, A: 2, L: 0 },
+  "WastelandSurgeon_Settler": { S: 2, P: 0, E: 0, C: 0, I: 0, A: 1, L: 0 },
+  "WorkDress": { S: 1, P: 1, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "WrestlerSpecial": { S: 2, P: 0, E: 2, C: 0, I: 0, A: 0, L: 1 },
+  "EnclaveSecurityOutfit": { S: 2, P: 0, E: 2, C: 0, I: 0, A: 0, L: 0 },
+  "HanksPowerArmor": { S: 2, P: 0, E: 3, C: 2, I: 0, A: 0, L: 0 },
+  "Incognito": { S: 0, P: 0, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "MaJuneJacket": { S: 2, P: 0, E: 0, C: 0, I: 0, A: 2, L: 0 },
+  "MojaveWastelandSurvivor": { S: 0, P: 0, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "MoldaversArmor": { S: 0, P: 0, E: 0, C: 0, I: 0, A: 0, L: 0 },
+  "RobCoRdSuit": { S: 2, P: 0, E: 4, C: 0, I: 0, A: 6, L: 0 },
+  "Vault33Suit": { S: 3, P: 0, E: 0, C: 0, I: 0, A: 2, L: 0 },
+  "WilzigsTravelwear": { S: 0, P: 0, E: 0, C: 0, I: 0, A: 0, L: 0 },
+};

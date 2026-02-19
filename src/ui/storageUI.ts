@@ -129,13 +129,8 @@ export class StorageUI {
 
   private getAttributesText(id: string): string {
     if (this.activeCategory !== 'Outfit') return '—';
-
-    const sp = (OUTFIT_SPECIAL_BONUSES as any)[id] as
-      | { S: number; P: number; E: number; C: number; I: number; A: number; L: number }
-      | undefined;
-
+    const sp = OUTFIT_SPECIAL_BONUSES[id];
     if (!sp) return '—';
-
     const parts: string[] = [];
     if (sp.S) parts.push(`S+${sp.S}`);
     if (sp.P) parts.push(`P+${sp.P}`);
@@ -144,7 +139,6 @@ export class StorageUI {
     if (sp.I) parts.push(`I+${sp.I}`);
     if (sp.A) parts.push(`A+${sp.A}`);
     if (sp.L) parts.push(`L+${sp.L}`);
-
     return parts.length ? parts.join(' ') : '—';
   }
 
