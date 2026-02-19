@@ -10,7 +10,12 @@ export const createDwellersTemplate = (): string => `
 
     <!-- Dweller List + Quick Batch Ops -->
     <div class="pip-panel h-full flex flex-col min-h-0">
-      <div class="pip-panel-title"><h3 class="text-lg font-semibold whitespace-nowrap">Dwellers</h3></div>
+      <div class="pip-panel-title">
+        <h3 class="text-lg font-semibold whitespace-nowrap flex items-center gap-2">
+          Dwellers
+          <span id="dwellersCount" class="text-green-300/90 text-sm font-medium"></span>
+        </h3>
+      </div>
       <div class="pip-panel-body p-3 pt-[18px] flex flex-col flex-1 min-h-0">
         <div class="flex items-center justify-center gap-2 mb-3">
           <button id="maxSpecialAll" class="btn btn-success btn-sm">Max All SPECIAL</button>

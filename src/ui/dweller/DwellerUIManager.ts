@@ -138,6 +138,12 @@ export class DwellerUIManager {
   updateDwellersList(dwellers: Dweller[]): void {
     const dwellersList = document.getElementById('dwellerListScroll');
     if (!dwellersList) return;
+    // Update count in the panel title
+    const countEl = document.getElementById('dwellersCount');
+    if (countEl) {
+      countEl.textContent = `(${dwellers.length})`;
+    }
+
 
     if (dwellers.length === 0) {
       dwellersList.innerHTML =
