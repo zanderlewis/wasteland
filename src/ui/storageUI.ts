@@ -1,7 +1,7 @@
 // Storage-specific UI management
 import { SaveEditor } from '../core/SaveEditor';
 import { WEAPON_LIST } from '../constants/weaponConstants';
-import { OUTFIT_LIST, OUTFIT_SPECIAL_BONUSES } from '../constants/outfitConstants';
+import { OUTFIT_LIST, OUTFIT_SPECIAL_BONUSES, type OutfitSpecial } from '../constants/outfitConstants';
 import { PET_LIST } from '../constants/petConstants';
 import type { ItemsItem } from '../types/saveFile';
 import { toastManager } from './toastManager';
@@ -129,8 +129,10 @@ export class StorageUI {
 
   private getAttributesText(id: string): string {
     if (this.activeCategory !== 'Outfit') return '—';
-    const sp = OUTFIT_SPECIAL_BONUSES[id];
+
+    const sp = (OUTFIT_SPECIAL_BONUSES as Record<string, OutfitSpecial>)[id];
     if (!sp) return '—';
+
     const parts: string[] = [];
     if (sp.S) parts.push(`S+${sp.S}`);
     if (sp.P) parts.push(`P+${sp.P}`);
@@ -139,6 +141,7 @@ export class StorageUI {
     if (sp.I) parts.push(`I+${sp.I}`);
     if (sp.A) parts.push(`A+${sp.A}`);
     if (sp.L) parts.push(`L+${sp.L}`);
+
     return parts.length ? parts.join(' ') : '—';
   }
 
