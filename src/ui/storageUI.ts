@@ -1,7 +1,7 @@
 // Storage-specific UI management
 import { SaveEditor } from '../core/SaveEditor';
 import { WEAPON_LIST } from '../constants/weaponConstants';
-import { OUTFIT_LIST } from '../constants/outfitConstants';
+import { OUTFIT_LIST, OUTFIT_SPECIAL_BONUSES } from '../constants/outfitConstants';
 import { PET_LIST } from '../constants/petConstants';
 import type { ItemsItem } from '../types/saveFile';
 import { toastManager } from './toastManager';
@@ -127,10 +127,25 @@ export class StorageUI {
     return id;
   }
 
-  private getAttributesText(_id: string): string {
-    // Attributes aren't available in the current constants/types.
-    // Keep this placeholder so it can be wired later when metadata is added.
-    return '—';
+  private getAttributesText(id: string): string {
+    if (this.activeCategory !== 'Outfit') return '—';
+
+    const sp = (OUTFIT_SPECIAL_BONUSES as any)[id] as
+      | { S: number; P: number; E: number; C: number; I: number; A: number; L: number }
+      | undefined;
+
+    if (!sp) return '—';
+
+    const parts: string[] = [];
+    if (sp.S) parts.push(`S+${sp.S}`);
+    if (sp.P) parts.push(`P+${sp.P}`);
+    if (sp.E) parts.push(`E+${sp.E}`);
+    if (sp.C) parts.push(`C+${sp.C}`);
+    if (sp.I) parts.push(`I+${sp.I}`);
+    if (sp.A) parts.push(`A+${sp.A}`);
+    if (sp.L) parts.push(`L+${sp.L}`);
+
+    return parts.length ? parts.join(' ') : '—';
   }
 
   private populateEditSelect(): void {
