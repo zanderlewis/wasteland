@@ -15,6 +15,7 @@ const DEFAULT_HAIR_COLORS = {
 export class DwellerFormManager {
   // Store the bound handler once so removeEventListener actually works
   private readonly boundGenderChangeHandler = this.handleGenderChange.bind(this);
+  private readonly boundChildChangeHandler = this.handleChildChange.bind(this);
 
   private colorConverter(colorhex: string | number, mode?: boolean): string | number {
     const colorInt = typeof colorhex === 'string' ? parseInt(colorhex) : colorhex;
@@ -63,13 +64,21 @@ export class DwellerFormManager {
         : DEFAULT_HAIR_COLORS.BROWN
     );
 
-    // Pregnancy (only for females)
-    if (dweller.gender === 1) {
+    // Child flag (save versions may use isChild or child)
+    const isChild = Boolean((dweller as any).isChild ?? (dweller as any).child ?? false);
+    this.setFormValue('dwellerChild', isChild ? 'true' : 'false');
+
+    // Pregnancy (only for females and not a child)
+    const showPregnancy = dweller.gender === 1 && !isChild;
+    if (showPregnancy) {
       this.setFormValue('dwellerPregnant', dweller.pregnant ? 'true' : 'false');
       this.setFormValue('dwellerBabyReadyTime', dweller.babyReady ? 'true' : 'false');
       this.togglePregnancyFields(true);
     } else {
+      // Hide + reset (prevents invalid male/child pregnancy state)
       this.togglePregnancyFields(false);
+      this.setFormValue('dwellerPregnant', 'false');
+      this.setFormValue('dwellerBabyReadyTime', 'false');
     }
 
     // SPECIAL stats
@@ -168,10 +177,18 @@ export class DwellerFormManager {
    */
   private setupGenderChangeListener(): void {
     const genderSelect = document.getElementById('dwellerGender') as HTMLSelectElement;
+    const childCheckbox = document.getElementById('dwellerChild') as HTMLInputElement;
+
     if (genderSelect) {
       genderSelect.removeEventListener('change', this.boundGenderChangeHandler);
       genderSelect.addEventListener('change', this.boundGenderChangeHandler);
     }
+
+    if (childCheckbox) {
+      childCheckbox.removeEventListener('change', this.boundChildChangeHandler);
+      childCheckbox.addEventListener('change', this.boundChildChangeHandler);
+    }
+  }
   }
 
   /**
@@ -180,10 +197,32 @@ export class DwellerFormManager {
   private handleGenderChange(event: Event): void {
     const target = event.target as HTMLSelectElement;
     const isFemale = target.value === '1';
-    this.togglePregnancyFields(isFemale);
 
-    // Reset pregnancy values if switching to male
-    if (!isFemale) {
+    const childCheckbox = document.getElementById('dwellerChild') as HTMLInputElement | null;
+    const isChild = childCheckbox?.checked ?? false;
+
+    this.togglePregnancyFields(isFemale && !isChild);
+
+    // Reset pregnancy values if switching to male or child
+    if (!isFemale || isChild) {
+      this.setFormValue('dwellerPregnant', 'false');
+      this.setFormValue('dwellerBabyReadyTime', 'false');
+    }
+  }
+
+  /**
+   * Handle child checkbox change event
+   */
+  private handleChildChange(): void {
+    const genderSelect = document.getElementById('dwellerGender') as HTMLSelectElement | null;
+    const childCheckbox = document.getElementById('dwellerChild') as HTMLInputElement | null;
+
+    const isFemale = (genderSelect?.value ?? '1') === '1';
+    const isChild = childCheckbox?.checked ?? false;
+
+    this.togglePregnancyFields(isFemale && !isChild);
+
+    if (!isFemale || isChild) {
       this.setFormValue('dwellerPregnant', 'false');
       this.setFormValue('dwellerBabyReadyTime', 'false');
     }

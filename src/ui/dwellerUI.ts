@@ -349,6 +349,26 @@ export class DwellerUI {
     const gender = parseInt(this.formManager.getFormValue('dwellerGender')) || 1;
     dweller.gender = gender;
 
+    // Child flag (save versions may use isChild or child)
+    const isChild = this.formManager.getFormValue('dwellerChild') === 'true';
+    (dweller as any).isChild = isChild;
+    if ((dweller as any).child !== undefined) {
+      (dweller as any).child = isChild;
+    }
+
+    // If marked child, enforce invalid-state cleanup
+    if (isChild) {
+      // pregnancy cleanup
+      if (typeof (dweller as any).pregnant === 'object') {
+        (dweller as any).pregnant.isPregnant = false;
+      } else {
+        (dweller as any).pregnant = false;
+      }
+      if ((dweller as any).babyReady !== undefined) {
+        (dweller as any).babyReady = false;
+      }
+    }
+
     // Your type seems to be "dweller.pregnant?.isPregnant" (object), but your older code used boolean.
     // Keep it compatible: store a boolean on dweller.pregnant if that is what your save type expects.
     const pregnant = this.formManager.getFormValue('dwellerPregnant') === 'true';
