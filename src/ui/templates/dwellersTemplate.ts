@@ -76,7 +76,7 @@ export const createDwellersTemplate = (): string => `
             </div>
 
             <!-- STATUS -->
-            <div class="grid grid-cols-3 gap-3">
+            <div class="grid grid-cols-4 gap-3">
               <div class="form-group mb-2">
                 <label class="form-label" for="dwellerRadiation">Radiation</label>
                 <input id="dwellerRadiation" class="form-input" type="number" min="0" />
@@ -90,6 +90,11 @@ export const createDwellersTemplate = (): string => `
               <div class="form-group mb-2 flex flex-col items-center justify-center">
                 <label for="dwellerBabyReadyTime" class="form-label mb-1 whitespace-nowrap">Baby Ready</label>
                 <input id="dwellerBabyReadyTime" type="checkbox" class="pip-checkbox" />
+              </div>
+
+              <div class="form-group mb-2 flex flex-col items-center justify-center">
+                <label for="dwellerChild" class="form-label mb-1 whitespace-nowrap">Child</label>
+                <input id="dwellerChild" type="checkbox" class="pip-checkbox" />
               </div>
             </div>
 
