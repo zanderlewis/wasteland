@@ -1,260 +1,139 @@
-// Message Modal Manager
-import { ModalType, MODAL_CONFIGS, type ModalTypeValue } from './templates/messageModalTemplate';
+// src/ui/messageModal.ts
+import {
+  ModalType,
+  type ModalTypeValue,
+  MODAL_CONFIGS
+} from './templates/messageModalTemplate';
 
-export interface MessageModalOptions {
-  title?: string;
-  message: string;
-  type?: ModalTypeValue;
-  confirmText?: string;
-  cancelText?: string;
-  showIcon?: boolean;
-  onConfirm?: () => void;
-  onCancel?: () => void;
-}
+type ResolveFn = (value: boolean) => void;
 
-/**
- * Manages the global message modal for consistent messaging throughout the app
- */
-export class MessageModalManager {
-  private modal: HTMLElement | null = null;
-  private isInitialized = false;
+class MessageModal {
+  private initialized = false;
+  private isConfirmMode = false;
+  private resolveFn: ResolveFn | null = null;
 
-  /**
-   * Initialize the modal manager
-   */
   initialize(): void {
-    if (this.isInitialized) return;
-    
-    this.modal = document.getElementById('messageModal');
-    if (!this.modal) {
-      console.error('Message modal not found in DOM');
+    // IMPORTANT: don’t lock initialize() unless we successfully bind.
+    if (this.initialized) return;
+
+    const modal = document.getElementById('messageModal') as HTMLDivElement | null;
+    const confirmBtn = document.getElementById('messageModalConfirm') as HTMLButtonElement | null;
+    const cancelBtn = document.getElementById('messageModalCancel') as HTMLButtonElement | null;
+
+    if (!modal || !confirmBtn || !cancelBtn) {
       return;
     }
 
-    this.setupEventListeners();
-    this.isInitialized = true;
-  }
+    this.initialized = true;
 
-  /**
-   * Show a message modal
-   */
-  show(options: MessageModalOptions): Promise<boolean> {
-    if (!this.isInitialized || !this.modal) {
-      console.error('MessageModalManager not initialized');
-      return Promise.resolve(false);
-    }
+    // Force hidden no matter what CSS does
+    modal.classList.add('modal-hidden');
+    modal.style.display = 'none';
 
-    return new Promise((resolve) => {
-      const type = options.type || ModalType.INFO;
-      const config = MODAL_CONFIGS[type];
+    // Confirm / OK
+    confirmBtn.addEventListener('click', () => this.close(true));
 
-      this.setupModal(options, config);
-      this.showModal();
+    // Cancel
+    cancelBtn.addEventListener('click', () => this.close(false));
 
-      // Set up one-time event listeners for this modal instance
-      const confirmHandler = () => {
-        this.hideModal();
-        if (options.onConfirm) {
-          options.onConfirm();
-        }
-        resolve(true);
-        this.cleanupEventListeners(confirmHandler, cancelHandler);
-      };
-
-      const cancelHandler = () => {
-        this.hideModal();
-        if (options.onCancel) {
-          options.onCancel();
-        }
-        resolve(false);
-        this.cleanupEventListeners(confirmHandler, cancelHandler);
-      };
-
-      const confirmBtn = document.getElementById('messageModalConfirm');
-      const cancelBtn = document.getElementById('messageModalCancel');
-
-      if (confirmBtn) {
-        confirmBtn.addEventListener('click', confirmHandler);
+    // Backdrop click (only closes for non-confirm dialogs)
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal && !this.isConfirmMode) {
+        this.close(false);
       }
+    });
 
-      if (cancelBtn && config.showCancel) {
-        cancelBtn.addEventListener('click', cancelHandler);
+    // ESC (only closes for non-confirm dialogs)
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && this.isOpen() && !this.isConfirmMode) {
+        this.close(false);
       }
-
-      // Close on escape key
-      const escapeHandler = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') {
-          cancelHandler();
-          document.removeEventListener('keydown', escapeHandler);
-        }
-      };
-      document.addEventListener('keydown', escapeHandler);
     });
   }
 
-  /**
-   * Show an info message
-   */
-  showInfo(message: string, title?: string): Promise<boolean> {
-    return this.show({
-      message,
-      title: title || 'Information',
-      type: ModalType.INFO,
-      showIcon: true
+  info(message: string, title = 'Message'): void {
+    this.open(ModalType.INFO, title, message);
+  }
+
+  success(message: string, title = 'Success'): void {
+    this.open(ModalType.SUCCESS, title, message);
+  }
+
+  warning(message: string, title = 'Warning'): void {
+    this.open(ModalType.WARNING, title, message);
+  }
+
+  error(message: string, title = 'Error'): void {
+    this.open(ModalType.ERROR, title, message);
+  }
+
+  confirm(message: string, title = 'Confirm'): Promise<boolean> {
+    return new Promise<boolean>((resolve) => {
+      this.resolveFn = resolve;
+      this.open(ModalType.CONFIRM, title, message);
     });
   }
 
-  /**
-   * Show a success message
-   */
-  showSuccess(message: string, title?: string): Promise<boolean> {
-    return this.show({
-      message,
-      title: title || 'Success',
-      type: ModalType.SUCCESS,
-      showIcon: true
-    });
+  private isOpen(): boolean {
+    const modal = document.getElementById('messageModal') as HTMLDivElement | null;
+    return !!modal && modal.style.display !== 'none';
   }
 
-  /**
-   * Show a warning message
-   */
-  showWarning(message: string, title?: string): Promise<boolean> {
-    return this.show({
-      message,
-      title: title || 'Warning',
-      type: ModalType.WARNING,
-      showIcon: true
-    });
-  }
-
-  /**
-   * Show an error message
-   */
-  showError(message: string, title?: string): Promise<boolean> {
-    return this.show({
-      message,
-      title: title || 'Error',
-      type: ModalType.ERROR,
-      showIcon: true
-    });
-  }
-
-  /**
-   * Show a confirmation dialog
-   */
-  showConfirm(
-    message: string,
-    title?: string,
-    confirmText?: string,
-    cancelText?: string
-  ): Promise<boolean> {
-    return this.show({
-      message,
-      title: title || 'Confirm',
-      type: ModalType.CONFIRM,
-      confirmText: confirmText || 'Confirm',
-      cancelText: cancelText || 'Cancel',
-      showIcon: true
-    });
-  }
-
-  /**
-   * Hide the modal
-   */
-  hideModal(): void {
-    if (this.modal) {
-      this.modal.classList.add('modal-hidden');
-    }
-  }
-
-  /**
-   * Show the modal
-   */
-  private showModal(): void {
-    if (this.modal) {
-      this.modal.classList.remove('modal-hidden');
-    }
-  }
-
-  /**
-   * Setup modal content based on options and config
-   */
-  private setupModal(options: MessageModalOptions, config: any): void {
-    const title = document.getElementById('messageModalTitle');
-    const icon = document.getElementById('messageModalIcon');
+  private open(type: ModalTypeValue, title: string, message: string): void {
+    const modal = document.getElementById('messageModal') as HTMLDivElement | null;
+    const titleEl = document.getElementById('messageModalTitle');
+    const textEl = document.getElementById('messageModalText');
+    const iconWrap = document.getElementById('messageModalIcon');
     const iconSymbol = document.getElementById('messageModalIconSymbol');
-    const text = document.getElementById('messageModalText');
-    const confirmBtn = document.getElementById('messageModalConfirm');
-    const cancelBtn = document.getElementById('messageModalCancel');
+    const confirmBtn = document.getElementById('messageModalConfirm') as HTMLButtonElement | null;
+    const cancelBtn = document.getElementById('messageModalCancel') as HTMLButtonElement | null;
 
-    // Set title
-    if (title) {
-      title.textContent = options.title || 'Message';
-      title.className = `text-lg font-semibold ${config.titleClass}`;
+    if (!modal || !titleEl || !textEl || !confirmBtn || !cancelBtn) return;
+
+    const cfg = MODAL_CONFIGS[type];
+    this.isConfirmMode = type === ModalType.CONFIRM;
+
+    // Title + message
+    titleEl.textContent = title;
+    textEl.textContent = message;
+
+    // Title class
+    titleEl.className = `text-lg font-semibold ${cfg.titleClass}`;
+
+    // Icon
+    if (iconWrap && iconSymbol) {
+      iconSymbol.textContent = cfg.icon;
+      iconWrap.classList.remove('hidden');
+      iconWrap.className = `text-center mb-4 text-4xl ${cfg.iconClass}`;
     }
 
-    // Set icon
-    if (icon && iconSymbol && options.showIcon !== false) {
-      iconSymbol.textContent = config.icon;
-      iconSymbol.className = config.iconClass;
-      icon.classList.remove('hidden');
-    } else if (icon) {
-      icon.classList.add('hidden');
-    }
+    // Buttons
+    confirmBtn.className = cfg.confirmClass;
+    confirmBtn.textContent = cfg.confirmText;
 
-    // Set message
-    if (text) {
-      text.textContent = options.message;
-    }
+    if (cfg.showCancel) cancelBtn.classList.remove('hidden');
+    else cancelBtn.classList.add('hidden');
 
-    // Set confirm button
-    if (confirmBtn) {
-      confirmBtn.textContent = options.confirmText || config.confirmText;
-      confirmBtn.className = config.confirmClass;
-    }
-
-    // Set cancel button
-    if (cancelBtn) {
-      if (config.showCancel) {
-        cancelBtn.textContent = options.cancelText || 'Cancel';
-        cancelBtn.classList.remove('hidden');
-      } else {
-        cancelBtn.classList.add('hidden');
-      }
-    }
+    // Show (force via inline style)
+    modal.classList.remove('modal-hidden');
+    modal.style.display = 'flex';
   }
 
-  /**
-   * Setup global event listeners
-   */
-  private setupEventListeners(): void {
-    if (!this.modal) return;
-
-    // Close modal when clicking outside
-    this.modal.addEventListener('click', (e) => {
-      if (e.target === this.modal) {
-        this.hideModal();
-      }
-    });
-  }
-
-  /**
-   * Clean up event listeners for a specific modal instance
-   */
-  private cleanupEventListeners(confirmHandler: () => void, cancelHandler: () => void): void {
-    const confirmBtn = document.getElementById('messageModalConfirm');
-    const cancelBtn = document.getElementById('messageModalCancel');
-
-    if (confirmBtn) {
-      confirmBtn.removeEventListener('click', confirmHandler);
+  private close(result: boolean): void {
+    const modal = document.getElementById('messageModal') as HTMLDivElement | null;
+    if (modal) {
+      modal.classList.add('modal-hidden');
+      modal.style.display = 'none';
     }
 
-    if (cancelBtn) {
-      cancelBtn.removeEventListener('click', cancelHandler);
-    }
+    const resolve = this.resolveFn;
+    this.resolveFn = null;
+
+    const wasConfirm = this.isConfirmMode;
+    this.isConfirmMode = false;
+
+    if (wasConfirm && resolve) resolve(result);
   }
 }
 
-// Create and export a singleton instance
-export const messageModal = new MessageModalManager();
+export const messageModal = new MessageModal();

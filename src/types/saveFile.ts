@@ -761,6 +761,8 @@ export interface DwellersItem {
   experience: Experience;
   relations: Relations;
   gender: number;
+  isChild?: boolean;
+  child?: boolean;
   stats: Stats;
   pregnant: boolean;
   babyReady: boolean;

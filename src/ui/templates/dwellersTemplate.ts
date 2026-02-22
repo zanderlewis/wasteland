@@ -1,233 +1,219 @@
-// Dwellers management template
-import { GAME_LIMITS } from '../../constants/gameConstants';
+// Dweller management interface template
 
-export const createDwellersSectionTemplate = (): string => `
-  <!-- Dwellers Section -->
-  <div id="dwellers-section" class="tab-content hidden">
-    <!-- Batch Operations -->
-    <div class="card mb-6">
-      <div class="card-header">
-        <h3 class="text-lg font-semibold">Batch Operations</h3>
+export const createDwellersTemplate = (): string => `
+  <!--
+    Fixed-height two-column layout:
+    - Prevent the dweller list panel from growing taller than the editor.
+    - The dweller list scrolls inside its panel instead.
+  -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch h-[calc(100vh-260px)] min-h-[560px]">
+
+    <!-- Dweller List + Quick Batch Ops -->
+    <div class="pip-panel h-full flex flex-col min-h-0">
+      <div class="pip-panel-title">
+        <h3 class="text-lg font-semibold whitespace-nowrap flex items-center gap-2">
+          Dwellers
+          <span id="dwellersCount" class="text-green-300/90 text-sm font-medium"></span>
+        </h3>
       </div>
-      <div class="card-body">
-        <div class="flex flex-wrap gap-2">
-          <button id="maxHappinessAll" class="btn btn-success">Max All Happiness</button>
-          <button id="healAll" class="btn btn-success">Heal All Dwellers</button>
-          <button id="maxSpecialAll" class="btn btn-success">Max All SPECIAL</button>
+      <div class="pip-panel-body p-3 pt-[18px] flex flex-col flex-1 min-h-0">
+        <div class="flex items-center justify-center gap-2 mb-3">
+          <button id="maxSpecialAll" class="btn btn-success btn-sm">Max All SPECIAL</button>
+          <button id="healAll" class="btn btn-success btn-sm">Heal All Dwellers</button>
+          <button id="maxHappinessAll" class="btn btn-success btn-sm">Max All Happiness</button>
         </div>
+
+        <div id="dwellerListScroll" class="dweller-list flex-1 min-h-0 overflow-y-auto relative"></div>
       </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <div id="dwellerListContainer" class="card lg:col-span-1">
-        <div class="card-header">
-          <h3 class="text-lg font-semibold">Dwellers</h3>
-        </div>
-        <div id="dwellerList" class="card-body max-h-96 overflow-y-auto space-y-2">
-          <!-- Dwellers will be populated here -->
-        </div>
-      </div>
-      
-      <div class="lg:col-span-2">
-        <div id="dwellerEditor" class="card">
-          <div class="card-header">
-            <h3 class="text-lg font-semibold">Edit Dweller</h3>
-            <span id="dwellerEditorStatus" class="text-sm text-gray-500">Select a dweller to edit</span>
-          </div>
-          <div class="card-body max-h-96 overflow-y-auto">
-            <form id="dwellerForm">
-              <fieldset id="dwellerFieldset" disabled>
-                <!-- Basic Info -->
-                <h4 class="text-md font-semibold mb-4">Basic Information</h4>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-                  <div class="form-group">
-                    <label class="form-label">First Name</label>
-                    <input type="text" id="dwellerName" class="form-input">
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label">Last Name</label>
-                    <input type="text" id="dwellerLastName" class="form-input">
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label">Gender</label>
-                    <select id="dwellerGender" class="form-input">
-                      <option value="1">Female</option>
-                      <option value="2">Male</option>
-                    </select>
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label">Level</label>
-                    <input type="number" id="dwellerLevel" class="form-input" min="${GAME_LIMITS.LEVEL_MIN}" max="${GAME_LIMITS.LEVEL_MAX}">
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label">Experience</label>
-                    <input type="number" id="dwellerExperience" class="form-input" min="0">
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label">Happiness</label>
-                    <input type="number" id="dwellerHappiness" class="form-input" min="${GAME_LIMITS.HAPPINESS_MIN}" max="${GAME_LIMITS.HAPPINESS_MAX}">
-                  </div>
-                </div>
+    <!-- Dweller Editor -->
+    <div class="pip-panel h-full flex flex-col min-h-0">
+      <div class="pip-panel-title"><h3 class="text-lg font-semibold whitespace-nowrap">Edit Dweller</h3></div>
+      <div class="pip-panel-body p-3 pt-[18px] flex flex-col flex-1 min-h-0 overflow-y-auto">
+        <div id="dwellerEditorStatus" class="text-green-200/80 mb-2">Select a dweller to edit</div>
 
-                <!-- Health Section -->
-                <h4 class="text-md font-semibold mt-6 mb-4">Health & Status</h4>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                  <div class="form-group">
-                    <label class="form-label">Health</label>
-                    <input type="number" id="dwellerHealth" class="form-input" min="0">
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label">Max Health</label>
-                    <input type="number" id="dwellerMaxHealth" class="form-input" min="0">
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label">Radiation</label>
-                    <input type="number" id="dwellerRadiation" class="form-input" min="${GAME_LIMITS.RADIATION_MIN}" max="${GAME_LIMITS.RADIATION_MAX}">
-                  </div>
-                </div>
+        <form id="dwellerForm" class="dweller-form space-y-2">
+          <fieldset id="dwellerFieldset" disabled>
 
-                <!-- Appearance Section -->
-                <h4 class="text-md font-semibold mt-6 mb-4">Appearance</h4>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                  <div class="form-group">
-                    <label class="form-label">Skin Color</label>
-                    <input type="color" id="dwellerSkinColor" class="form-input" value="#FFDBAC" title="Skin Color">
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label">Hair Color</label>
-                    <input type="color" id="dwellerHairColor" class="form-input" value="#8B4513" title="Hair Color">
-                  </div>
-                </div>
+            <!-- BASIC INFO -->
+            <div class="grid grid-cols-2 gap-2">
+              <div class="form-group mb-2">
+                <label class="form-label" for="dwellerName">First Name</label>
+                <input id="dwellerName" class="form-input" type="text" />
+              </div>
+              <div class="form-group mb-2">
+                <label class="form-label" for="dwellerLastName">Last Name</label>
+                <input id="dwellerLastName" class="form-input" type="text" />
+              </div>
 
-                <!-- Pregnancy Section -->
-                <div id="pregnancySection" class="pregnancy-field">
-                  <h4 class="text-md font-semibold mt-6 mb-4">Pregnancy</h4>
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                  <div class="form-group">
-                    <label class="form-label">Pregnant</label>
-                    <select id="dwellerPregnant" class="form-input">
-                      <option value="false">No</option>
-                      <option value="true">Yes</option>
-                    </select>
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label">Baby Ready</label>
-                    <select id="dwellerBabyReady" class="form-input" title="Whether baby is ready to be born">
-                      <option value="false">Not Ready</option>
-                      <option value="true">Ready</option>
-                    </select>
-                  </div>
-                  </div>
-                </div>
+              <div class="form-group mb-2">
+                <label class="form-label" for="dwellerGender">Gender</label>
+                <select id="dwellerGender" class="form-input">
+                  <option value="2">Male</option>
+                  <option value="1">Female</option></select>
+              </div>
 
-                <!-- SPECIAL Stats -->
-                <h4 class="text-md font-semibold mt-6 mb-4">SPECIAL Stats</h4>
-                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-6">
-                  <div class="form-group">
-                    <label class="form-label">Strength</label>
-                    <input type="number" id="dwellerStrength" class="form-input special-input" min="${GAME_LIMITS.SPECIAL_MIN}" max="${GAME_LIMITS.SPECIAL_MAX}">
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label">Perception</label>
-                    <input type="number" id="dwellerPerception" class="form-input special-input" min="${GAME_LIMITS.SPECIAL_MIN}" max="${GAME_LIMITS.SPECIAL_MAX}">
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label">Endurance</label>
-                    <input type="number" id="dwellerEndurance" class="form-input special-input" min="${GAME_LIMITS.SPECIAL_MIN}" max="${GAME_LIMITS.SPECIAL_MAX}">
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label">Charisma</label>
-                    <input type="number" id="dwellerCharisma" class="form-input special-input" min="${GAME_LIMITS.SPECIAL_MIN}" max="${GAME_LIMITS.SPECIAL_MAX}">
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label">Intelligence</label>
-                    <input type="number" id="dwellerIntelligence" class="form-input special-input" min="${GAME_LIMITS.SPECIAL_MIN}" max="${GAME_LIMITS.SPECIAL_MAX}">
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label">Agility</label>
-                    <input type="number" id="dwellerAgility" class="form-input special-input" min="${GAME_LIMITS.SPECIAL_MIN}" max="${GAME_LIMITS.SPECIAL_MAX}">
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label">Luck</label>
-                    <input type="number" id="dwellerLuck" class="form-input special-input" min="${GAME_LIMITS.SPECIAL_MIN}" max="${GAME_LIMITS.SPECIAL_MAX}">
-                  </div>
-                </div>
+              <div class="form-group mb-2">
+                <label class="form-label" for="dwellerLevel">Level</label>
+                <input id="dwellerLevel" class="form-input" type="number" min="1" max="50" />
+              </div>
 
-                <!-- Equipment Section -->
-                <h4 class="text-md font-semibold mt-6 mb-4">Equipment</h4>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                  <div class="form-group">
-                    <label class="form-label">Weapon</label>
-                    <select id="dwellerWeapon" class="form-input">
-                      <option value="">No Weapon</option>
-                      <!-- Options will be populated dynamically -->
-                    </select>
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label">Outfit</label>
-                    <select id="dwellerOutfit" class="form-input">
-                      <option value="">No Outfit</option>
-                      <!-- Options will be populated dynamically -->
-                    </select>
-                  </div>
-                </div>
+              <div class="form-group mb-2">
+                <label class="form-label" for="dwellerExperience">Experience</label>
+                <input id="dwellerExperience" class="form-input" type="number" min="0" />
+              </div>
 
-              <!-- Pet Section -->
+              <div class="form-group mb-2">
+                <label class="form-label" for="dwellerHappiness">Happiness</label>
+                <input id="dwellerHappiness" class="form-input" type="number" min="0" max="100" />
+              </div>
+
+              <div class="form-group mb-2">
+                <label class="form-label" for="dwellerHealth">Health</label>
+                <input id="dwellerHealth" class="form-input" type="number" min="0" />
+              </div>
+
+              <div class="form-group mb-2">
+                <label class="form-label" for="dwellerMaxHealth">Max Health</label>
+                <input id="dwellerMaxHealth" class="form-input" type="number" min="1" />
+              </div>
+            </div>
+
+            <!-- STATUS -->
+            <div class="grid grid-cols-4 gap-3">
+              <div class="form-group mb-2">
+                <label class="form-label" for="dwellerRadiation">Radiation</label>
+                <input id="dwellerRadiation" class="form-input" type="number" min="0" />
+              </div>
+
+              <div class="form-group mb-2 flex flex-col items-center justify-center">
+                <label for="dwellerPregnant" class="form-label mb-1 whitespace-nowrap">Pregnant</label>
+                <input id="dwellerPregnant" type="checkbox" class="pip-checkbox" />
+              </div>
+
+              <div class="form-group mb-2 flex flex-col items-center justify-center">
+                <label for="dwellerBabyReadyTime" class="form-label mb-1 whitespace-nowrap">Baby Ready</label>
+                <input id="dwellerBabyReadyTime" type="checkbox" class="pip-checkbox" />
+              </div>
+
+              <div class="form-group mb-2 flex flex-col items-center justify-center">
+                <label for="dwellerChild" class="form-label mb-1 whitespace-nowrap">Child</label>
+                <input id="dwellerChild" type="checkbox" class="pip-checkbox" />
+              </div>
+            </div>
+
+            <!-- APPEARANCE -->
+            <div class="grid grid-cols-2 gap-3">
               <div>
-                <h4 class="text-md font-semibold mb-4">Pet</h4>
-                <div class="form-group">
-                  <label class="form-label">Pet</label>
-                  <select id="dwellerPet" class="form-input">
-                    <option value="">No Pet</option>
-                    <!-- Options will be populated dynamically -->
-                  </select>
+                <label class="form-label whitespace-nowrap">Hair Colour</label>
+                <input id="dwellerHairColor" type="color" class="pip-color" />
+              </div>
+              <div>
+                <label class="form-label whitespace-nowrap">Skin Colour</label>
+                <input id="dwellerSkinColor" type="color" class="pip-color" />
+              </div>
+            </div>
+
+<!-- SPECIAL -->
+            <div class="flex items-center justify-between mt-3">
+              <h4 class="text-green-200 uppercase tracking-wide">SPECIAL Stats</h4>
+              <button id="maxSpecial" type="button" class="btn btn-success btn-sm">Max SPECIAL</button>
+            </div>
+
+            <div class="grid grid-cols-7 gap-2 mt-2">
+              <div class="text-center">
+                <div class="pip-green-text special-letter">S</div>
+                <div class="special-slider-wrap">
+                  <input id="dwellerStrength" type="range" min="1" max="10" value="1" data-bubble="specialBubbleS" class="special-slider special-slider-vertical" />
+                  <div id="specialBubbleS" class="special-slider-value">1</div>
                 </div>
               </div>
-
-              <!-- Action Buttons -->
-              <div class="flex gap-4 pt-4 border-t border-gray-700">
-                <button type="submit" id="saveDwellerChanges" class="btn btn-primary">Save Changes</button>
-                <button type="button" id="resetDwellerForm" class="btn btn-secondary">Reset</button>
-                <button type="button" id="maxSpecial" class="btn btn-success">Max SPECIAL</button>
-                <button type="button" id="evictDweller" class="btn btn-danger">Evict Dweller</button>
+              <div class="text-center">
+                <div class="pip-green-text special-letter">P</div>
+                <div class="special-slider-wrap">
+                  <input id="dwellerPerception" type="range" min="1" max="10" value="1" data-bubble="specialBubbleP" class="special-slider special-slider-vertical" />
+                  <div id="specialBubbleP" class="special-slider-value">1</div>
+                </div>
               </div>
-              </fieldset>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
+              <div class="text-center">
+                <div class="pip-green-text special-letter">E</div>
+                <div class="special-slider-wrap">
+                  <input id="dwellerEndurance" type="range" min="1" max="10" value="1" data-bubble="specialBubbleE" class="special-slider special-slider-vertical" />
+                  <div id="specialBubbleE" class="special-slider-value">1</div>
+                </div>
+              </div>
+              <div class="text-center">
+                <div class="pip-green-text special-letter">C</div>
+                <div class="special-slider-wrap">
+                  <input id="dwellerCharisma" type="range" min="1" max="10" value="1" data-bubble="specialBubbleC" class="special-slider special-slider-vertical" />
+                  <div id="specialBubbleC" class="special-slider-value">1</div>
+                </div>
+              </div>
+              <div class="text-center">
+                <div class="pip-green-text special-letter">I</div>
+                <div class="special-slider-wrap">
+                  <input id="dwellerIntelligence" type="range" min="1" max="10" value="1" data-bubble="specialBubbleI" class="special-slider special-slider-vertical" />
+                  <div id="specialBubbleI" class="special-slider-value">1</div>
+                </div>
+              </div>
+              <div class="text-center">
+                <div class="pip-green-text special-letter">A</div>
+                <div class="special-slider-wrap">
+                  <input id="dwellerAgility" type="range" min="1" max="10" value="1" data-bubble="specialBubbleA" class="special-slider special-slider-vertical" />
+                  <div id="specialBubbleA" class="special-slider-value">1</div>
+                </div>
+              </div>
+              <div class="text-center">
+                <div class="pip-green-text special-letter">L</div>
+                <div class="special-slider-wrap">
+                  <input id="dwellerLuck" type="range" min="1" max="10" value="1" data-bubble="specialBubbleL" class="special-slider special-slider-vertical" />
+                  <div id="specialBubbleL" class="special-slider-value">1</div>
+                </div>
+              </div>
+            </div>
 
-    <!-- Eviction Confirmation Modal -->
-    <div id="evictionModal" class="modal modal-hidden">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3 class="text-lg font-semibold text-red-400">⚠️ Confirm Dweller Eviction</h3>
-        </div>
-        <div class="modal-body">
-          <p class="text-gray-300 mb-4">
-            <strong class="text-red-400">WARNING:</strong> You are about to evict this dweller from your vault.
-          </p>
-          <p class="text-gray-300 mb-4">
-            Dweller: <span id="evictionDwellerName" class="font-semibold text-white"></span>
-          </p>
-          <p class="text-gray-300 mb-4">
-            This action will:
-          </p>
-          <ul class="list-disc pl-6 text-gray-300 mb-4 space-y-1">
-            <li>Remove the dweller from all room assignments</li>
-            <li>Mark them for eviction from the vault</li>
-            <li>This action cannot be easily undone</li>
-          </ul>
-          <p class="text-red-400 font-medium">
-            Are you sure you want to proceed?
-          </p>
-        </div>
-        <div class="modal-footer">
-          <button id="cancelEviction" class="btn btn-secondary">Cancel</button>
-          <button id="confirmEviction" class="btn btn-danger">Yes, Evict Dweller</button>
-        </div>
+            <!-- Equipment -->
+            <div class="mt-3">
+              <h4 class="text-green-200 uppercase tracking-wide">Equipment</h4>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+              <div class="form-group mb-2">
+                <label class="form-label" for="dwellerWeapon">Weapon</label>
+                <select id="dwellerWeapon" class="form-input"></select>
+              </div>
+
+              <div class="form-group mb-2">
+                <label class="form-label" for="dwellerOutfit">Outfit</label>
+                <select id="dwellerOutfit" class="form-input"></select>
+              </div>
+
+              <div class="form-group mb-2 col-span-2">
+                <label class="form-label" for="dwellerPet">Pet</label>
+                <select id="dwellerPet" class="form-input"></select>
+              </div>
+            </div>
+
+            <!-- Save / Reset -->
+            <div class="flex items-center gap-2 pt-2">
+              <button id="saveDwellerChanges" type="submit" class="btn btn-success">Save Changes</button>
+              <button id="resetDwellerForm" type="button" class="btn btn-secondary">Reset</button>
+              <button id="evictDweller" type="button" class="btn btn-danger ml-auto">Evict Dweller</button>
+            </div>
+          </fieldset>
+        </form>
       </div>
     </div>
+  </div>
+`;
+
+/**
+ * Tab wrapper so the Dwellers UI is only visible when the DWELLERS tab is active.
+ * (EventManager switches visibility by toggling `.hidden` on `.tab-content` sections.)
+ */
+export const createDwellersSectionTemplate = (): string => `
+  <div id="dwellers-section" class="tab-content hidden">
+    ${createDwellersTemplate()}
   </div>
 `;

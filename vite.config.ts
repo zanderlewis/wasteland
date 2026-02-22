@@ -3,7 +3,7 @@ import { defineConfig } from 'vite';
 export default defineConfig(() => ({
   base: process.env.VITE_BASE ?? '/',
   define: {
-    __APP_CHANNEL__: JSON.stringify(process.env.VITE_APP_CHANNEL ?? 'main')
+    __BUILD_SHA__: JSON.stringify(process.env.VITE_BUILD_SHA ?? '')
   },
   build: {
     outDir: 'dist',

@@ -50,6 +50,8 @@ jobs:
           git checkout layout-update
           npm ci
           rm -rf dist
+          # Inject the current layout-update commit SHA into the Vite build
+          export VITE_BUILD_SHA="$(git rev-parse HEAD)"
           npm run build
           mkdir -p site/layout-update
           cp -R dist/* site/layout-update/
