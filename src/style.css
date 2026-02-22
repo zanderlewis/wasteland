@@ -2,47 +2,92 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Force dark mode for the entire app */
+/* ============================================================
+   Font
+   ============================================================ */
+@font-face {
+  font-family: 'FuturaCondensed';
+  src: url('./assets/fonts/futura-condensed-pt-medium-589e44ed1e3a5.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ============================================================
+   Base (global)
+   ============================================================ */
 @layer base {
   html {
     color-scheme: dark;
+    font-size: 22px; /* make 1rem match Pip-Boy base text */
   }
-  
+
   body {
-    @apply bg-gray-900 text-white;
+    @apply bg-gray-900 text-green-500;
+    font-family: 'FuturaCondensed', system-ui, sans-serif;
+    font-size: 22px;
+    line-height: 1.15;
+    margin: 0;
+  }
+
+  /* Force Pip-Boy green for headings and labels (override any leftover gray utility classes) */
+  h1, h2, h3, h4, h5, h6,
+  legend,
+  .card-header,
+  .form-label,
+  label {
+    color: rgb(34, 197, 94) !important; /* Tailwind green-500 */
   }
 }
 
+/* ============================================================
+   App layout components
+   ============================================================ */
 .container {
-  @apply max-w-6xl mx-auto px-4 py-8;
+  /* Make the whole page ~26% thinner (max-w-6xl -> max-w-4xl) */
+  @apply max-w-4xl mx-auto px-4 py-8;
+
+  max-width: 53.2rem;
 }
 
 .card {
-  @apply bg-gray-800 rounded-lg shadow-lg border border-gray-700;
+  /* Pip-Boy-ish green border */
+  @apply bg-gray-800 rounded-lg shadow-lg border border-green-900/60;
+  box-shadow:
+    0 0 0 1px rgba(34, 197, 94, 0.12),
+    0 0 24px rgba(34, 197, 94, 0.08);
 }
 
 .card-header {
-  @apply px-6 py-4 border-b border-gray-700 bg-gray-750 rounded-t-lg;
+  @apply px-6 py-4 border-b border-green-900/60 bg-gray-750 rounded-t-lg;
 }
 
 .card-body {
   @apply p-6 max-h-[calc(100vh-200px)] overflow-y-auto;
+  margin: 0;
+}
+
+.card-body-tight {
+  @apply p-0 max-h-[calc(100vh-200px)] overflow-y-auto;
 }
 
 .btn {
-  @apply px-4 py-2 rounded-md font-medium text-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900;
+  @apply px-4 py-2 rounded-md font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900;
+  /* Keep button text at least as big as row text */
+  font-size: 22px;
+  line-height: 1.15;
 }
 
 .btn-primary {
-  @apply bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500;
+  @apply bg-green-700 text-black hover:bg-green-600 focus:ring-green-500;
 }
 
 .btn-secondary {
-  @apply bg-gray-600 text-white hover:bg-gray-700 focus:ring-gray-500;
+  @apply bg-gray-600 text-white hover:bg-gray-700 focus:ring-green-500;
 }
 
 .btn-success {
-  @apply bg-green-600 text-white hover:bg-green-700 focus:ring-green-500;
+  @apply bg-green-600 text-black hover:bg-green-500 focus:ring-green-500;
 }
 
 .btn-danger {
@@ -50,36 +95,13 @@
 }
 
 .btn-warning {
-  @apply bg-yellow-600 text-white hover:bg-yellow-700 focus:ring-yellow-500;
-}
-
-/* Modal Styles */
-.modal {
-  @apply fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50;
-}
-
-.modal-content {
-  @apply bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4 border border-gray-700;
-}
-
-.modal-header {
-  @apply px-6 py-4 border-b border-gray-700 bg-gray-750 rounded-t-lg;
-}
-
-.modal-body {
-  @apply p-6;
-}
-
-.modal-footer {
-  @apply px-6 py-4 border-t border-gray-700 bg-gray-750 rounded-b-lg flex justify-end space-x-3;
-}
-
-.modal-hidden {
-  display: none;
+  @apply bg-yellow-600 text-black hover:bg-yellow-500 focus:ring-yellow-500;
 }
 
 .btn-sm {
-  @apply px-3 py-1 text-xs;
+  @apply px-3 py-1;
+  font-size: 22px;
+  line-height: 1.15;
 }
 
 .btn:disabled {
@@ -87,204 +109,382 @@
 }
 
 .form-input {
-  @apply block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-white placeholder-gray-400;
+  @apply block w-full px-3 py-2 border border-green-900/50 rounded-md shadow-sm
+    focus:outline-none focus:ring-green-500 focus:border-green-500
+    bg-gray-700 text-green-500 placeholder-green-500/30;
+  font-size: 22px;
+  line-height: 1.15;
+}
+/* Tighter spacing specifically inside the Edit Dweller form */
+.dweller-form .form-input {
+  padding-top: 0.35rem;
+  padding-bottom: 0.35rem;
 }
 
+/* Vertical SPECIAL sliders (green) */
+.special-slider {
+  -webkit-appearance: slider-vertical;
+  appearance: slider-vertical;
+  writing-mode: bt-lr;
+  width: 1.75rem;      /* wider rail */
+  height: 7.5rem;      /* vertical height */
+  background: transparent;
+}
+
+.special-slider::-webkit-slider-runnable-track {
+  width: 0.6rem;
+  border-radius: 9999px;
+  background: rgba(16, 185, 129, 0.35); /* green-500-ish */
+  border: 1px solid rgba(16, 185, 129, 0.75);
+}
+
+.special-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 3.2rem;       /* bigger knob */
+  height: 1.2rem;
+  border-radius: 0.5rem;
+  background: rgba(16, 185, 129, 0.95);
+  border: 1px solid rgba(16, 185, 129, 1);
+  margin-left: -0.5rem; /* center knob over track */
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
+}
+
+.special-slider::-moz-range-track {
+  width: 0.6rem;
+  border-radius: 9999px;
+  background: rgba(16, 185, 129, 0.35);
+  border: 1px solid rgba(16, 185, 129, 0.75);
+}
+
+.special-slider::-moz-range-thumb {
+  width: 3.2rem;
+  height: 1.2rem;
+  border-radius: 0.5rem;
+  background: rgba(16, 185, 129, 0.95);
+  border: 1px solid rgba(16, 185, 129, 1);
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
+}
+
+
 .form-label {
-  @apply block text-sm font-medium text-gray-300 mb-1;
+  @apply block font-medium text-green-500/80 mb-1;
+  font-size: 22px;
+  line-height: 1.15;
 }
 
 .form-group {
-  @apply mb-4;
+  @apply mb-2;
 }
-
-.tab-container {
-  @apply border-b border-gray-700 mb-6;
-}
-
-.tab {
-  @apply inline-block px-4 py-2 text-sm font-medium text-gray-400 border-b-2 border-transparent hover:text-gray-200 hover:border-gray-500 cursor-pointer transition-colors duration-200;
-}
-
-.tab.active {
-  @apply text-blue-400 border-blue-400;
-}
-
-.dweller-list {
-  @apply space-y-2 max-h-[calc(100vh-200px)] overflow-y-auto;
-}
-
-.dweller-item {
-  @apply p-3 bg-gray-750 rounded-lg cursor-pointer hover:bg-gray-700 transition-colors duration-200 border border-gray-600;
-}
-
-.dweller-item.active {
-  @apply bg-blue-900 border-2 border-blue-500;
-}
-
-.dweller-item.evicted {
-  @apply bg-red-900 border-red-500;
-}
-
-.dweller-name {
-  @apply font-medium text-gray-100;
-}
-
-.dweller-stats {
-  @apply text-sm text-gray-400 mt-1;
-}
-
 .special-grid {
   @apply grid grid-cols-7 gap-2;
 }
 
-.special-stat {
-  @apply text-center;
-}
-
-.special-stat label {
-  @apply block text-xs font-medium text-gray-400 mb-1;
-}
-
-.special-stat input {
-  @apply w-full text-center;
-}
-
 .resource-grid {
-  @apply grid grid-cols-3 gap-4;
+  /* Always show resources on one row (6 items) */
+  @apply grid grid-cols-6 gap-4;
 }
 
+
+.tab-container {
+  /* Trapezoid tabs sit on top of this line */
+  @apply mb-6;
+  border-bottom: 2px solid rgba(34, 197, 94, 0.35);
+  padding-bottom: 0;
+  position: relative;
+  z-index: 60;
+  overflow: visible;
+}
+
+.tab {
+  /* Rounded-corner isosceles trapezoid */
+  @apply inline-flex items-center justify-center font-medium cursor-pointer transition-colors duration-200;
+  margin-right: 10px;
+  padding: 10px 18px;
+  font-size: 22px;
+  line-height: 1.15;
+  color: rgba(34, 197, 94, 0.75);
+
+  background: rgba(17, 24, 39, 0.70);
+  border: 2px solid rgba(34, 197, 94, 0.65);
+  border-bottom: 0;
+  border-radius: 14px 14px 0 0;
+
+  /* Top narrower than bottom */
+  clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 100%, 0 100%);
+
+  position: relative;
+  top: 2px; /* overlap the container line */
+  z-index: 61;
+}
+
+.tab .tab-label {
+  white-space: nowrap;
+  pointer-events: none; /* clicking text still clicks the button */
+}
+
+.tab:hover {
+  color: rgba(226, 232, 240, 0.95); /* near-white */
+  border-color: rgba(34, 197, 94, 0.95);
+}
+
+.tab.active {
+  color: rgba(34, 197, 94, 0.95);
+  background: rgba(17, 24, 39, 0.92);
+  border-color: rgba(34, 197, 94, 0.95);
+}
+
+/* Storage sub-tabs */
+.storage-subtab {
+  @apply px-3 py-1 rounded-md font-medium text-green-500/70 border border-green-900/60
+    hover:text-green-100 hover:border-green-500 transition-colors duration-200;
+  font-size: 16px;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+.storage-subtab.active {
+  @apply text-green-500 border-green-400 bg-green-900/20;
+}
+
+.storage-list {
+  @apply border border-green-900/60 rounded-lg bg-gray-750;
+}
+
+.storage-list-row {
+  @apply flex items-center justify-between px-3 py-2 border-b border-green-900/40;
+}
+
+.storage-list-row:last-child {
+  border-bottom: none;
+}
+
+.storage-item-name {
+  @apply text-green-200;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.storage-item-id {
+  @apply text-green-500/70 text-sm;
+  white-space: nowrap;
+}
+
+/* Upload section centering */
+#dropZone {
+  @apply flex flex-col items-center justify-center text-center;
+}
+
+/* Drag and drop */
 .drop-zone {
-  @apply border-2 border-dashed border-gray-600 rounded-lg p-8 text-center hover:border-gray-500 transition-colors duration-200 bg-gray-750;
+  @apply border-2 border-dashed border-green-900/60 rounded-lg p-8 text-center
+    hover:border-green-500 transition-colors duration-200 bg-gray-750;
 }
 
-.drop-zone.dragover {
-  @apply border-blue-500 bg-blue-900;
+.drop-zone.dragover,
+.drop-zone.drag-over,
+#dropZone.drag-over {
+  @apply border-green-400 bg-green-900/20;
 }
 
-.error-message {
-  @apply text-red-400 text-sm mt-1;
+/* Modal Styles */
+.modal {
+  @apply fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60;
 }
 
-.success-message {
-  @apply text-green-400 text-sm mt-1;
+.modal-content {
+  @apply bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4 border border-green-900/60;
 }
 
-.loading {
-  @apply animate-pulse;
+.modal-header {
+  @apply px-6 py-4 border-b border-green-900/60 bg-gray-750 rounded-t-lg;
 }
 
-/* Animations */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+.modal-body {
+  @apply p-6;
 }
 
-.fade-in {
-  animation: fadeIn 0.3s ease-out;
+.modal-footer {
+  @apply px-6 py-4 border-t border-green-900/60 bg-gray-750 rounded-b-lg flex justify-end space-x-3;
 }
 
-/* Code block styling */
-code {
-  @apply inline bg-gray-800 text-green-400 font-mono px-1 rounded-sm;
+.modal-hidden {
+  display: none;
 }
 
-pre {
-  @apply block bg-gray-800 text-green-400 font-mono text-sm overflow-x-auto;
+
+:root {
+  --pip-green: rgb(34, 197, 94); /* Tailwind green-500 */
+  --pip-bg: rgb(17, 24, 39);     /* Tailwind gray-900 */
+  --pip-green-dark: rgba(16, 90, 28, 0.9);
 }
 
-pre code {
-  @apply bg-transparent text-inherit;
+/* Pip-Boy panels */
+.pip-panel {
+  border: 2px solid var(--pip-green);
+  position: relative;
+  background: rgba(17, 24, 39, 0.6);
+  box-shadow:
+    0 0 0 2px var(--pip-green-dark),
+    inset 0 0 0 2px var(--pip-green-dark),
+    0 0 18px rgba(0, 255, 90, 0.08);
+  border-radius: 14px;
+  overflow: visible;
 }
 
-.code-block {
-  @apply bg-gray-800 font-mono text-sm text-green-400 overflow-x-auto;
+.pip-panel-title {
+  position: absolute;
+  /* Center the title badge vertically on the panel's top border */
+  top: 0;
+  transform: translateY(-50%);
+  left: 14px;
+  padding: 0 10px;
+  background: rgba(5, 30, 10, 0.95);
+  color: var(--pip-green);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border: 2px solid var(--pip-green);
+  border-radius: 10px;
+  box-shadow: 0 0 0 2px var(--pip-green-dark), inset 0 0 0 2px var(--pip-green-dark);
+
+  /* Prevent wrapping + allow right-aligned header actions in specific panels */
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+  flex-wrap: nowrap;
+  overflow: visible;
 }
 
-.inline-code {
-  @apply inline bg-gray-800 text-green-400 font-mono text-sm;
+/* Ensure inner title text never wraps (Vault Management, Quick Actions, Backup & Export, etc.) */
+.pip-panel-title > * {
+  white-space: nowrap;
 }
 
-/* File path specific styling */
-.file-path {
-  @apply inline bg-gray-800 text-yellow-400 font-mono text-sm px-1 rounded-sm;
+/* Storage title bar needs room for usage + category buttons on the same line */
+.pip-panel-title.storage-title {
+  right: 14px;
+  width: calc(100% - 28px);
+  justify-content: space-between;
 }
 
-/* Custom gray-750 utility and max-height utility */
-@layer utilities {
-  .bg-gray-750 {
-    background-color: rgb(55, 65, 81);
-  }
-  
-  .border-gray-750 {
-    border-color: rgb(55, 65, 81);
-  }
-
-  .max-h-\[calc\(100vh-200px\)\] {
-    max-height: calc(100vh - 200px);
-  }
+.pip-panel-title.storage-title .storage-title-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
 }
 
-/* Responsive design */
-@media (max-width: 768px) {
-  .special-grid {
-    @apply grid-cols-4;
-  }
-  
-  .resource-grid {
-    @apply grid-cols-2;
-  }
-  
-  .container {
-    @apply px-2;
-  }
+.pip-panel-title.storage-title .storage-title-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
 }
 
-/* Status message styling for dark mode */
-.status-success {
-  @apply bg-green-900 text-green-300 border border-green-700;
+.pip-panel-header {
+  background: transparent;
 }
 
-.status-error {
-  @apply bg-red-900 text-red-300 border border-red-700;
+/* Remove horizontal lines inside Pip panels */
+.pip-panel .border-b,
+.pip-panel .border-t {
+  border-bottom-width: 0 !important;
+  border-top-width: 0 !important;
 }
 
-.status-info {
-  @apply bg-blue-900 text-blue-300 border border-blue-700;
+.pip-panel .divide-y > :not([hidden]) ~ :not([hidden]) {
+  border-top-width: 0 !important;
 }
 
-.loading {
-  @apply animate-pulse;
+/* Sort indicator chevrons (same width for up/down) */
+
+.dw-sort-indicator {
+  position: absolute;
+  left: 50%;
+  top: calc(100% - 2px); /* straddle the header bottom border */
+  width: 20px;
+  height: 12px;
+  transform: translateX(-50%);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 30;
 }
 
-/* Animations */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+.dw-sort-indicator.is-active {
+  opacity: 1;
 }
 
-.fade-in {
-  animation: fadeIn 0.3s ease-out;
+/* Default chevron points DOWN (descending). */
+.dw-sort-indicator.desc {
+  transform: translateX(-50%) rotate(0deg);
 }
 
-/* Responsive design */
-@media (max-width: 768px) {
-  .special-grid {
-    @apply grid-cols-4;
-  }
-  
-  .resource-grid {
-    @apply grid-cols-2;
-  }
-  
-  .container {
-    @apply px-2;
-  }
+/* Ascending chevron points UP. */
+.dw-sort-indicator.asc {
+  transform: translateX(-50%) rotate(180deg);
 }
+
+.dw-sort-indicator::before,
+.dw-sort-indicator::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  width: 12px;
+  height: 3px;
+  background: var(--pip-green);
+  border-radius: 2px;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.65);
+}
+
+.dw-sort-indicator::before {
+  left: 0;
+  transform: rotate(45deg);
+}
+
+.dw-sort-indicator::after {
+  right: 0;
+  transform: rotate(-45deg);
+}
+
+
+.dw-sort-indicator.is-active {
+  opacity: 1;
+}
+
+.dw-sort-indicator::before,
+.dw-sort-indicator::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  width: 12px;
+  height: 2px;
+  background: var(--pip-green);
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.55);
+}
+
+.dw-sort-indicator::before {
+  left: 0;
+  transform-origin: left center;
+  transform: rotate(-45deg);
+}
+
+.dw-sort-indicator::after {
+  right: 0;
+  transform-origin: right center;
+  transform: rotate(45deg);
+}
+
+.dw-sort-indicator.desc {
+  transform: translateX(-50%) rotate(180deg);
+}
+
 
 /* Toast Notifications */
 .toast {
-  @apply min-w-80 max-w-sm p-4 rounded-lg border shadow-lg backdrop-blur-sm relative;
+  @apply min-w-80 max-w-sm p-4 rounded-lg border border-green-900/60 shadow-lg backdrop-blur-sm relative;
   animation: slideInRight 0.3s ease-out;
 }
 
@@ -297,44 +497,322 @@ pre code {
 }
 
 .toast-message {
-  @apply flex-1 text-sm font-medium break-words;
+  @apply flex-1 font-medium break-words;
+  font-size: 22px;
+  line-height: 1.15;
 }
 
 .toast-close {
-  @apply ml-2 text-lg font-bold opacity-70 hover:opacity-100 transition-opacity cursor-pointer bg-transparent border-none text-inherit flex-shrink-0 w-6 h-6 flex items-center justify-center rounded;
+  @apply ml-2 text-lg font-bold opacity-70 hover:opacity-100 transition-opacity cursor-pointer
+    bg-transparent border-none text-inherit flex-shrink-0 w-6 h-6 flex items-center justify-center rounded;
 }
 
 .toast-close:hover {
   @apply bg-black bg-opacity-20;
 }
 
-/* Toast animations */
-@keyframes slideInRight {
-  from {
-    transform: translateX(100%);
-    opacity: 0;
+/* Code block styling */
+code {
+  @apply inline bg-gray-800 text-green-500 font-mono px-1 rounded-sm;
+}
+
+pre {
+  @apply block bg-gray-800 text-green-500 font-mono text-sm overflow-x-auto;
+}
+
+pre code {
+  @apply bg-transparent text-inherit;
+}
+
+.code-block {
+  @apply bg-gray-800 font-mono text-sm text-green-500 overflow-x-auto;
+}
+
+.inline-code {
+  @apply inline bg-gray-800 text-green-500 font-mono text-sm;
+}
+
+.file-path {
+  @apply inline bg-gray-800 text-yellow-400 font-mono text-sm px-1 rounded-sm;
+}
+
+/* Utilities */
+@layer utilities {
+  .dweller-field { width: 50%; }
+  @media (max-width: 768px) { .dweller-field { width: 100%; } }
+  .bg-gray-750 {
+    background-color: rgb(55, 65, 81);
   }
-  to {
-    transform: translateX(0);
-    opacity: 1;
+
+  .border-gray-750 {
+    border-color: rgb(55, 65, 81);
+  }
+
+  .max-h-\[calc\(100vh-200px\)\] {
+    max-height: calc(100vh - 200px);
+  }
+
+  /* Make any Tailwind "small text" at least the base size (requested) */
+  .text-xs,
+  .text-sm {
+    font-size: 1rem;
+    line-height: 1.15;
+  }
+
+  /* Clamp common arbitrary small text sizes used in a few templates */
+  .text-\[10px\],
+  .text-\[11px\],
+  .text-\[12px\] {
+    font-size: 1rem !important;
+    line-height: 1.15 !important;
   }
 }
 
-@keyframes slideOutRight {
-  from {
-    transform: translateX(0);
-    opacity: 1;
+/* Responsive */
+@media (max-width: 768px) {
+  .special-grid {
+    @apply grid-cols-4;
   }
-  to {
-    transform: translateX(100%);
-    opacity: 0;
+
+  .resource-grid {
+    @apply grid-cols-2;
   }
+
+  .container {
+  @apply px-2;
+  max-width: 53rem; /* ~5% thinner than 4xl */
+}
 }
 
-.animate-slide-in {
-  animation: slideInRight 0.3s ease-out;
+/* ============================================================
+   Pip-Boy / CRT Effects (global)
+   ============================================================ */
+
+/* Overall CRT glow + slight green phosphor */
+body {
+  text-shadow:
+    0 0 6px rgba(34, 197, 94, 0.22),
+    0 0 14px rgba(34, 197, 94, 0.14);
 }
 
-.animate-slide-out {
-  animation: slideOutRight 0.3s ease-in;
+/* Scanlines + vignette */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.00) 0px,
+      rgba(0, 0, 0, 0.00) 2px,
+      rgba(0, 0, 0, 0.18) 3px
+    ),
+    radial-gradient(
+      circle at center,
+      rgba(0, 0, 0, 0.00) 0%,
+      rgba(0, 0, 0, 0.35) 75%,
+      rgba(0, 0, 0, 0.55) 100%
+    );
+
+  mix-blend-mode: multiply;
+  opacity: 0.55;
+}
+
+/* subtle flicker */
+@keyframes crtFlicker {
+  0% { opacity: 0.22; }
+  15% { opacity: 0.28; }
+  30% { opacity: 0.20; }
+  45% { opacity: 0.30; }
+  60% { opacity: 0.24; }
+  75% { opacity: 0.32; }
+  100% { opacity: 0.22; }
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10000;
+
+  background: rgba(34, 197, 94, 0.08);
+  mix-blend-mode: screen;
+  animation: crtFlicker 6s infinite;
+}
+
+/* Terminal-ish flicker */
+@keyframes terminalFlicker {
+  0%, 100% { filter: brightness(1) contrast(1); }
+  50% { filter: brightness(1.06) contrast(1.03); }
+}
+#app {
+  animation: terminalFlicker 5.5s infinite;
+}
+
+/* Subtle bloom on bars */
+@keyframes barBloom {
+  0%, 100% { filter: drop-shadow(0 0 0 rgba(34,197,94,0.0)); }
+  50% { filter: drop-shadow(0 0 6px rgba(34,197,94,0.35)); }
+}
+.bg-green-500 {
+  animation: barBloom 3.5s infinite;
+}
+
+/* SPECIAL vertical sliders in Edit Dweller */
+input.special-slider {
+  writing-mode: bt-lr; /* Firefox */
+  -webkit-appearance: slider-vertical; /* Chromium/Safari */
+  display: block;
+  margin: 0 auto;
+  width: 2.25rem;
+  height: 9.5rem;
+  padding: 0;
+}
+
+
+/* Ensure headings inside title badges never introduce borders/lines */
+.pip-panel-title h1,
+.pip-panel-title h2,
+.pip-panel-title h3 {
+  border: 0 !important;
+  margin: 0;
+  padding: 0;
+  white-space: nowrap;
+}
+
+
+/* SPECIAL vertical sliders (green + thicker) */
+
+/* SPECIAL slider bubble (value on handle) */
+.special-slider-wrap {
+  position: relative;
+  width: 3.4rem;
+  /* 30% shorter than the old tall sliders, but still readable */
+  height: 6.6rem;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.35rem;
+}
+/* Value displayed under each SPECIAL slider */
+.special-slider-value {
+  padding: 0 8px;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: #08110c;
+  background: var(--pip-green);
+  border-radius: 999px;
+  border: 1px solid rgba(0,0,0,0.35);
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.8);
+  user-select: none;
+}
+input[type="range"].special-slider {
+  writing-mode: bt-lr;
+  -webkit-appearance: slider-vertical;
+  appearance: slider-vertical;
+  display: block;
+  margin: 0 auto;
+  width: 3.4rem;      /* wider */
+  height: 6.6rem;
+  padding: 0;
+  accent-color: var(--pip-green);
+}
+
+input[type="range"].special-slider::-webkit-slider-runnable-track {
+  width: 18px;
+  background: rgba(16, 185, 129, 0.25);
+  border: 1px solid rgba(16, 185, 129, 0.45);
+  border-radius: 999px;
+  box-shadow: inset 0 0 10px rgba(16, 185, 129, 0.25);
+}
+
+input[type="range"].special-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 42px;
+  height: 22px;
+  border-radius: 999px;
+  background: var(--pip-green);
+  border: 1px solid rgba(0, 0, 0, 0.35);
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.8);
+}
+
+input[type="range"].special-slider::-moz-range-track {
+  width: 18px;
+  background: rgba(16, 185, 129, 0.25);
+  border: 1px solid rgba(16, 185, 129, 0.45);
+  border-radius: 999px;
+}
+
+input[type="range"].special-slider::-moz-range-thumb {
+  width: 42px;
+  height: 22px;
+  border-radius: 999px;
+  background: var(--pip-green);
+  border: 1px solid rgba(0, 0, 0, 0.35);
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.8);
+}
+
+
+/* Debug-style 1px green borders around elements in Edit Dweller */
+#dweller-section .pip-panel-body * {
+  outline: 1px solid rgba(16, 185, 129, 0.28);
+  outline-offset: -1px;
+}
+
+
+/* Green checkboxes */
+.pip-checkbox {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--pip-green);
+}
+
+
+.pip-green-text{color:var(--pip-green);}
+
+.pip-color{
+  width: 100%;
+  height: 2.25rem;
+  padding: 0;
+  border: 1px solid rgba(0,255,0,0.35);
+  border-radius: 0.375rem;
+  background: rgba(0,0,0,0.35);
+}
+.pip-color::-webkit-color-swatch-wrapper{padding:0.15rem;}
+.pip-color::-webkit-color-swatch{border:none;border-radius:0.25rem;}
+
+
+/* SPECIAL slider column alignment */
+.special-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.special-column .pip-green-text {
+  color: var(--pip-green);
+  text-align: center;
+  width: 100%;
+  margin-bottom: 6px;
+  z-index: 2;
+}
+
+
+/* Special slider label stacking */
+.special-column { align-items: center; }
+.special-column > .pip-green-text { position: relative; z-index: 2; text-align: center; margin-bottom: 6px; color: var(--pip-green); }
+
+
+/* Ensure SPECIAL letters sit above vertical sliders */
+.special-column .pip-green-text {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  margin-bottom: 4px;
 }

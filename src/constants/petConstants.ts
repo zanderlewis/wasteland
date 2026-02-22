@@ -119,6 +119,9 @@ const DOGS = {
     "stbernard_r": 'St. Bernard - Wasteland Junk Boost',
     "stbernard_c": 'St. Bernard - Wasteland Junk Boost',
     "stbernard_l": 'St. Bernard - Wasteland Junk Boost',
+
+    "Rollerbrain": "Rollerbrain - Happiness Boost",
+    "cx404_l": "CX404 - XP Boost",
 } as const;
 
 const BIRDS = {
@@ -269,5 +272,9 @@ export const petBonusMap: { [key: string]: { uniqueName: string; bonus: string; 
     "blueyellowmacaw_l2": { uniqueName: "Vinnie", bonus: "ObjectiveMultiplier", bonusValue: 2 },
     "scarletmacaw_c": { uniqueName: "Pirate Parrot", bonus: "Resistance", bonusValue: 22 },
     "scarletmacaw_r": { uniqueName: "Pirate Parrot", bonus: "Resistance", bonusValue: 38 },
-    "scarletmacaw_l": { uniqueName: "Wanderer", bonus: "Resistance", bonusValue: 48 }
+    "scarletmacaw_l": { uniqueName: "Wanderer", bonus: "Resistance", bonusValue: 48 },
+
+    // Added from save analysis
+    "Rollerbrain": { uniqueName: "Rollerbrain", bonus: "HappinessBoost", bonusValue: 98.0 },
+    "cx404_l": { uniqueName: "CX404", bonus: "XPBoost", bonusValue: 40.0 },
 };

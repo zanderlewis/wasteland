@@ -1,11 +1,14 @@
 import type {
   FalloutShelterSave,
-  DwellersItem as Dweller
+  DwellersItem as Dweller,
+  ItemsItem
 } from '../types/saveFile';
 
 type Actor = any;
 
 type SpecialStatType = number;
+
+type StorageCategory = 'Weapon' | 'Outfit' | 'Junk' | 'Pet';
 
 type ResourceTypeValue =
   | 'Caps'
@@ -245,6 +248,175 @@ export class SaveEditor implements ISaveEditor {
 
   removeAllRadiation(): void {
     this.dwellerMixin.removeAllRadiation();
+  }
+
+  // ============================================================================
+  // STORAGE OPERATIONS
+  // ============================================================================
+
+  /**
+   * Return items currently in vault storage inventory for the given category.
+   * NOTE: Fallout Shelter represents stored items as entries in vault.inventory.items.
+   */
+  getStorageItems(category: StorageCategory): ItemsItem[] {
+    const save = this.save;
+    if (!save) return [];
+
+    const items = save.vault?.inventory?.items || [];
+    const wanted = category.toLowerCase();
+
+    // Be tolerant of different casing/wording across platform versions.
+    return items.filter((it) => {
+      const t = (it.type || '').toLowerCase();
+      if (!t) return false;
+      if (wanted === 'weapon') return t === 'weapon' || t === 'weapons';
+      if (wanted === 'outfit') return t === 'outfit' || t === 'outfits';
+      if (wanted === 'pet') return t === 'pet' || t === 'pets';
+      if (wanted === 'junk') return t === 'junk' || t === 'scrap' || t === 'item';
+      return false;
+    });
+  }
+
+  /**
+   * Add a single item to vault storage inventory.
+   */
+  addStorageItem(category: StorageCategory, id: string): void {
+    if (!this.save) return;
+
+    // Ensure inventory exists
+    if (!this.save.vault.inventory) {
+      // Some save-file variants/older typings may not include inventory.
+      // Mutate via a loose cast to keep runtime behaviour while satisfying TS.
+      (this.save.vault as any).inventory = { items: [] };
+    }
+    if (!Array.isArray(this.save.vault.inventory.items)) {
+      this.save.vault.inventory.items = [];
+    }
+
+    const item: ItemsItem = {
+      id,
+      type: category,
+      hasBeenAssigned: false,
+      hasRandonWeaponBeenAssigned: false,
+      extraData: {
+        partsCollectedCount: 0,
+        IsCraftingInProgress: false,
+        IsCrafted: false,
+        IsClaimed: false,
+        IsClaimedInCraftingRoom: false,
+        IsNew: true,
+      },
+    };
+
+    this.save.vault.inventory.items.push(item);
+  }
+
+
+  /**
+   * Total number of items currently in vault storage inventory.
+   */
+  getStorageUsed(): number {
+    const save = this.save;
+    if (!save) return 0;
+    const items = save.vault?.inventory?.items || [];
+    return Array.isArray(items) ? items.length : 0;
+  }
+
+  /**
+   * Storage capacity is based on storage rooms plus a base capacity of 10.
+   * Storage per storage room = 5 x Size x (Level + 1)
+   * Size is 1..3 (mergeLevel + 1), Level is 1..3.
+   */
+  getStorageCapacity(): number {
+    const save = this.save;
+    if (!save) return 0;
+
+    // In-game item storage starts at 10 and increases with Storage rooms (and Warehouses in some saves).
+    const base = 10;
+
+    // Some save variants store rooms at vault.rooms (array), others at vault.rooms.rooms
+    const roomsAny: any = save.vault?.rooms;
+    const rooms: any[] = Array.isArray(roomsAny) ? roomsAny : (Array.isArray(roomsAny?.rooms) ? roomsAny.rooms : []);
+    if (!Array.isArray(rooms)) return base;
+
+    const isItemStorageRoom = (r: any): boolean => {
+      const t = String(r?.type || '').toLowerCase();
+      const c = String(r?.class || '').toLowerCase();
+      // "Storage" is the common type; include "warehouse" for compatibility with other save variants.
+      return t.includes('storage') || t.includes('warehouse') || c.includes('storage') || c.includes('warehouse');
+    };
+
+    const clamp = (n: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, n));
+
+    const roomCap = rooms
+      .filter(isItemStorageRoom)
+      .reduce((sum: number, r: any) => {
+        // In this project's saves, mergeLevel is already 1..3 (size), not 0..2.
+        const size = clamp(Number(r?.mergeLevel) || 1, 1, 3);
+        const level = clamp(Number(r?.level) || 1, 1, 3);
+        // Capacity per room: 10 × Size × (Level + 1)  (matches in-game values for the provided save)
+        return sum + 10 * size * (level + 1);
+      }, 0);
+
+    return base + roomCap;
+  }
+
+  /**
+   * Get current count of a specific item in storage for a given category.
+   */
+  getStorageItemCount(category: StorageCategory, id: string): number {
+    const items = this.getStorageItems(category);
+    return items.filter((it) => it.id === id).length;
+  }
+
+  /**
+   * Set the quantity for a specific item in storage (0 deletes).
+   * Returns true if applied; false if it would exceed storage capacity or no save loaded.
+   */
+  setStorageItemQuantity(category: StorageCategory, id: string, qty: number): boolean {
+    if (!this.save) return false;
+
+    const desired = Math.max(0, Math.floor(Number(qty) || 0));
+
+    // Ensure inventory exists
+    if (!this.save.vault.inventory) {
+      (this.save.vault as any).inventory = { items: [] };
+    }
+    if (!Array.isArray(this.save.vault.inventory.items)) {
+      this.save.vault.inventory.items = [];
+    }
+
+    const wanted = category.toLowerCase();
+    const matchesCategory = (it: any): boolean => {
+      const t = String(it?.type || '').toLowerCase();
+      if (!t) return false;
+      if (wanted === 'weapon') return t === 'weapon' || t === 'weapons';
+      if (wanted === 'outfit') return t === 'outfit' || t === 'outfits';
+      if (wanted === 'pet') return t === 'pet' || t === 'pets';
+      if (wanted === 'junk') return t === 'junk' || t === 'scrap' || t === 'item';
+      return false;
+    };
+
+    const items = this.save.vault.inventory.items;
+    const current = items.filter((it) => matchesCategory(it) && it.id === id).length;
+    const delta = desired - current;
+
+    if (delta > 0) {
+      const used = this.getStorageUsed();
+      const cap = this.getStorageCapacity();
+      if (used + delta > cap) return false;
+    }
+
+    // Remove all existing instances of this item (in the target category)
+    const remaining = items.filter((it) => !(matchesCategory(it) && it.id === id));
+    this.save.vault.inventory.items = remaining;
+
+    // Add back desired quantity
+    for (let i = 0; i < desired; i++) {
+      this.addStorageItem(category, id);
+    }
+
+    return true;
   }
 
   // ============================================================================

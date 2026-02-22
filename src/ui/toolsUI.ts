@@ -2,21 +2,25 @@
 import { SaveEditor } from '../core/SaveEditor';
 import type { VaultUI } from './vaultUI';
 import type { DwellerUI } from './dwellerUI';
+import type { StorageUI } from './storageUI';
 import { toastManager } from './toastManager';
 
 export class ToolsUI {
   private saveEditor: SaveEditor;
   private vaultUI: VaultUI | null = null;
   private dwellerUI: DwellerUI | null = null;
+  private storageUI: StorageUI | null = null;
 
   constructor(
     saveEditor: SaveEditor, 
     vaultUI?: VaultUI, 
-    dwellerUI?: DwellerUI
+    dwellerUI?: DwellerUI,
+    storageUI?: StorageUI
   ) {
     this.saveEditor = saveEditor;
     this.vaultUI = vaultUI || null;
     this.dwellerUI = dwellerUI || null;
+    this.storageUI = storageUI || null;
   }
 
   bindEvents(): void {
@@ -116,6 +120,7 @@ export class ToolsUI {
         if (editorSection) editorSection.classList.remove('hidden');
         this.refreshVaultUI();
         this.refreshDwellersUI();
+        this.refreshStorageUI();
       } catch (err) {
         console.error('Error loading example file:', err);
         this.showMessage(`Error loading example file: ${err instanceof Error ? err.message : String(err)}`, 'error');
@@ -303,6 +308,12 @@ export class ToolsUI {
     // Directly call the dwellers UI load method if available
     if (this.dwellerUI) {
       this.dwellerUI.loadDwellersList();
+    }
+  }
+
+  private refreshStorageUI(): void {
+    if (this.storageUI) {
+      this.storageUI.loadStorageData();
     }
   }
 

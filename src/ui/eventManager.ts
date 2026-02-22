@@ -2,6 +2,7 @@
 import { SaveEditor } from '../core/SaveEditor';
 import { DwellerUI } from './dwellerUI';
 import { VaultUI } from './vaultUI';
+import { StorageUI } from './storageUI';
 import { ToolsUI } from './toolsUI';
 import { messageModal } from './messageModal';
 import { toastManager } from './toastManager';
@@ -10,16 +11,19 @@ export class EventManager {
   private saveEditor: SaveEditor;
   private dwellerUI: DwellerUI;
   private vaultUI: VaultUI;
+  private storageUI: StorageUI;
   private toolsUI: ToolsUI;
 
   constructor(saveEditor: SaveEditor) {
     this.saveEditor = saveEditor;
     this.dwellerUI = new DwellerUI(saveEditor);
     this.vaultUI = new VaultUI(saveEditor);
+    this.storageUI = new StorageUI(saveEditor);
     this.toolsUI = new ToolsUI(
       saveEditor, 
       this.vaultUI, 
-      this.dwellerUI
+      this.dwellerUI,
+      this.storageUI
     );
   }
 
@@ -34,6 +38,7 @@ export class EventManager {
     this.bindTabEvents();
     this.bindVaultEvents();
     this.bindDwellerEvents();
+    this.bindStorageEvents();
     this.bindToolsEvents();
   }
 
@@ -46,12 +51,13 @@ export class EventManager {
     fileInput?.addEventListener('change', (e) => {
       const target = e.target as HTMLInputElement;
       if (target.files && target.files.length > 0) {
-        this.handleFileSelect(target.files[0]);
+        this.handleFileSelect(target.files[0]).finally(() => { (e.target as HTMLInputElement).value = ''; });
       }
     });
 
     // Select file button
     selectFileBtn?.addEventListener('click', () => {
+      if (fileInput) fileInput.value = '';
       fileInput?.click();
     });
 
@@ -80,8 +86,9 @@ export class EventManager {
     const tabs = document.querySelectorAll('.tab');
     tabs.forEach(tab => {
       tab.addEventListener('click', (e) => {
-        const target = e.target as HTMLElement;
-        const section = target.dataset.section;
+        // Tabs contain nested elements (e.g. span.tab-label). Always read from the tab button.
+        const button = e.currentTarget as HTMLElement;
+        const section = button.dataset.section;
         if (section) {
           this.switchTab(section);
         }
@@ -101,6 +108,10 @@ export class EventManager {
     closeDwellerEditor?.addEventListener('click', () => {
       this.dwellerUI.closeDwellerEditor();
     });
+  }
+
+  private bindStorageEvents(): void {
+    this.storageUI.bindEvents();
   }
 
   private bindToolsEvents(): void {
@@ -124,6 +135,7 @@ export class EventManager {
       this.showEditorSection();
       this.loadVaultData();
       this.loadDwellersList();
+      this.loadStorageData();
       
     } catch (error) {
       console.error('Error loading file:', error);
@@ -202,6 +214,10 @@ export class EventManager {
 
   private loadDwellersList(): void {
     this.dwellerUI.loadDwellersList();
+  }
+
+  private loadStorageData(): void {
+    this.storageUI.loadStorageData();
   }
 
   private showStatus(message: string, type: 'success' | 'error' | 'info'): void {
