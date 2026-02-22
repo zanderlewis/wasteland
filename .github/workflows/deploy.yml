@@ -2,7 +2,7 @@ name: Deploy main + layout-update to GitHub Pages
 
 on:
   push:
-    branches: ["main", "layout-update"]
+    branches: ["main"]
   workflow_dispatch:
 
 permissions:
