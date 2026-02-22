@@ -1,4 +1,4 @@
-name: Deploy main + layout-update to GitHub Pages
+name: Deploy to GitHub Pages
 
 on:
   push:
@@ -40,21 +40,6 @@ jobs:
           npm run build
           mkdir -p site
           cp -R dist/* site/
-
-      # Build layout-update into site/layout-update/
-      - name: Build layout-update
-        env:
-          VITE_BASE: /wasteland/layout-update/
-          VITE_APP_CHANNEL: layout-update
-        run: |
-          git checkout layout-update
-          npm ci
-          rm -rf dist
-          # Inject the current layout-update commit SHA into the Vite build
-          export VITE_BUILD_SHA="$(git rev-parse HEAD)"
-          npm run build
-          mkdir -p site/layout-update
-          cp -R dist/* site/layout-update/
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
