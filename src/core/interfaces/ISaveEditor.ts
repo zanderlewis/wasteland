@@ -68,6 +68,14 @@ export interface ISaveEditor {
   setDwellerOutfit(dweller: Dweller, outfitId: number | string, outfitType?: string): void;
   setDwellerPet(dweller: Dweller, petId: string, petType?: string): void;
   removeDwellerPet(dweller: Dweller): void;
+  // Appearance
+  setDwellerHairColor(dweller: Dweller, colorValue: string | number): void;
+  setDwellerSkinColor(dweller: Dweller, colorValue: string | number): void;
+  setDwellerOutfitColor(dweller: Dweller, colorValue: string | number): void;
+  getDwellerHairColorHex(dweller: Dweller): string;
+  getDwellerSkinColorHex(dweller: Dweller): string;
+  getDwellerOutfitColorHex(dweller: Dweller): string;
+
   evictDweller(dweller: Dweller): void;
   unevictDweller(dweller: Dweller): void;
   setAllDwellersSuperHealth(): void;
