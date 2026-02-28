@@ -66,4 +66,11 @@ export class SaveEditorQuickActionsMixin {
   removeAllRocks(): void {
     this.quickActions.removeAllRocks();
   }
+
+  /**
+   * Cap junk inventory to a maximum per item id
+   */
+  capJunk(maxPerItem: number = 30): number {
+    return this.quickActions.capJunk(maxPerItem);
+  }
 }

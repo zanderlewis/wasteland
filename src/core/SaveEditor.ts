@@ -481,4 +481,8 @@ export class SaveEditor implements ISaveEditor {
   removeAllRocks(): void {
     this.quickActionsMixin.removeAllRocks();
   }
+
+  capJunk(maxPerItem: number = 30): number {
+    return this.quickActionsMixin.capJunk(maxPerItem);
+  }
 }
