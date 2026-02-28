@@ -387,12 +387,12 @@ export class DwellerUI {
     // Colors
     const hairColor = this.formManager.getFormValue('dwellerHairColor');
     if (hairColor) {
-      (dweller as any).hairColor = parseInt(hairColor.replace('#', ''), 16) | 0xff000000;
+      this.saveEditor.setDwellerHairColor(dweller, hairColor);
     }
 
     const skinColor = this.formManager.getFormValue('dwellerSkinColor');
     if (skinColor) {
-      (dweller as any).skinColor = parseInt(skinColor.replace('#', ''), 16) | 0xff000000;
+      this.saveEditor.setDwellerSkinColor(dweller, skinColor);
     }
   }
 

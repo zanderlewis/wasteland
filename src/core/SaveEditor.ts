@@ -226,6 +226,33 @@ export class SaveEditor implements ISaveEditor {
     this.dwellerMixin.removeDwellerPet(dweller);
   }
 
+  // Appearance
+
+  setDwellerHairColor(dweller: Dweller, colorValue: string | number): void {
+    this.dwellerMixin.setDwellerHairColor(dweller, colorValue);
+  }
+
+  setDwellerSkinColor(dweller: Dweller, colorValue: string | number): void {
+    this.dwellerMixin.setDwellerSkinColor(dweller, colorValue);
+  }
+
+  setDwellerOutfitColor(dweller: Dweller, colorValue: string | number): void {
+    this.dwellerMixin.setDwellerOutfitColor(dweller, colorValue);
+  }
+
+  getDwellerHairColorHex(dweller: Dweller): string {
+    return this.dwellerMixin.getDwellerHairColorHex(dweller);
+  }
+
+  getDwellerSkinColorHex(dweller: Dweller): string {
+    return this.dwellerMixin.getDwellerSkinColorHex(dweller);
+  }
+
+  getDwellerOutfitColorHex(dweller: Dweller): string {
+    return this.dwellerMixin.getDwellerOutfitColorHex(dweller);
+  }
+
+
   evictDweller(dweller: Dweller): void {
     this.dwellerMixin.evictDweller(dweller);
   }
@@ -453,5 +480,9 @@ export class SaveEditor implements ISaveEditor {
 
   removeAllRocks(): void {
     this.quickActionsMixin.removeAllRocks();
+  }
+
+  capJunk(maxPerItem: number = 30): number {
+    return this.quickActionsMixin.capJunk(maxPerItem);
   }
 }

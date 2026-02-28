@@ -19,6 +19,7 @@ export const createToolsSectionTemplate = (): string => `
             <button id="unlockAllRooms" class="btn btn-success">Unlock All Rooms</button>
             <button id="unlockAllRecipes" class="btn btn-success">Unlock All Recipes</button>
             <button id="removeAllRocks" class="btn btn-success">Remove All Rocks</button>
+            <button id="capJunk" class="btn btn-success">Cap Junk</button>
           </div>
         </div>
       </div>

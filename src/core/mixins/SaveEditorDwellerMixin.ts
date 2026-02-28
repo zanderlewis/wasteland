@@ -118,6 +118,33 @@ export class SaveEditorDwellerMixin {
     this.dwellerManager.removeDwellerPet(dweller);
   }
 
+  // Appearance
+
+  setDwellerHairColor(dweller: Dweller, colorValue: string | number): void {
+    this.dwellerManager.setDwellerHairColor(dweller, colorValue);
+  }
+
+  setDwellerSkinColor(dweller: Dweller, colorValue: string | number): void {
+    this.dwellerManager.setDwellerSkinColor(dweller, colorValue);
+  }
+
+  setDwellerOutfitColor(dweller: Dweller, colorValue: string | number): void {
+    this.dwellerManager.setDwellerOutfitColor(dweller, colorValue);
+  }
+
+  getDwellerHairColorHex(dweller: Dweller): string {
+    return this.dwellerManager.getDwellerHairColorHex(dweller);
+  }
+
+  getDwellerSkinColorHex(dweller: Dweller): string {
+    return this.dwellerManager.getDwellerSkinColorHex(dweller);
+  }
+
+  getDwellerOutfitColorHex(dweller: Dweller): string {
+    return this.dwellerManager.getDwellerOutfitColorHex(dweller);
+  }
+
+
   /**
    * Evict a dweller from the vault
    */

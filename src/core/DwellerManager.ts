@@ -126,12 +126,20 @@ export class DwellerManager {
     this.appearanceManager.setDwellerHairColor(dweller, colorValue);
   }
 
+  setDwellerSkinColor(dweller: Dweller, colorValue: string | number): void {
+    this.appearanceManager.setDwellerSkinColor(dweller, colorValue);
+  }
+
   setDwellerOutfitColor(dweller: Dweller, colorValue: string | number): void {
     this.appearanceManager.setDwellerOutfitColor(dweller, colorValue);
   }
 
   getDwellerHairColorHex(dweller: Dweller): string {
     return this.appearanceManager.getDwellerHairColorHex(dweller);
+  }
+
+  getDwellerSkinColorHex(dweller: Dweller): string {
+    return this.appearanceManager.getDwellerSkinColorHex(dweller);
   }
 
   getDwellerOutfitColorHex(dweller: Dweller): string {

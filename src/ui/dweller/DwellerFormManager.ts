@@ -18,7 +18,7 @@ export class DwellerFormManager {
   private readonly boundChildChangeHandler = this.handleChildChange.bind(this);
 
   private colorConverter(colorhex: string | number, mode?: boolean): string | number {
-    const colorInt = typeof colorhex === 'string' ? parseInt(colorhex) : colorhex;
+    const colorInt = typeof colorhex === 'string' ? parseInt(colorhex, 10) : colorhex;
 
     if (mode) {
       // Convert from FOS integer to hex color for HTML input
@@ -28,7 +28,8 @@ export class DwellerFormManager {
     } else {
       // Convert from hex color to FOS integer
       const cleanHex = colorhex.toString().replace('#', '');
-      const fosColor = 0xFF000000 | parseInt(cleanHex, 16);
+      const rgb = parseInt(cleanHex, 16) & 0xFFFFFF;
+      const fosColor = (0xFF000000 | rgb) >>> 0;
       return fosColor;
     }
   }
