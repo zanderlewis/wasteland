@@ -138,6 +138,50 @@ export class QuickActions {
     }
   }
 
+  /**
+   * Cap junk items so no junk id has more than `maxPerItem` entries.
+   * Junk items are stored as individual inventory entries (not as stacks).
+   *
+   * @returns number of removed items
+   */
+  capJunk(maxPerItem: number = 30): number {
+    if (!this.save) throw new Error('No save loaded');
+
+    if (!this.save.vault) throw new Error('Invalid save: missing vault');
+    if (!this.save.vault.inventory) {
+      (this.save.vault as any).inventory = { items: [] };
+    }
+    if (!Array.isArray((this.save.vault.inventory as any).items)) {
+      (this.save.vault.inventory as any).items = [];
+    }
+
+    const items = (this.save.vault.inventory as any).items as any[];
+    const isJunkType = (type: any): boolean => {
+      const t = String(type || '').toLowerCase();
+      return t === 'junk' || t === 'scrap' || t === 'item';
+    };
+
+    const counts = new Map<string, number>();
+    const before = items.length;
+
+    const filtered = items.filter((it) => {
+      if (!it) return false;
+      if (!isJunkType(it.type)) return true;
+
+      const key = String(it.id ?? '');
+      const c = counts.get(key) ?? 0;
+      if (c >= maxPerItem) return false;
+      counts.set(key, c + 1);
+      return true;
+    });
+
+    (this.save.vault.inventory as any).items = filtered;
+
+    const after = filtered.length;
+    return Math.max(0, before - after);
+  }
+
+
   // Helper methods that delegate to other managers
   private setResource(resourceType: ResourceTypeValue, amount: number): void {
     if (!this.save) throw new Error('No save loaded');

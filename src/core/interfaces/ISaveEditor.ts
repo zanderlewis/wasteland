@@ -92,4 +92,5 @@ export interface ISaveEditor {
   unlockAllRecipes(): void;
   unlockEverything(): void;
   removeAllRocks(): void;
+  capJunk(maxPerItem?: number): number;
 }

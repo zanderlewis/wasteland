@@ -195,6 +195,14 @@ export class ToolsUI {
       this.saveEditor.removeAllRocks();
       this.showMessage('All rocks removed!', 'success');
     });
+
+    // Cap junk (reduce each junk stack to 30)
+    const capJunkBtn = document.getElementById('capJunk');
+    capJunkBtn?.addEventListener('click', () => {
+      const removed = this.saveEditor.capJunk(30);
+      this.showMessage(`Capped junk to 30 each${removed > 0 ? ` (removed ${removed})` : ''}.`, 'success');
+      this.refreshStorageUI();
+    });
   }
 
   private bindExportEvents(): void {
