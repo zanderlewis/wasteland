@@ -1,10 +1,10 @@
 // Main application template
-import { createVaultSectionTemplate } from './vaultTemplate';
-import { createDwellersSectionTemplate } from './dwellersTemplate';
-import { createStorageSectionTemplate } from './storageTemplate';
-import { createToolsSectionTemplate } from './toolsTemplate';
-import { createStatusTemplate } from './statusTemplate';
-import { createMessageModalTemplate } from './messageModalTemplate';
+import { createVaultSectionTemplate } from "./vaultTemplate";
+import { createDwellersSectionTemplate } from "./dwellersTemplate";
+import { createStorageSectionTemplate } from "./storageTemplate";
+import { createToolsSectionTemplate } from "./toolsTemplate";
+import { createStatusTemplate } from "./statusTemplate";
+import { createMessageModalTemplate } from "./messageModalTemplate";
 
 export const createMainTemplate = (): string => `
   <div class="container p-6">
@@ -15,7 +15,7 @@ export const createMainTemplate = (): string => `
       <div class="pip-panel-title">
         <h2 class="text-xl font-semibold">UPLOAD SAVE FILE</h2>
       </div>
-      <div id="dropZone" class="pip-panel-body flex flex-col items-center justify-center text-center gap-3">
+      <div id="dropZone" class="pip-panel-body flex flex-col items-center justify-center text-center gap-3 pt-3 pb-3">
           <p class="text-green-500 text-lg">Drag and drop your save file here or click to select</p>
           <input type="file" id="fileInput" class="hidden" accept=".sav,.json" />
           <button id="selectFileBtn" class="btn btn-primary mb-4">Select File</button>

@@ -6,20 +6,22 @@
   "description": "A web-based save editor for Fallout Shelter",
   "author": "Zander Lewis <zander@zanderlewis.dev>",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
-    "preview:pages": "vite preview --port 4173 --base /wasteland/"
+    "dev": "vp dev",
+    "build": "tsc && vp build",
+    "preview": "vp preview",
+    "preview:pages": "vp preview --port 4173 --base /wasteland/",
+    "prepare": "vp config"
   },
   "devDependencies": {
     "@types/crypto-js": "^4.2.2",
     "@types/file-saver": "^2.0.7",
-    "@types/node": "^25.3.3",
-    "autoprefixer": "^10.4.27",
-    "postcss": "^8.5.6",
+    "@types/node": "^25.6.0",
+    "autoprefixer": "^10.5.0",
+    "postcss": "^8.5.10",
     "ts-node": "^10.9.2",
-    "typescript": "~5.8.3",
-    "vite": "^7.3.1"
+    "typescript": "~6.0.2",
+    "vite": "npm:@voidzero-dev/vite-plus-core@^0.1.18",
+    "vite-plus": "^0.1.18"
   },
   "dependencies": {
     "@tailwindcss/forms": "^0.5.11",
@@ -27,5 +29,6 @@
     "crypto-js": "^4.2.0",
     "file-saver": "^2.0.5",
     "tailwindcss": "^3.4.19"
-  }
+  },
+  "packageManager": "pnpm@10.33.0"
 }
