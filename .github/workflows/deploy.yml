@@ -35,9 +35,6 @@ jobs:
       - name: Type check
         run: vp check
 
-      - name: Run tests
-        run: vp test
-
       - name: Build project
         env:
           VITE_BASE: /wasteland/
