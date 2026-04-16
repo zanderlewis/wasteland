@@ -27,57 +27,57 @@ export const createMessageModalTemplate = (): string => `
  * Modal types for consistent styling
  */
 export const ModalType = {
-  INFO: 'info',
-  SUCCESS: 'success',
-  WARNING: 'warning',
-  ERROR: 'error',
-  CONFIRM: 'confirm'
+  INFO: "info",
+  SUCCESS: "success",
+  WARNING: "warning",
+  ERROR: "error",
+  CONFIRM: "confirm",
 } as const;
 
-export type ModalTypeValue = typeof ModalType[keyof typeof ModalType];
+export type ModalTypeValue = (typeof ModalType)[keyof typeof ModalType];
 
 /**
  * Configuration for different modal types
  */
 export const MODAL_CONFIGS = {
   [ModalType.INFO]: {
-    titleClass: 'text-blue-400',
-    icon: 'ℹ️',
-    iconClass: 'text-blue-400',
-    confirmClass: 'btn btn-primary',
-    confirmText: 'OK',
-    showCancel: false
+    titleClass: "text-blue-400",
+    icon: "ℹ️",
+    iconClass: "text-blue-400",
+    confirmClass: "btn btn-primary",
+    confirmText: "OK",
+    showCancel: false,
   },
   [ModalType.SUCCESS]: {
-    titleClass: 'text-green-400',
-    icon: '✅',
-    iconClass: 'text-green-400',
-    confirmClass: 'btn btn-success',
-    confirmText: 'OK',
-    showCancel: false
+    titleClass: "text-green-400",
+    icon: "✅",
+    iconClass: "text-green-400",
+    confirmClass: "btn btn-success",
+    confirmText: "OK",
+    showCancel: false,
   },
   [ModalType.WARNING]: {
-    titleClass: 'text-yellow-400',
-    icon: '⚠️',
-    iconClass: 'text-yellow-400',
-    confirmClass: 'btn btn-warning',
-    confirmText: 'OK',
-    showCancel: false
+    titleClass: "text-yellow-400",
+    icon: "⚠️",
+    iconClass: "text-yellow-400",
+    confirmClass: "btn btn-warning",
+    confirmText: "OK",
+    showCancel: false,
   },
   [ModalType.ERROR]: {
-    titleClass: 'text-red-400',
-    icon: '❌',
-    iconClass: 'text-red-400',
-    confirmClass: 'btn btn-danger',
-    confirmText: 'OK',
-    showCancel: false
+    titleClass: "text-red-400",
+    icon: "❌",
+    iconClass: "text-red-400",
+    confirmClass: "btn btn-danger",
+    confirmText: "OK",
+    showCancel: false,
   },
   [ModalType.CONFIRM]: {
-    titleClass: 'text-yellow-400',
-    icon: '⚠️',
-    iconClass: 'text-yellow-400',
-    confirmClass: 'btn btn-danger',
-    confirmText: 'Confirm',
-    showCancel: true
-  }
+    titleClass: "text-yellow-400",
+    icon: "⚠️",
+    iconClass: "text-yellow-400",
+    confirmClass: "btn btn-danger",
+    confirmText: "Confirm",
+    showCancel: true,
+  },
 } as const;

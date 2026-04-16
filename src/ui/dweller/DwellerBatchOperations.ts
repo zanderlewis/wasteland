@@ -1,5 +1,5 @@
-import type { SaveEditor } from '../../core/SaveEditor';
-import type { DwellersItem as Dweller } from '../../types/saveFile';
+import type { SaveEditor } from "../../core/SaveEditor";
+import type { DwellersItem as Dweller } from "../../types/saveFile";
 
 /**
  * Handles batch operations for dwellers
@@ -16,9 +16,9 @@ export class DwellerBatchOperations {
    */
   maxHappinessAll(): void {
     if (!this.saveEditor.isLoaded()) return;
-    
+
     const dwellers = this.saveEditor.getDwellers();
-    dwellers.forEach(dweller => {
+    dwellers.forEach((dweller) => {
       this.saveEditor.setDwellerHappiness(dweller, 100);
     });
   }
@@ -28,12 +28,16 @@ export class DwellerBatchOperations {
    */
   healAll(): void {
     if (!this.saveEditor.isLoaded()) return;
-    
+
     const dwellers = this.saveEditor.getDwellers();
-    dwellers.forEach(dweller => {
+    dwellers.forEach((dweller) => {
       if (dweller.health) {
         this.saveEditor.setDwellerRadiation(dweller, 0);
-        this.saveEditor.setDwellerHealth(dweller, dweller.health.maxHealth || 100, dweller.health.maxHealth || 100);
+        this.saveEditor.setDwellerHealth(
+          dweller,
+          dweller.health.maxHealth || 100,
+          dweller.health.maxHealth || 100,
+        );
       }
     });
   }
@@ -43,9 +47,9 @@ export class DwellerBatchOperations {
    */
   maxSpecialAll(): void {
     if (!this.saveEditor.isLoaded()) return;
-    
+
     const dwellers = this.saveEditor.getDwellers();
-    dwellers.forEach(dweller => {
+    dwellers.forEach((dweller) => {
       for (let i = 1; i <= 7; i++) {
         this.saveEditor.setDwellerSpecial(dweller, i as any, 10);
       }

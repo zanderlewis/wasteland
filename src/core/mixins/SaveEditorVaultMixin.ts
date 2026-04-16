@@ -1,21 +1,21 @@
 // Vault-related operations for SaveEditor
 // ResourceTypeValue is not exported from generated types; provide local alias
 type ResourceTypeValue =
-  | 'Caps'
-  | 'Nuka'
-  | 'Food'
-  | 'Energy'
-  | 'Water'
-  | 'StimPack'
-  | 'RadAway'
-  | 'Lunchbox'
-  | 'MrHandy'
-  | 'PetCarrier'
-  | 'CraftedOutfit'
-  | 'CraftedWeapon'
-  | 'NukaColaQuantum'
-  | 'CraftedTheme';
-import { VaultManager } from '../VaultManager';
+  | "Caps"
+  | "Nuka"
+  | "Food"
+  | "Energy"
+  | "Water"
+  | "StimPack"
+  | "RadAway"
+  | "Lunchbox"
+  | "MrHandy"
+  | "PetCarrier"
+  | "CraftedOutfit"
+  | "CraftedWeapon"
+  | "NukaColaQuantum"
+  | "CraftedTheme";
+import { VaultManager } from "../VaultManager";
 
 /**
  * Mixin for vault-related operations

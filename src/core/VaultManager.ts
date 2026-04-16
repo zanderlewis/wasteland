@@ -1,26 +1,21 @@
-import type { 
-  FalloutShelterSave
-} from '../types/saveFile';
+import type { FalloutShelterSave } from "../types/saveFile";
 
 type ResourceTypeValue =
-  | 'Caps'
-  | 'Nuka'
-  | 'Food'
-  | 'Energy'
-  | 'Water'
-  | 'StimPack'
-  | 'RadAway'
-  | 'Lunchbox'
-  | 'MrHandy'
-  | 'PetCarrier'
-  | 'CraftedOutfit'
-  | 'CraftedWeapon'
-  | 'NukaColaQuantum'
-  | 'CraftedTheme';
-import { 
-  GAME_LIMITS, 
-  validateValue 
-} from '../constants/gameConstants';
+  | "Caps"
+  | "Nuka"
+  | "Food"
+  | "Energy"
+  | "Water"
+  | "StimPack"
+  | "RadAway"
+  | "Lunchbox"
+  | "MrHandy"
+  | "PetCarrier"
+  | "CraftedOutfit"
+  | "CraftedWeapon"
+  | "NukaColaQuantum"
+  | "CraftedTheme";
+import { GAME_LIMITS, validateValue } from "../constants/gameConstants";
 
 /**
  * Vault-specific operations for the save editor
@@ -41,7 +36,7 @@ export class VaultManager {
    * @param name - New vault name
    */
   setVaultName(name: string): void {
-    if (!this.save) throw new Error('No save loaded');
+    if (!this.save) throw new Error("No save loaded");
     this.save.vault.VaultName = name;
   }
 
@@ -49,8 +44,8 @@ export class VaultManager {
    * Get vault name
    */
   getVaultName(): string {
-    if (!this.save) return '';
-    return this.save.vault.VaultName || '';
+    if (!this.save) return "";
+    return this.save.vault.VaultName || "";
   }
 
   /**
@@ -59,7 +54,7 @@ export class VaultManager {
    * @param amount - Amount to set
    */
   setResource(resourceType: ResourceTypeValue, amount: number): void {
-    if (!this.save) throw new Error('No save loaded');
+    if (!this.save) throw new Error("No save loaded");
     if (!this.save.vault.storage) {
       (this.save.vault as any).storage = { resources: {}, bonus: {} };
     }
@@ -67,18 +62,27 @@ export class VaultManager {
       (this.save.vault.storage as any).resources = {};
     }
 
-    const saveFileResourceName = resourceType === 'Caps' ? 'Nuka' : resourceType;
+    const saveFileResourceName = resourceType === "Caps" ? "Nuka" : resourceType;
 
-    const maxValue = resourceType === 'Caps' ? GAME_LIMITS.CAPS_MAX :
-                    resourceType === 'NukaColaQuantum' ? GAME_LIMITS.NUKA_COLA_MAX :
-                    resourceType === 'Food' ? GAME_LIMITS.FOOD_MAX :
-                    resourceType === 'Water' ? GAME_LIMITS.WATER_MAX :
-                    resourceType === 'Energy' ? GAME_LIMITS.ENERGY_MAX :
-                    resourceType === 'RadAway' ? GAME_LIMITS.RADAWAY_MAX :
-                    resourceType === 'StimPack' ? GAME_LIMITS.STIMPACKS_MAX :
-                    GAME_LIMITS.NUKA_COLA_MAX;
-    
-    ((this.save.vault.storage.resources as unknown) as Record<string, number>)[saveFileResourceName] = validateValue.resource(amount, maxValue);
+    const maxValue =
+      resourceType === "Caps"
+        ? GAME_LIMITS.CAPS_MAX
+        : resourceType === "NukaColaQuantum"
+          ? GAME_LIMITS.NUKA_COLA_MAX
+          : resourceType === "Food"
+            ? GAME_LIMITS.FOOD_MAX
+            : resourceType === "Water"
+              ? GAME_LIMITS.WATER_MAX
+              : resourceType === "Energy"
+                ? GAME_LIMITS.ENERGY_MAX
+                : resourceType === "RadAway"
+                  ? GAME_LIMITS.RADAWAY_MAX
+                  : resourceType === "StimPack"
+                    ? GAME_LIMITS.STIMPACKS_MAX
+                    : GAME_LIMITS.NUKA_COLA_MAX;
+
+    (this.save.vault.storage.resources as unknown as Record<string, number>)[saveFileResourceName] =
+      validateValue.resource(amount, maxValue);
   }
 
   /**
@@ -88,9 +92,13 @@ export class VaultManager {
   getResource(resourceType: ResourceTypeValue): number {
     if (!this.save?.vault?.storage?.resources) return 0;
 
-    const saveFileResourceName = resourceType === 'Caps' ? 'Nuka' : resourceType;
+    const saveFileResourceName = resourceType === "Caps" ? "Nuka" : resourceType;
 
-    return (this.save.vault.storage.resources as unknown as Record<string, number>)[saveFileResourceName] || 0;
+    return (
+      (this.save.vault.storage.resources as unknown as Record<string, number>)[
+        saveFileResourceName
+      ] || 0
+    );
   }
 
   /**
@@ -98,14 +106,14 @@ export class VaultManager {
    * @param count - Number of lunchboxes
    */
   setLunchboxCount(count: number): void {
-    if (!this.save) throw new Error('No save loaded');
-    
+    if (!this.save) throw new Error("No save loaded");
+
     // Initialize LunchBoxesByType if it doesn't exist
     if (!this.save.vault.LunchBoxesByType) {
       (this.save.vault as any).LunchBoxesByType = [];
     }
-    
-    this.updateLunchBoxesByType('lunchboxes', validateValue.lunchboxes(count));
+
+    this.updateLunchBoxesByType("lunchboxes", validateValue.lunchboxes(count));
   }
 
   /**
@@ -122,13 +130,13 @@ export class VaultManager {
    * @param count - Number of Mr. Handies
    */
   setMrHandyCount(count: number): void {
-    if (!this.save) throw new Error('No save loaded');
-    
+    if (!this.save) throw new Error("No save loaded");
+
     if (!this.save.vault.LunchBoxesByType) {
       (this.save.vault as any).LunchBoxesByType = [];
     }
-    
-    this.updateLunchBoxesByType('mrHandies', validateValue.mrHandies(count));
+
+    this.updateLunchBoxesByType("mrHandies", validateValue.mrHandies(count));
   }
 
   /**
@@ -145,13 +153,13 @@ export class VaultManager {
    * @param count - Number of Pet Carriers
    */
   setPetCarrierCount(count: number): void {
-    if (!this.save) throw new Error('No save loaded');
-    
+    if (!this.save) throw new Error("No save loaded");
+
     if (!this.save.vault.LunchBoxesByType) {
       (this.save.vault as any).LunchBoxesByType = [];
     }
-    
-    this.updateLunchBoxesByType('petCarriers', validateValue.petCarriers(count));
+
+    this.updateLunchBoxesByType("petCarriers", validateValue.petCarriers(count));
   }
 
   /**
@@ -168,13 +176,13 @@ export class VaultManager {
    * @param count - Number of Starter Packs
    */
   setStarterPackCount(count: number): void {
-    if (!this.save) throw new Error('No save loaded');
-    
+    if (!this.save) throw new Error("No save loaded");
+
     if (!this.save.vault.LunchBoxesByType) {
       (this.save.vault as any).LunchBoxesByType = [];
     }
-    
-    this.updateLunchBoxesByType('starterPacks', validateValue.starterPacks(count));
+
+    this.updateLunchBoxesByType("starterPacks", validateValue.starterPacks(count));
   }
 
   /**
@@ -191,8 +199,8 @@ export class VaultManager {
    * @param themeId - Theme ID to set
    */
   setVaultTheme(themeId: number): void {
-    if (!this.save) throw new Error('No save loaded');
-    
+    if (!this.save) throw new Error("No save loaded");
+
     const validatedTheme = validateValue.caps(themeId); // Using caps validation as it has similar range
     this.save.vault.VaultTheme = validatedTheme;
   }
@@ -209,7 +217,7 @@ export class VaultManager {
    * @param mode - Vault mode ('Normal' or 'Survival')
    */
   setVaultMode(mode: string): void {
-    if (!this.save) throw new Error('No save loaded');
+    if (!this.save) throw new Error("No save loaded");
     (this.save.vault as any).VaultMode = mode;
   }
 
@@ -217,15 +225,15 @@ export class VaultManager {
    * Get vault mode
    */
   getVaultMode(): string {
-    return (this.save?.vault as any)?.VaultMode || 'Normal';
+    return (this.save?.vault as any)?.VaultMode || "Normal";
   }
 
   /**
    * Unlock all vault themes
    */
   unlockAllThemes(): void {
-    if (!this.save) throw new Error('No save loaded');
-    
+    if (!this.save) throw new Error("No save loaded");
+
     if (!(this.save.vault as any).unlockedThemes) {
       (this.save.vault as any).unlockedThemes = [];
     }
@@ -241,69 +249,72 @@ export class VaultManager {
    * Max all resources
    */
   maxAllResources(): void {
-    if (!this.save) throw new Error('No save loaded');
-    
-    this.setResource('Caps', GAME_LIMITS.CAPS_MAX);
-    this.setResource('Food', GAME_LIMITS.FOOD_MAX);
-    this.setResource('Energy', GAME_LIMITS.ENERGY_MAX);
-    this.setResource('Water', GAME_LIMITS.WATER_MAX);
-    this.setResource('NukaColaQuantum', GAME_LIMITS.NUKA_COLA_MAX);
-    this.setResource('StimPack', GAME_LIMITS.STIMPACKS_MAX);
-    this.setResource('RadAway', GAME_LIMITS.RADAWAY_MAX);
-    
+    if (!this.save) throw new Error("No save loaded");
+
+    this.setResource("Caps", GAME_LIMITS.CAPS_MAX);
+    this.setResource("Food", GAME_LIMITS.FOOD_MAX);
+    this.setResource("Energy", GAME_LIMITS.ENERGY_MAX);
+    this.setResource("Water", GAME_LIMITS.WATER_MAX);
+    this.setResource("NukaColaQuantum", GAME_LIMITS.NUKA_COLA_MAX);
+    this.setResource("StimPack", GAME_LIMITS.STIMPACKS_MAX);
+    this.setResource("RadAway", GAME_LIMITS.RADAWAY_MAX);
+
     this.setLunchboxCount(GAME_LIMITS.LUNCHBOXES_MAX);
     this.setMrHandyCount(GAME_LIMITS.MR_HANDIES_MAX);
     this.setPetCarrierCount(GAME_LIMITS.PET_CARRIERS_MAX);
   }
 
-  private updateLunchBoxesByType(type: 'lunchboxes' | 'mrHandies' | 'petCarriers' | 'starterPacks', newCount: number): void {
+  private updateLunchBoxesByType(
+    type: "lunchboxes" | "mrHandies" | "petCarriers" | "starterPacks",
+    newCount: number,
+  ): void {
     if (!this.save) return;
-    
+
     // Get current counts for all types
     const currentLunchboxes = this.getLunchboxCount();
     const currentMrHandies = this.getMrHandyCount();
     const currentPetCarriers = this.getPetCarrierCount();
     const currentStarterPacks = this.getStarterPackCount();
-    
+
     // Update the specific type count
     let lunchboxCount = currentLunchboxes;
     let mrHandyCount = currentMrHandies;
     let petCarrierCount = currentPetCarriers;
     let starterPackCount = currentStarterPacks;
-    
+
     switch (type) {
-      case 'lunchboxes':
+      case "lunchboxes":
         lunchboxCount = newCount;
         break;
-      case 'mrHandies':
+      case "mrHandies":
         mrHandyCount = newCount;
         break;
-      case 'petCarriers':
+      case "petCarriers":
         petCarrierCount = newCount;
         break;
-      case 'starterPacks':
+      case "starterPacks":
         starterPackCount = newCount;
         break;
     }
-    
+
     // Rebuild the LunchBoxesByType array
     const newLunchBoxesByType: number[] = [];
-    
+
     // Add lunchboxes (type 0)
     for (let i = 0; i < lunchboxCount; i++) {
       newLunchBoxesByType.push(0);
     }
-    
+
     // Add Mr. Handies (type 1)
     for (let i = 0; i < mrHandyCount; i++) {
       newLunchBoxesByType.push(1);
     }
-    
+
     // Add Pet Carriers (type 2)
     for (let i = 0; i < petCarrierCount; i++) {
       newLunchBoxesByType.push(2);
     }
-    
+
     // Add Starter Packs (type 3)
     for (let i = 0; i < starterPackCount; i++) {
       newLunchBoxesByType.push(3);

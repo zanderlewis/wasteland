@@ -1,9 +1,9 @@
 // Tools-specific UI management
-import { SaveEditor } from '../core/SaveEditor';
-import type { VaultUI } from './vaultUI';
-import type { DwellerUI } from './dwellerUI';
-import type { StorageUI } from './storageUI';
-import { toastManager } from './toastManager';
+import { SaveEditor } from "../core/SaveEditor";
+import type { VaultUI } from "./vaultUI";
+import type { DwellerUI } from "./dwellerUI";
+import type { StorageUI } from "./storageUI";
+import { toastManager } from "./toastManager";
 
 export class ToolsUI {
   private saveEditor: SaveEditor;
@@ -12,10 +12,10 @@ export class ToolsUI {
   private storageUI: StorageUI | null = null;
 
   constructor(
-    saveEditor: SaveEditor, 
-    vaultUI?: VaultUI, 
+    saveEditor: SaveEditor,
+    vaultUI?: VaultUI,
     dwellerUI?: DwellerUI,
-    storageUI?: StorageUI
+    storageUI?: StorageUI,
   ) {
     this.saveEditor = saveEditor;
     this.vaultUI = vaultUI || null;
@@ -26,7 +26,7 @@ export class ToolsUI {
   bindEvents(): void {
     // Quick action buttons
     this.bindQuickActionEvents();
-    
+
     // Export/backup buttons
     this.bindExportEvents();
 
@@ -35,8 +35,8 @@ export class ToolsUI {
   }
 
   private bindExampleLoader(): void {
-    const select = document.getElementById('exampleFilesSelect') as HTMLSelectElement | null;
-    const loadBtn = document.getElementById('loadExampleBtn');
+    const select = document.getElementById("exampleFilesSelect") as HTMLSelectElement | null;
+    const loadBtn = document.getElementById("loadExampleBtn");
 
     if (!select || !loadBtn) return;
 
@@ -47,8 +47,10 @@ export class ToolsUI {
       // Compute base-aware URL for the examples manifest so it works on GH Pages or any subpath.
       // Prefer Vite's BASE_URL during dev/build, otherwise use the page's base (document.baseURI).
       const viteBase = (import.meta as any)?.env?.BASE_URL;
-      const baseForExamples = viteBase ? new URL(viteBase, window.location.href).href : (document.baseURI || window.location.href);
-      const manifestUrl = new URL('examples/examples.json', baseForExamples).href;
+      const baseForExamples = viteBase
+        ? new URL(viteBase, window.location.href).href
+        : document.baseURI || window.location.href;
+      const manifestUrl = new URL("examples/examples.json", baseForExamples).href;
 
       try {
         const resp = await fetch(manifestUrl);
@@ -59,38 +61,40 @@ export class ToolsUI {
         }
       } catch (err) {
         // Manifest not available; use fallback single example path
-        console.warn('Could not load examples manifest, falling back to single example', err);
-        files = ['maxBaseVault.json'];
+        console.warn("Could not load examples manifest, falling back to single example", err);
+        files = ["maxBaseVault.json"];
       }
 
       // Populate select
-      select.innerHTML = '';
-      const placeholder = document.createElement('option');
-      placeholder.value = '';
-      placeholder.textContent = '-- select example --';
+      select.innerHTML = "";
+      const placeholder = document.createElement("option");
+      placeholder.value = "";
+      placeholder.textContent = "-- select example --";
       select.appendChild(placeholder);
 
       files.forEach((fileName) => {
-        const opt = document.createElement('option');
+        const opt = document.createElement("option");
         opt.value = fileName; // store just filename
         opt.textContent = fileName;
         select.appendChild(opt);
       });
     })();
 
-    loadBtn.addEventListener('click', async () => {
+    loadBtn.addEventListener("click", async () => {
       const val = select.value;
       if (!val) {
-        this.showMessage('Please choose an example file to load', 'info');
+        this.showMessage("Please choose an example file to load", "info");
         return;
       }
 
       try {
-  // Build a base-aware URL for the selected example so this works from any base path
-  const viteBase2 = (import.meta as any)?.env?.BASE_URL;
-  const baseForFetch = viteBase2 ? new URL(viteBase2, window.location.href).href : (document.baseURI || window.location.href);
-  const url = new URL(`examples/${val}`, baseForFetch).href;
-  const resp = await fetch(url);
+        // Build a base-aware URL for the selected example so this works from any base path
+        const viteBase2 = (import.meta as any)?.env?.BASE_URL;
+        const baseForFetch = viteBase2
+          ? new URL(viteBase2, window.location.href).href
+          : document.baseURI || window.location.href;
+        const url = new URL(`examples/${val}`, baseForFetch).href;
+        const resp = await fetch(url);
         if (!resp.ok) throw new Error(`Failed to fetch ${url}: ${resp.status} ${resp.statusText}`);
 
         // Try to parse JSON (manifest ensures .json)
@@ -102,125 +106,131 @@ export class ToolsUI {
           throw new Error(`Failed to parse JSON from ${url}: ${parseErr}`);
         }
 
-        const fileName = val || 'example.json';
+        const fileName = val || "example.json";
 
         // Mimic file upload behavior: update file UI status (same elements used by EventManager)
-        const fileStatus = document.getElementById('fileStatus');
-        const fileNameEl = document.getElementById('fileName');
+        const fileStatus = document.getElementById("fileStatus");
+        const fileNameEl = document.getElementById("fileName");
         if (fileNameEl) fileNameEl.textContent = fileName;
-        if (fileStatus) fileStatus.classList.remove('hidden');
+        if (fileStatus) fileStatus.classList.remove("hidden");
 
         // Load into save editor (this should set internal filename/state)
         this.saveEditor.loadSave(data, fileName);
         console.info(`Loaded example ${fileName}`);
-        this.showMessage(`Loaded ${fileName}`, 'success');
+        this.showMessage(`Loaded ${fileName}`, "success");
 
         // Ensure editor UI is visible and refreshed
-        const editorSection = document.getElementById('editorSection');
-        if (editorSection) editorSection.classList.remove('hidden');
+        const editorSection = document.getElementById("editorSection");
+        if (editorSection) editorSection.classList.remove("hidden");
         this.refreshVaultUI();
         this.refreshDwellersUI();
         this.refreshStorageUI();
       } catch (err) {
-        console.error('Error loading example file:', err);
-        this.showMessage(`Error loading example file: ${err instanceof Error ? err.message : String(err)}`, 'error');
+        console.error("Error loading example file:", err);
+        this.showMessage(
+          `Error loading example file: ${err instanceof Error ? err.message : String(err)}`,
+          "error",
+        );
       }
     });
   }
 
   private bindQuickActionEvents(): void {
     // Max caps
-    const maxCapsBtn = document.getElementById('maxCaps');
-    maxCapsBtn?.addEventListener('click', () => {
+    const maxCapsBtn = document.getElementById("maxCaps");
+    maxCapsBtn?.addEventListener("click", () => {
       this.saveEditor.maxCaps();
-      this.showMessage('Caps maxed!', 'success');
+      this.showMessage("Caps maxed!", "success");
       this.refreshVaultUI();
     });
 
     // Max resources
-    const maxResourcesBtn = document.getElementById('maxResources');
-    maxResourcesBtn?.addEventListener('click', () => {
+    const maxResourcesBtn = document.getElementById("maxResources");
+    maxResourcesBtn?.addEventListener("click", () => {
       this.saveEditor.maxAllResources();
-      this.showMessage('All resources maxed!', 'success');
+      this.showMessage("All resources maxed!", "success");
       this.refreshVaultUI();
     });
 
     // Max lunchboxes
-    const maxLunchboxesBtn = document.getElementById('maxLunchboxes');
-    maxLunchboxesBtn?.addEventListener('click', () => {
+    const maxLunchboxesBtn = document.getElementById("maxLunchboxes");
+    maxLunchboxesBtn?.addEventListener("click", () => {
       this.saveEditor.maxLunchboxes();
-      this.showMessage('Lunchboxes maxed!', 'success');
+      this.showMessage("Lunchboxes maxed!", "success");
       this.refreshVaultUI();
     });
 
     // Max everything
-    const maxAllBtn = document.getElementById('maxAll');
-    maxAllBtn?.addEventListener('click', () => {
+    const maxAllBtn = document.getElementById("maxAll");
+    maxAllBtn?.addEventListener("click", () => {
       this.saveEditor.maxCaps();
       this.saveEditor.maxAllResources();
       this.saveEditor.maxLunchboxes();
       this.saveEditor.maxNukaCola();
-      this.showMessage('Everything maxed!', 'success');
+      this.showMessage("Everything maxed!", "success");
       this.refreshVaultUI();
     });
 
     // Max all dwellers
-    const maxAllDwellersBtn = document.getElementById('maxAllDwellers');
-    maxAllDwellersBtn?.addEventListener('click', () => {
+    const maxAllDwellersBtn = document.getElementById("maxAllDwellers");
+    maxAllDwellersBtn?.addEventListener("click", () => {
       this.saveEditor.healAllDwellers();
       this.saveEditor.maxAllDwellersSpecial();
       this.saveEditor.maxAllHappiness();
-      this.showMessage('All dwellers maxed out (health, SPECIAL, and happiness)!', 'success');
+      this.showMessage("All dwellers maxed out (health, SPECIAL, and happiness)!", "success");
       this.refreshDwellersUI();
     });
 
     // Unlock all rooms
-    const unlockAllRoomsBtn = document.getElementById('unlockAllRooms');
-    unlockAllRoomsBtn?.addEventListener('click', () => {
+    const unlockAllRoomsBtn = document.getElementById("unlockAllRooms");
+    unlockAllRoomsBtn?.addEventListener("click", () => {
       this.saveEditor.unlockAllRooms();
-      this.showMessage('All rooms unlocked!', 'success');
+      this.showMessage("All rooms unlocked!", "success");
       this.refreshVaultUI();
     });
 
     // Unlock all recipes
-    const unlockAllRecipesBtn = document.getElementById('unlockAllRecipes');
-    unlockAllRecipesBtn?.addEventListener('click', () => {
+    const unlockAllRecipesBtn = document.getElementById("unlockAllRecipes");
+    unlockAllRecipesBtn?.addEventListener("click", () => {
       this.saveEditor.unlockAllRecipes();
-      this.showMessage('All recipes unlocked!', 'success');
+      this.showMessage("All recipes unlocked!", "success");
     });
 
     // Remove all rocks
-    const removeAllRocksBtn = document.getElementById('removeAllRocks');
-    removeAllRocksBtn?.addEventListener('click', () => {
+    const removeAllRocksBtn = document.getElementById("removeAllRocks");
+    removeAllRocksBtn?.addEventListener("click", () => {
       this.saveEditor.removeAllRocks();
-      this.showMessage('All rocks removed!', 'success');
+      this.showMessage("All rocks removed!", "success");
     });
 
     // Cap junk (reduce each junk stack to 30)
-    const capJunkBtn = document.getElementById('capJunk');
-    capJunkBtn?.addEventListener('click', () => {
+    const capJunkBtn = document.getElementById("capJunk");
+    capJunkBtn?.addEventListener("click", () => {
       const removed = this.saveEditor.capJunk(30);
-      this.showMessage(`Capped junk to 30 each${removed > 0 ? ` (removed ${removed})` : ''}.`, 'success');
+      this.showMessage(
+        `Capped junk to 30 each${removed > 0 ? ` (removed ${removed})` : ""}.`,
+        "success",
+      );
       this.refreshStorageUI();
     });
   }
 
   private bindExportEvents(): void {
     // Create backup
-    const createBackupBtn = document.getElementById('createBackup');
-    createBackupBtn?.addEventListener('click', () => {
+    const createBackupBtn = document.getElementById("createBackup");
+    createBackupBtn?.addEventListener("click", () => {
       this.createBackup();
     });
 
     // Export as JSON
-    const exportJsonBtn = document.getElementById('exportJson');
-    exportJsonBtn?.addEventListener('click', () => {
+    const exportJsonBtn = document.getElementById("exportJson");
+    exportJsonBtn?.addEventListener("click", () => {
       this.exportAsJson();
     });
 
     // Export as .sav
-    const exportSavBtn = document.getElementById('exportSav');
-    exportSavBtn?.addEventListener('click', () => {
+    const exportSavBtn = document.getElementById("exportSav");
+    exportSavBtn?.addEventListener("click", () => {
       this.exportAsSav();
     });
   }
@@ -229,18 +239,18 @@ export class ToolsUI {
     try {
       const save = this.saveEditor.getSave();
       if (!save) {
-        this.showMessage('No save file loaded!', 'error');
+        this.showMessage("No save file loaded!", "error");
         return;
       }
 
       const backupData = JSON.stringify(save, null, 2);
-      const fileName = `backup_${this.saveEditor.getFileName()}_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.json`;
-      
-      await this.downloadFile(backupData, fileName, 'application/json');
-      this.showMessage('Backup created successfully!', 'success');
+      const fileName = `backup_${this.saveEditor.getFileName()}_${new Date().toISOString().slice(0, 19).replace(/:/g, "-")}.json`;
+
+      await this.downloadFile(backupData, fileName, "application/json");
+      this.showMessage("Backup created successfully!", "success");
     } catch (error) {
-      console.error('Error creating backup:', error);
-      this.showMessage('Error creating backup!', 'error');
+      console.error("Error creating backup:", error);
+      this.showMessage("Error creating backup!", "error");
     }
   }
 
@@ -248,18 +258,18 @@ export class ToolsUI {
     try {
       const save = this.saveEditor.getSave();
       if (!save) {
-        this.showMessage('No save file loaded!', 'error');
+        this.showMessage("No save file loaded!", "error");
         return;
       }
 
       const jsonData = JSON.stringify(save, null, 2);
-      const fileName = this.changeFileExtension(this.saveEditor.getFileName(), 'json');
-      
-      await this.downloadFile(jsonData, fileName, 'application/json');
-      this.showMessage('JSON export completed!', 'success');
+      const fileName = this.changeFileExtension(this.saveEditor.getFileName(), "json");
+
+      await this.downloadFile(jsonData, fileName, "application/json");
+      this.showMessage("JSON export completed!", "success");
     } catch (error) {
-      console.error('Error exporting JSON:', error);
-      this.showMessage('Error exporting JSON!', 'error');
+      console.error("Error exporting JSON:", error);
+      this.showMessage("Error exporting JSON!", "error");
     }
   }
 
@@ -267,38 +277,38 @@ export class ToolsUI {
     try {
       const save = this.saveEditor.getSave();
       if (!save) {
-        this.showMessage('No save file loaded!', 'error');
+        this.showMessage("No save file loaded!", "error");
         return;
       }
 
-      const { encryptSaveFile } = await import('../utils/crypto');
+      const { encryptSaveFile } = await import("../utils/crypto");
       const encryptedData = encryptSaveFile(save);
-      const fileName = this.changeFileExtension(this.saveEditor.getFileName(), 'sav');
-      
-      await this.downloadFile(encryptedData, fileName, 'application/octet-stream');
-      this.showMessage('.sav export completed!', 'success');
+      const fileName = this.changeFileExtension(this.saveEditor.getFileName(), "sav");
+
+      await this.downloadFile(encryptedData, fileName, "application/octet-stream");
+      this.showMessage(".sav export completed!", "success");
     } catch (error) {
-      console.error('Error exporting .sav:', error);
-      this.showMessage('Error exporting .sav file!', 'error');
+      console.error("Error exporting .sav:", error);
+      this.showMessage("Error exporting .sav file!", "error");
     }
   }
 
   private async downloadFile(content: string, fileName: string, mimeType: string): Promise<void> {
     const blob = new Blob([content], { type: mimeType });
     const url = URL.createObjectURL(blob);
-    
-    const link = document.createElement('a');
+
+    const link = document.createElement("a");
     link.href = url;
     link.download = fileName;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    
+
     URL.revokeObjectURL(url);
   }
 
   private changeFileExtension(fileName: string, newExtension: string): string {
-    const lastDotIndex = fileName.lastIndexOf('.');
+    const lastDotIndex = fileName.lastIndexOf(".");
     if (lastDotIndex === -1) {
       return `${fileName}.${newExtension}`;
     }
@@ -325,15 +335,15 @@ export class ToolsUI {
     }
   }
 
-  private showMessage(message: string, type: 'success' | 'error' | 'info'): void {
+  private showMessage(message: string, type: "success" | "error" | "info"): void {
     switch (type) {
-      case 'success':
+      case "success":
         toastManager.showSuccess(message);
         break;
-      case 'error':
+      case "error":
         toastManager.showError(message);
         break;
-      case 'info':
+      case "info":
       default:
         toastManager.showInfo(message);
         break;

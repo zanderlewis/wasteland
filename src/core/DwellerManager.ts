@@ -1,18 +1,15 @@
-import type {
-  FalloutShelterSave,
-  DwellersItem as Dweller
-} from '../types/saveFile';
+import type { FalloutShelterSave, DwellersItem as Dweller } from "../types/saveFile";
 
 type SpecialStatType = number;
 
 type Actor = any;
-import { 
+import {
   DwellerStatsManager,
   DwellerHealthManager,
   DwellerEquipmentManager,
   DwellerAppearanceManager,
-  DwellerBatchOperations
-} from './dweller';
+  DwellerBatchOperations,
+} from "./dweller";
 
 /**
  * Dweller-specific operations for the save editor
@@ -28,16 +25,13 @@ export class DwellerManager {
 
   constructor(save: FalloutShelterSave | null) {
     this.save = save;
-    
+
     // Initialize specialized managers
     this.statsManager = new DwellerStatsManager();
     this.healthManager = new DwellerHealthManager();
     this.equipmentManager = new DwellerEquipmentManager();
     this.appearanceManager = new DwellerAppearanceManager();
-    this.batchOperations = new DwellerBatchOperations(
-      this.statsManager,
-      this.healthManager
-    );
+    this.batchOperations = new DwellerBatchOperations(this.statsManager, this.healthManager);
   }
 
   updateSave(save: FalloutShelterSave | null): void {
@@ -172,15 +166,15 @@ export class DwellerManager {
    */
   evictDweller(dweller: Dweller): void {
     if (!dweller) return;
-    
+
     // Mark dweller for eviction
     dweller.WillBeEvicted = true;
     dweller.IsEvictedWaitingForFollowers = false;
     dweller.assigned = false;
     dweller.savedRoom = -1;
-    
+
     // Room assignment is stored under `savedRoom` in the generated format; already cleared above.
-    
+
     console.log(`Dweller ${dweller.name} ${dweller.lastName} marked for eviction`);
   }
 
@@ -189,11 +183,11 @@ export class DwellerManager {
    */
   unevictDweller(dweller: Dweller): void {
     if (!dweller) return;
-    
+
     // Remove eviction flags
     dweller.WillBeEvicted = false;
     dweller.IsEvictedWaitingForFollowers = false;
-    
+
     console.log(`Dweller ${dweller.name} ${dweller.lastName} eviction undone`);
   }
 }

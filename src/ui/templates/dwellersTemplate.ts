@@ -1,9 +1,5 @@
 // Helper to generate a SPECIAL stat slider
-const createSpecialSlider = (
-  label: string,
-  id: string,
-  bubbleId: string,
-): string => `
+const createSpecialSlider = (label: string, id: string, bubbleId: string): string => `
   <div class="flex flex-col items-center">
     <div class="special-slider-wrap">
       <input

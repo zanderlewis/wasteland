@@ -1,5 +1,5 @@
-import type { DwellersItem as Dweller } from '../../types/saveFile';
-import { toastManager } from '../toastManager';
+import type { DwellersItem as Dweller } from "../../types/saveFile";
+import { toastManager } from "../toastManager";
 
 /**
  * Handles UI state management for the dweller editor
@@ -8,43 +8,38 @@ export class DwellerUIManager {
   private selectedDweller: Dweller | null = null;
 
   // Sorting state for the list
-  private sortKey:
-    | 'name'
-    | 'gender'
-    | 'level'
-    | 'xp'
-    | 'happy'
-    | 'special'
-    | 'health' = 'name';
-  private sortDir: 'asc' | 'desc' = 'asc';
+  private sortKey: "name" | "gender" | "level" | "xp" | "happy" | "special" | "health" = "name";
+  private sortDir: "asc" | "desc" = "asc";
 
   // When sorting SPECIAL, we cycle S,P,E,C,I,A,L
   private specialSortIndex = 0; // 0..6
   private readonly specialNames = [
-    'Strength',
-    'Perception',
-    'Endurance',
-    'Charisma',
-    'Intelligence',
-    'Agility',
-    'Luck'
+    "Strength",
+    "Perception",
+    "Endurance",
+    "Charisma",
+    "Intelligence",
+    "Agility",
+    "Luck",
   ];
-  private readonly specialLetters = ['S', 'P', 'E', 'C', 'I', 'A', 'L'];
+  private readonly specialLetters = ["S", "P", "E", "C", "I", "A", "L"];
 
   // Column layout (header and rows MUST match)
   // Name column: widen by ~60% (15% -> 24%)
   // Remove left padding and give the column that same space back in width.
-  private readonly COL_NAME = 'basis-[calc(24%+12px)] shrink-0 pl-0 pr-2 text-left border-r border-green-700/60';
+  private readonly COL_NAME =
+    "basis-[calc(24%+12px)] shrink-0 pl-0 pr-2 text-left border-r border-green-700/60";
   // Width tweaks (requested):
   // - Gender/Level/Happiness/Special: -20px
   // - XP: -10px
   // Also reduce horizontal padding to hit the tighter widths.
-  private readonly COL_SMALL = 'w-7 shrink-0 px-0.5 text-center border-r border-green-700/60';
+  private readonly COL_SMALL = "w-7 shrink-0 px-0.5 text-center border-r border-green-700/60";
   // XP column +10px
-  private readonly COL_XP = 'w-[64px] shrink-0 px-0.5 text-center border-r border-green-700/60';
-  private readonly COL_SPECIAL = 'w-[90px] shrink-0 px-0.5 text-center border-r border-green-700/60';
-  private readonly COL_HEALTH = 'w-[90px] shrink-0 px-1 text-center';
-  private readonly COL_BORDER = 'border-green-900/60 border-r';
+  private readonly COL_XP = "w-[64px] shrink-0 px-0.5 text-center border-r border-green-700/60";
+  private readonly COL_SPECIAL =
+    "w-[90px] shrink-0 px-0.5 text-center border-r border-green-700/60";
+  private readonly COL_HEALTH = "w-[90px] shrink-0 px-1 text-center";
+  private readonly COL_BORDER = "border-green-900/60 border-r";
 
   private readonly SPECIAL_BAR_H = 28; // px, must match h-[28px] in the SPECIAL mini chart
 
@@ -60,72 +55,72 @@ export class DwellerUIManager {
   }
 
   showDwellerEditor(): void {
-    const fieldset = document.getElementById('dwellerFieldset') as HTMLFieldSetElement;
-    const statusText = document.getElementById('dwellerEditorStatus');
+    const fieldset = document.getElementById("dwellerFieldset") as HTMLFieldSetElement;
+    const statusText = document.getElementById("dwellerEditorStatus");
 
     if (fieldset) {
       fieldset.disabled = false;
-      const formElements = fieldset.querySelectorAll(
-        'input, select, button'
-      ) as NodeListOf<HTMLInputElement | HTMLSelectElement | HTMLButtonElement>;
+      const formElements = fieldset.querySelectorAll("input, select, button") as NodeListOf<
+        HTMLInputElement | HTMLSelectElement | HTMLButtonElement
+      >;
       formElements.forEach((element) => (element.disabled = false));
     }
 
     // Status text is redundant (header already says "Edit Dweller")
     if (statusText) {
-      statusText.textContent = '';
-      statusText.className = 'hidden';
+      statusText.textContent = "";
+      statusText.className = "hidden";
     }
   }
 
   showEvictedDwellerEditor(): void {
-    const fieldset = document.getElementById('dwellerFieldset') as HTMLFieldSetElement;
-    const statusText = document.getElementById('dwellerEditorStatus');
+    const fieldset = document.getElementById("dwellerFieldset") as HTMLFieldSetElement;
+    const statusText = document.getElementById("dwellerEditorStatus");
 
     if (statusText) {
-      statusText.textContent = 'Dweller is evicted - Only undo eviction is available';
-      statusText.className = 'text-red-300';
+      statusText.textContent = "Dweller is evicted - Only undo eviction is available";
+      statusText.className = "text-red-300";
     }
 
     if (fieldset) {
-      const formElements = fieldset.querySelectorAll(
-        'input, select, button'
-      ) as NodeListOf<HTMLInputElement | HTMLSelectElement | HTMLButtonElement>;
+      const formElements = fieldset.querySelectorAll("input, select, button") as NodeListOf<
+        HTMLInputElement | HTMLSelectElement | HTMLButtonElement
+      >;
       formElements.forEach((element) => {
-        element.disabled = element.id !== 'evictDweller';
+        element.disabled = element.id !== "evictDweller";
       });
     }
   }
 
   closeDwellerEditor(): void {
-    const fieldset = document.getElementById('dwellerFieldset') as HTMLFieldSetElement;
-    const statusText = document.getElementById('dwellerEditorStatus');
+    const fieldset = document.getElementById("dwellerFieldset") as HTMLFieldSetElement;
+    const statusText = document.getElementById("dwellerEditorStatus");
 
     if (fieldset) {
       fieldset.disabled = true;
-      const formElements = fieldset.querySelectorAll(
-        'input, select, button'
-      ) as NodeListOf<HTMLInputElement | HTMLSelectElement | HTMLButtonElement>;
+      const formElements = fieldset.querySelectorAll("input, select, button") as NodeListOf<
+        HTMLInputElement | HTMLSelectElement | HTMLButtonElement
+      >;
       formElements.forEach((element) => (element.disabled = true));
     }
 
     if (statusText) {
-      statusText.textContent = 'Select a dweller to edit';
-      statusText.className = 'text-green-500/80';
+      statusText.textContent = "Select a dweller to edit";
+      statusText.className = "text-green-500/80";
     }
 
     this.selectedDweller = null;
   }
 
-  showMessage(message: string, type: 'success' | 'error' | 'info'): void {
+  showMessage(message: string, type: "success" | "error" | "info"): void {
     switch (type) {
-      case 'success':
+      case "success":
         toastManager.showSuccess(message);
         break;
-      case 'error':
+      case "error":
         toastManager.showError(message);
         break;
-      case 'info':
+      case "info":
       default:
         toastManager.showInfo(message);
         break;
@@ -136,11 +131,11 @@ export class DwellerUIManager {
    * Update the dweller list display
    */
   updateDwellersList(dwellers: Dweller[]): void {
-    const dwellersList = document.getElementById('dwellerListScroll');
+    const dwellersList = document.getElementById("dwellerListScroll");
     if (!dwellersList) return;
 
     // Update count in the panel title
-    const countEl = document.getElementById('dwellersCount');
+    const countEl = document.getElementById("dwellersCount");
     if (countEl) {
       countEl.textContent = `(${dwellers.length})`;
     }
@@ -158,26 +153,24 @@ export class DwellerUIManager {
     const sorted = [...dwellers].sort((a, b) => this.compareDwellers(a, b));
 
     const specialHeaderLabel =
-      this.sortKey === 'special'
-        ? this.specialNames[this.specialSortIndex]
-        : 'Special';
+      this.sortKey === "special" ? this.specialNames[this.specialSortIndex] : "Special";
 
     dwellersList.innerHTML = `
       <div class="pip-table w-full">
         <!-- HEADER -->
         <div class="dw-header hidden lg:flex items-stretch px-0 py-2 sticky top-0 z-30 bg-gray-900 border-b border-green-900/60">
-          ${this.renderHeaderCell('name', 'Name', this.COL_NAME)}
-          ${this.renderHeaderCell('gender', 'M/F', this.COL_SMALL)}
-          ${this.renderHeaderCell('level', 'LVL', this.COL_SMALL)}
-          ${this.renderHeaderCell('xp', 'XP', this.COL_XP)}
-          ${this.renderHeaderCell('happy', '😊', this.COL_SMALL)}
-          ${this.renderHeaderCell('special', specialHeaderLabel, this.COL_SPECIAL)}
-          ${this.renderHeaderCell('health', 'Health', this.COL_HEALTH)}
+          ${this.renderHeaderCell("name", "Name", this.COL_NAME)}
+          ${this.renderHeaderCell("gender", "M/F", this.COL_SMALL)}
+          ${this.renderHeaderCell("level", "LVL", this.COL_SMALL)}
+          ${this.renderHeaderCell("xp", "XP", this.COL_XP)}
+          ${this.renderHeaderCell("happy", "😊", this.COL_SMALL)}
+          ${this.renderHeaderCell("special", specialHeaderLabel, this.COL_SPECIAL)}
+          ${this.renderHeaderCell("health", "Health", this.COL_HEALTH)}
         </div>
 
         <!-- ROWS -->
         <div class="dw-rows">
-          ${sorted.map((d) => this.renderDwellerRow(d)).join('')}
+          ${sorted.map((d) => this.renderDwellerRow(d)).join("")}
         </div>
       </div>
     `;
@@ -186,13 +179,13 @@ export class DwellerUIManager {
     if (!(dwellersList as any).__dwellerSortBound) {
       (dwellersList as any).__dwellerSortBound = true;
 
-      dwellersList.addEventListener('click', (e) => {
+      dwellersList.addEventListener("click", (e) => {
         const target = e.target as HTMLElement;
 
         // Sorting click
-        const header = target.closest('[data-sort]') as HTMLElement | null;
+        const header = target.closest("[data-sort]") as HTMLElement | null;
         if (header) {
-          const key = (header.dataset.sort as any) || '';
+          const key = (header.dataset.sort as any) || "";
           this.onHeaderClick(key);
           // Re-render with new sort state
           const list: Dweller[] = (dwellersList as any).__dwellers || [];
@@ -201,10 +194,10 @@ export class DwellerUIManager {
         }
 
         // Row selection click
-        const row = target.closest('.dweller-row') as HTMLElement | null;
+        const row = target.closest(".dweller-row") as HTMLElement | null;
         if (!row) return;
 
-        const id = parseInt(row.dataset.dwellerId || '0', 10);
+        const id = parseInt(row.dataset.dwellerId || "0", 10);
         const list: Dweller[] = (dwellersList as any).__dwellers;
         const dweller = list.find((d) => d.serializeId === id);
         if (dweller) this.selectDweller(dweller);
@@ -219,64 +212,55 @@ export class DwellerUIManager {
    */
 
   private onHeaderClick(key: string): void {
-    if (key === 'special') {
-      if (this.sortKey !== 'special') {
-        this.sortKey = 'special';
+    if (key === "special") {
+      if (this.sortKey !== "special") {
+        this.sortKey = "special";
         this.specialSortIndex = 0;
-        this.sortDir = 'asc';
+        this.sortDir = "asc";
         return;
       }
 
       // Cycle: Stat asc -> same Stat desc -> next Stat asc -> ...
-      if (this.sortDir === 'asc') {
-        this.sortDir = 'desc';
+      if (this.sortDir === "asc") {
+        this.sortDir = "desc";
       } else {
-        this.sortDir = 'asc';
+        this.sortDir = "asc";
         this.specialSortIndex = (this.specialSortIndex + 1) % 7;
       }
       return;
     }
 
     if (this.sortKey === key) {
-      this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc';
+      this.sortDir = this.sortDir === "asc" ? "desc" : "asc";
     } else {
       this.sortKey = key as any;
-      this.sortDir = 'asc';
+      this.sortDir = "asc";
     }
   }
 
-
   private renderHeaderCell(
-  key:
-    | 'name'
-    | 'gender'
-    | 'level'
-    | 'xp'
-    | 'happy'
-    | 'special'
-    | 'health',
-  label: string,
-  extraClasses: string
-): string {
-  const active = this.sortKey === key;
-  const desc = active && this.sortDir === 'desc';
+    key: "name" | "gender" | "level" | "xp" | "happy" | "special" | "health",
+    label: string,
+    extraClasses: string,
+  ): string {
+    const active = this.sortKey === key;
+    const desc = active && this.sortDir === "desc";
 
-  return `
+    return `
     <div
       class="relative ${extraClasses} cursor-pointer select-none text-green-500 hover:text-green-400 pb-2"
       data-sort="${key}"
       role="button"
       tabindex="0"
     >
-      <div class="w-full uppercase ${key === 'name' ? 'text-left' : 'text-center'}">${this.escapeHtml(label)}</div>
-      <span class="dw-sort-indicator ${active ? 'is-active' : ''} ${desc ? 'desc' : ''}" aria-hidden="true"></span>
+      <div class="w-full uppercase ${key === "name" ? "text-left" : "text-center"}">${this.escapeHtml(label)}</div>
+      <span class="dw-sort-indicator ${active ? "is-active" : ""} ${desc ? "desc" : ""}" aria-hidden="true"></span>
     </div>
   `;
-}
-
+  }
 
   private renderDwellerRow(dweller: Dweller): string {
-    const fullName = `${dweller.name} ${dweller.lastName || ''}`.trim();
+    const fullName = `${dweller.name} ${dweller.lastName || ""}`.trim();
     // Abbreviate first name to initial aggressively to avoid wrapping.
     let name = fullName;
     if (dweller.name && dweller.lastName) {
@@ -291,7 +275,7 @@ export class DwellerUIManager {
 
     // Gender: symbols, plus sign for pregnant female
     const isFemale = dweller.gender === 1;
-    const genderSymbol = isFemale ? '♀' : '♂';
+    const genderSymbol = isFemale ? "♀" : "♂";
     const isPregnant = this.isDwellerPregnant(dweller);
     const genderText = isFemale && isPregnant ? `${genderSymbol}+` : genderSymbol;
 
@@ -349,7 +333,7 @@ export class DwellerUIManager {
     const values = this.getSpecialValues(dweller);
     const labels = this.specialLetters;
 
-return `
+    return `
   <div class="inline-flex items-end gap-px" aria-label="SPECIAL stats">
     ${values
       .map((v, i) => {
@@ -368,7 +352,7 @@ return `
           </div>
         `;
       })
-      .join('')}
+      .join("")}
   </div>
 `;
   }
@@ -398,10 +382,10 @@ return `
   }
 
   private compareDwellers(a: Dweller, b: Dweller): number {
-    const dir = this.sortDir === 'asc' ? 1 : -1;
+    const dir = this.sortDir === "asc" ? 1 : -1;
 
-    const aName = `${a.name ?? ''} ${a.lastName ?? ''}`.trim().toLowerCase();
-    const bName = `${b.name ?? ''} ${b.lastName ?? ''}`.trim().toLowerCase();
+    const aName = `${a.name ?? ""} ${a.lastName ?? ""}`.trim().toLowerCase();
+    const bName = `${b.name ?? ""} ${b.lastName ?? ""}`.trim().toLowerCase();
 
     const aLevel = a.experience?.currentLevel ?? 1;
     const bLevel = b.experience?.currentLevel ?? 1;
@@ -424,28 +408,28 @@ return `
     let cmp = 0;
 
     switch (this.sortKey) {
-      case 'name':
+      case "name":
         cmp = aName.localeCompare(bName);
         break;
-      case 'gender':
+      case "gender":
         cmp = aGender - bGender;
         break;
-      case 'level':
+      case "level":
         cmp = aLevel - bLevel;
         break;
-      case 'xp':
+      case "xp":
         cmp = aXp - bXp;
         break;
-      case 'happy':
+      case "happy":
         cmp = aHappy - bHappy;
         break;
-      case 'health':
+      case "health":
         // Sort by proportion of HP to Max HP.
         const aMax = Math.max(1, a.health?.maxHealth ?? 100);
         const bMax = Math.max(1, b.health?.maxHealth ?? 100);
-        cmp = (aHp / aMax) - (bHp / bMax);
+        cmp = aHp / aMax - bHp / bMax;
         break;
-      case 'special':
+      case "special":
         cmp = aSpecial - bSpecial;
         break;
       default:
@@ -460,8 +444,8 @@ return `
 
   private isDwellerPregnant(dweller: Dweller): boolean {
     const p: any = (dweller as any).pregnant;
-    if (typeof p === 'boolean') return p;
-    if (p && typeof p === 'object') return !!p.isPregnant;
+    if (typeof p === "boolean") return p;
+    if (p && typeof p === "object") return !!p.isPregnant;
     return false;
   }
 
@@ -476,15 +460,15 @@ return `
 
   private selectDweller(dweller: Dweller): void {
     this.selectedDweller = dweller;
-    document.dispatchEvent(new CustomEvent('dwellerSelected', { detail: { dweller } }));
+    document.dispatchEvent(new CustomEvent("dwellerSelected", { detail: { dweller } }));
   }
 
   private escapeHtml(input: string): string {
     return input
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;');
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
   }
 }

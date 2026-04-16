@@ -1,42 +1,38 @@
-import type {
-  FalloutShelterSave,
-  DwellersItem as Dweller,
-  ItemsItem
-} from '../types/saveFile';
+import type { FalloutShelterSave, DwellersItem as Dweller, ItemsItem } from "../types/saveFile";
 
 type Actor = any;
 
 type SpecialStatType = number;
 
-type StorageCategory = 'Weapon' | 'Outfit' | 'Junk' | 'Pet';
+type StorageCategory = "Weapon" | "Outfit" | "Junk" | "Pet";
 
 type ResourceTypeValue =
-  | 'Caps'
-  | 'Nuka'
-  | 'Food'
-  | 'Energy'
-  | 'Water'
-  | 'StimPack'
-  | 'RadAway'
-  | 'Lunchbox'
-  | 'MrHandy'
-  | 'PetCarrier'
-  | 'CraftedOutfit'
-  | 'CraftedWeapon'
-  | 'NukaColaQuantum'
-  | 'CraftedTheme';
-import type { ISaveEditor } from './interfaces/ISaveEditor';
-import { VaultManager } from './VaultManager';
-import { DwellerManager } from './DwellerManager';
-import { QuickActions } from './QuickActions';
-import { SaveEditorVaultMixin } from './mixins/SaveEditorVaultMixin';
-import { SaveEditorDwellerMixin } from './mixins/SaveEditorDwellerMixin';
-import { SaveEditorQuickActionsMixin } from './mixins/SaveEditorQuickActionsMixin';
+  | "Caps"
+  | "Nuka"
+  | "Food"
+  | "Energy"
+  | "Water"
+  | "StimPack"
+  | "RadAway"
+  | "Lunchbox"
+  | "MrHandy"
+  | "PetCarrier"
+  | "CraftedOutfit"
+  | "CraftedWeapon"
+  | "NukaColaQuantum"
+  | "CraftedTheme";
+import type { ISaveEditor } from "./interfaces/ISaveEditor";
+import { VaultManager } from "./VaultManager";
+import { DwellerManager } from "./DwellerManager";
+import { QuickActions } from "./QuickActions";
+import { SaveEditorVaultMixin } from "./mixins/SaveEditorVaultMixin";
+import { SaveEditorDwellerMixin } from "./mixins/SaveEditorDwellerMixin";
+import { SaveEditorQuickActionsMixin } from "./mixins/SaveEditorQuickActionsMixin";
 
 export class SaveEditor implements ISaveEditor {
   private save: FalloutShelterSave | null = null;
-  private fileName: string = '';
-  
+  private fileName: string = "";
+
   // Manager instances
   private vaultManager: VaultManager;
   private dwellerManager: DwellerManager;
@@ -66,7 +62,7 @@ export class SaveEditor implements ISaveEditor {
   loadSave(saveData: FalloutShelterSave, fileName: string): void {
     this.save = saveData;
     this.fileName = fileName;
-    
+
     // Update all managers with the new save data
     this.vaultManager.updateSave(saveData);
     this.dwellerManager.updateSave(saveData);
@@ -252,7 +248,6 @@ export class SaveEditor implements ISaveEditor {
     return this.dwellerMixin.getDwellerOutfitColorHex(dweller);
   }
 
-
   evictDweller(dweller: Dweller): void {
     this.dwellerMixin.evictDweller(dweller);
   }
@@ -294,12 +289,12 @@ export class SaveEditor implements ISaveEditor {
 
     // Be tolerant of different casing/wording across platform versions.
     return items.filter((it) => {
-      const t = (it.type || '').toLowerCase();
+      const t = (it.type || "").toLowerCase();
       if (!t) return false;
-      if (wanted === 'weapon') return t === 'weapon' || t === 'weapons';
-      if (wanted === 'outfit') return t === 'outfit' || t === 'outfits';
-      if (wanted === 'pet') return t === 'pet' || t === 'pets';
-      if (wanted === 'junk') return t === 'junk' || t === 'scrap' || t === 'item';
+      if (wanted === "weapon") return t === "weapon" || t === "weapons";
+      if (wanted === "outfit") return t === "outfit" || t === "outfits";
+      if (wanted === "pet") return t === "pet" || t === "pets";
+      if (wanted === "junk") return t === "junk" || t === "scrap" || t === "item";
       return false;
     });
   }
@@ -338,7 +333,6 @@ export class SaveEditor implements ISaveEditor {
     this.save.vault.inventory.items.push(item);
   }
 
-
   /**
    * Total number of items currently in vault storage inventory.
    */
@@ -363,27 +357,34 @@ export class SaveEditor implements ISaveEditor {
 
     // Some save variants store rooms at vault.rooms (array), others at vault.rooms.rooms
     const roomsAny: any = save.vault?.rooms;
-    const rooms: any[] = Array.isArray(roomsAny) ? roomsAny : (Array.isArray(roomsAny?.rooms) ? roomsAny.rooms : []);
+    const rooms: any[] = Array.isArray(roomsAny)
+      ? roomsAny
+      : Array.isArray(roomsAny?.rooms)
+        ? roomsAny.rooms
+        : [];
     if (!Array.isArray(rooms)) return base;
 
     const isItemStorageRoom = (r: any): boolean => {
-      const t = String(r?.type || '').toLowerCase();
-      const c = String(r?.class || '').toLowerCase();
+      const t = String(r?.type || "").toLowerCase();
+      const c = String(r?.class || "").toLowerCase();
       // "Storage" is the common type; include "warehouse" for compatibility with other save variants.
-      return t.includes('storage') || t.includes('warehouse') || c.includes('storage') || c.includes('warehouse');
+      return (
+        t.includes("storage") ||
+        t.includes("warehouse") ||
+        c.includes("storage") ||
+        c.includes("warehouse")
+      );
     };
 
     const clamp = (n: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, n));
 
-    const roomCap = rooms
-      .filter(isItemStorageRoom)
-      .reduce((sum: number, r: any) => {
-        // In this project's saves, mergeLevel is already 1..3 (size), not 0..2.
-        const size = clamp(Number(r?.mergeLevel) || 1, 1, 3);
-        const level = clamp(Number(r?.level) || 1, 1, 3);
-        // Capacity per room: 10 × Size × (Level + 1)  (matches in-game values for the provided save)
-        return sum + 10 * size * (level + 1);
-      }, 0);
+    const roomCap = rooms.filter(isItemStorageRoom).reduce((sum: number, r: any) => {
+      // In this project's saves, mergeLevel is already 1..3 (size), not 0..2.
+      const size = clamp(Number(r?.mergeLevel) || 1, 1, 3);
+      const level = clamp(Number(r?.level) || 1, 1, 3);
+      // Capacity per room: 10 × Size × (Level + 1)  (matches in-game values for the provided save)
+      return sum + 10 * size * (level + 1);
+    }, 0);
 
     return base + roomCap;
   }
@@ -415,12 +416,12 @@ export class SaveEditor implements ISaveEditor {
 
     const wanted = category.toLowerCase();
     const matchesCategory = (it: any): boolean => {
-      const t = String(it?.type || '').toLowerCase();
+      const t = String(it?.type || "").toLowerCase();
       if (!t) return false;
-      if (wanted === 'weapon') return t === 'weapon' || t === 'weapons';
-      if (wanted === 'outfit') return t === 'outfit' || t === 'outfits';
-      if (wanted === 'pet') return t === 'pet' || t === 'pets';
-      if (wanted === 'junk') return t === 'junk' || t === 'scrap' || t === 'item';
+      if (wanted === "weapon") return t === "weapon" || t === "weapons";
+      if (wanted === "outfit") return t === "outfit" || t === "outfits";
+      if (wanted === "pet") return t === "pet" || t === "pets";
+      if (wanted === "junk") return t === "junk" || t === "scrap" || t === "item";
       return false;
     };
 

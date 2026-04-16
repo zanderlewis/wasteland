@@ -1,6 +1,6 @@
-import type { DwellersItem as Dweller } from '../../types/saveFile';
-import { DwellerStatsManager } from './DwellerStatsManager';
-import { DwellerHealthManager } from './DwellerHealthManager';
+import type { DwellersItem as Dweller } from "../../types/saveFile";
+import { DwellerStatsManager } from "./DwellerStatsManager";
+import { DwellerHealthManager } from "./DwellerHealthManager";
 
 /**
  * Manages batch operations on dwellers
@@ -9,10 +9,7 @@ export class DwellerBatchOperations {
   private statsManager: DwellerStatsManager;
   private healthManager: DwellerHealthManager;
 
-  constructor(
-    statsManager: DwellerStatsManager,
-    healthManager: DwellerHealthManager,
-  ) {
+  constructor(statsManager: DwellerStatsManager, healthManager: DwellerHealthManager) {
     this.statsManager = statsManager;
     this.healthManager = healthManager;
   }
@@ -21,7 +18,7 @@ export class DwellerBatchOperations {
    * Max out all SPECIAL stats for all dwellers
    */
   maxAllDwellersSpecial(dwellers: Dweller[]): void {
-    dwellers.forEach(dweller => {
+    dwellers.forEach((dweller) => {
       this.statsManager.maxDwellerSpecial(dweller);
     });
   }
@@ -30,7 +27,7 @@ export class DwellerBatchOperations {
    * Set all dwellers to super health
    */
   setAllDwellersSuperHealth(dwellers: Dweller[]): void {
-    dwellers.forEach(dweller => {
+    dwellers.forEach((dweller) => {
       this.healthManager.setDwellerSuperHealth(dweller);
     });
   }
@@ -39,7 +36,7 @@ export class DwellerBatchOperations {
    * Max happiness for all dwellers
    */
   maxAllHappiness(dwellers: Dweller[]): void {
-    dwellers.forEach(dweller => {
+    dwellers.forEach((dweller) => {
       this.statsManager.setDwellerHappiness(dweller, 100);
     });
   }
@@ -48,7 +45,7 @@ export class DwellerBatchOperations {
    * Heal all dwellers to full health
    */
   healAllDwellers(dwellers: Dweller[]): void {
-    dwellers.forEach(dweller => {
+    dwellers.forEach((dweller) => {
       const maxHealth = dweller.health?.maxHealth || 100;
       this.healthManager.setDwellerHealth(dweller, maxHealth);
       // Remove radiation
@@ -62,7 +59,7 @@ export class DwellerBatchOperations {
    * Remove radiation from all dwellers
    */
   removeAllRadiation(dwellers: Dweller[]): void {
-    dwellers.forEach(dweller => {
+    dwellers.forEach((dweller) => {
       this.healthManager.setDwellerRadiation(dweller, 0);
     });
   }

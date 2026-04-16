@@ -14,16 +14,11 @@ const DEFAULT_HAIR_COLORS = {
  */
 export class DwellerFormManager {
   // Store the bound handler once so removeEventListener actually works
-  private readonly boundGenderChangeHandler =
-    this.handleGenderChange.bind(this);
+  private readonly boundGenderChangeHandler = this.handleGenderChange.bind(this);
   private readonly boundChildChangeHandler = this.handleChildChange.bind(this);
 
-  private colorConverter(
-    colorhex: string | number,
-    mode?: boolean,
-  ): string | number {
-    const colorInt =
-      typeof colorhex === "string" ? parseInt(colorhex, 10) : colorhex;
+  private colorConverter(colorhex: string | number, mode?: boolean): string | number {
+    const colorInt = typeof colorhex === "string" ? parseInt(colorhex, 10) : colorhex;
 
     if (mode) {
       // Convert from FOS integer to hex color for HTML input
@@ -47,32 +42,14 @@ export class DwellerFormManager {
     this.setFormValue("dwellerName", dweller.name);
     this.setFormValue("dwellerLastName", dweller.lastName || "");
     this.setFormValue("dwellerGender", (dweller.gender || 1).toString());
-    this.setFormValue(
-      "dwellerLevel",
-      (dweller.experience?.currentLevel || 1).toString(),
-    );
-    this.setFormValue(
-      "dwellerExperience",
-      (dweller.experience?.experienceValue || 0).toString(),
-    );
-    this.setFormValue(
-      "dwellerHappiness",
-      (dweller.happiness?.happinessValue || 50).toString(),
-    );
+    this.setFormValue("dwellerLevel", (dweller.experience?.currentLevel || 1).toString());
+    this.setFormValue("dwellerExperience", (dweller.experience?.experienceValue || 0).toString());
+    this.setFormValue("dwellerHappiness", (dweller.happiness?.happinessValue || 50).toString());
 
     // Health
-    this.setFormValue(
-      "dwellerHealth",
-      (dweller.health?.healthValue || 100).toString(),
-    );
-    this.setFormValue(
-      "dwellerMaxHealth",
-      (dweller.health?.maxHealth || 100).toString(),
-    );
-    this.setFormValue(
-      "dwellerRadiation",
-      (dweller.health?.radiationValue || 0).toString(),
-    );
+    this.setFormValue("dwellerHealth", (dweller.health?.healthValue || 100).toString());
+    this.setFormValue("dwellerMaxHealth", (dweller.health?.maxHealth || 100).toString());
+    this.setFormValue("dwellerRadiation", (dweller.health?.radiationValue || 0).toString());
 
     // Appearance
     this.setFormValue(
@@ -89,19 +66,14 @@ export class DwellerFormManager {
     );
 
     // Child flag (save versions may use isChild or child)
-    const isChild = Boolean(
-      (dweller as any).isChild ?? (dweller as any).child ?? false,
-    );
+    const isChild = Boolean((dweller as any).isChild ?? (dweller as any).child ?? false);
     this.setFormValue("dwellerChild", isChild ? "true" : "false");
 
     // Pregnancy (only for females and not a child)
     const showPregnancy = dweller.gender === 1 && !isChild;
     if (showPregnancy) {
       this.setFormValue("dwellerPregnant", dweller.pregnant ? "true" : "false");
-      this.setFormValue(
-        "dwellerBabyReadyTime",
-        dweller.babyReady ? "true" : "false",
-      );
+      this.setFormValue("dwellerBabyReadyTime", dweller.babyReady ? "true" : "false");
       this.togglePregnancyFields(true);
     } else {
       // Hide + reset (prevents invalid male/child pregnancy state)
@@ -126,16 +98,10 @@ export class DwellerFormManager {
     if (dweller.stats && dweller.stats.stats) {
       const stats = dweller.stats.stats;
       this.setFormValue("dwellerStrength", stats[1]?.value?.toString() || "1");
-      this.setFormValue(
-        "dwellerPerception",
-        stats[2]?.value?.toString() || "1",
-      );
+      this.setFormValue("dwellerPerception", stats[2]?.value?.toString() || "1");
       this.setFormValue("dwellerEndurance", stats[3]?.value?.toString() || "1");
       this.setFormValue("dwellerCharisma", stats[4]?.value?.toString() || "1");
-      this.setFormValue(
-        "dwellerIntelligence",
-        stats[5]?.value?.toString() || "1",
-      );
+      this.setFormValue("dwellerIntelligence", stats[5]?.value?.toString() || "1");
       this.setFormValue("dwellerAgility", stats[6]?.value?.toString() || "1");
       this.setFormValue("dwellerLuck", stats[7]?.value?.toString() || "1");
     }
@@ -145,28 +111,17 @@ export class DwellerFormManager {
    * Load equipment values into form
    */
   loadEquipmentToForm(dweller: Dweller): void {
-    this.setFormValue(
-      "dwellerWeapon",
-      (dweller.equipedWeapon?.id || "").toString(),
-    );
-    this.setFormValue(
-      "dwellerOutfit",
-      (dweller.equipedOutfit?.id || "").toString(),
-    );
+    this.setFormValue("dwellerWeapon", (dweller.equipedWeapon?.id || "").toString());
+    this.setFormValue("dwellerOutfit", (dweller.equipedOutfit?.id || "").toString());
 
     // Set pet value (some generated save shapes don't include pet fields)
-    const petId =
-      (dweller as any).equippedPet?.id || (dweller as any).pet?.id || "";
+    const petId = (dweller as any).equippedPet?.id || (dweller as any).pet?.id || "";
     this.setFormValue("dwellerPet", petId);
 
     // Verify the pet was set correctly
-    const petSelect = document.getElementById(
-      "dwellerPet",
-    ) as HTMLSelectElement;
+    const petSelect = document.getElementById("dwellerPet") as HTMLSelectElement;
     if (petSelect && petId) {
-      const selectedOption = Array.from(petSelect.options).find(
-        (opt) => opt.value === petId,
-      );
+      const selectedOption = Array.from(petSelect.options).find((opt) => opt.value === petId);
       if (selectedOption) {
         console.log("Pet select value after setting:", petSelect.value);
       }
@@ -177,10 +132,7 @@ export class DwellerFormManager {
    * Set form field value
    */
   setFormValue(fieldId: string, value: string): void {
-    const element = document.getElementById(fieldId) as
-      | HTMLInputElement
-      | HTMLSelectElement
-      | null;
+    const element = document.getElementById(fieldId) as HTMLInputElement | HTMLSelectElement | null;
     if (!element) return;
 
     // Support checkboxes (used for Pregnant / Baby Ready)
@@ -196,10 +148,7 @@ export class DwellerFormManager {
    * Get form field value
    */
   getFormValue(fieldId: string): string {
-    const el = document.getElementById(fieldId) as
-      | HTMLInputElement
-      | HTMLSelectElement
-      | null;
+    const el = document.getElementById(fieldId) as HTMLInputElement | HTMLSelectElement | null;
 
     if (!el) return "";
 
@@ -225,12 +174,8 @@ export class DwellerFormManager {
    * Setup gender change listener to toggle pregnancy fields
    */
   private setupGenderChangeListener(): void {
-    const genderSelect = document.getElementById(
-      "dwellerGender",
-    ) as HTMLSelectElement;
-    const childCheckbox = document.getElementById(
-      "dwellerChild",
-    ) as HTMLInputElement;
+    const genderSelect = document.getElementById("dwellerGender") as HTMLSelectElement;
+    const childCheckbox = document.getElementById("dwellerChild") as HTMLInputElement;
 
     if (genderSelect) {
       genderSelect.removeEventListener("change", this.boundGenderChangeHandler);
@@ -250,9 +195,7 @@ export class DwellerFormManager {
     const target = event.target as HTMLSelectElement;
     const isFemale = target.value === "1";
 
-    const childCheckbox = document.getElementById(
-      "dwellerChild",
-    ) as HTMLInputElement | null;
+    const childCheckbox = document.getElementById("dwellerChild") as HTMLInputElement | null;
     const isChild = childCheckbox?.checked ?? false;
 
     this.togglePregnancyFields(isFemale && !isChild);
@@ -268,12 +211,8 @@ export class DwellerFormManager {
    * Handle child checkbox change event
    */
   private handleChildChange(): void {
-    const genderSelect = document.getElementById(
-      "dwellerGender",
-    ) as HTMLSelectElement | null;
-    const childCheckbox = document.getElementById(
-      "dwellerChild",
-    ) as HTMLInputElement | null;
+    const genderSelect = document.getElementById("dwellerGender") as HTMLSelectElement | null;
+    const childCheckbox = document.getElementById("dwellerChild") as HTMLInputElement | null;
 
     const isFemale = (genderSelect?.value ?? "1") === "1";
     const isChild = childCheckbox?.checked ?? false;
@@ -297,14 +236,8 @@ export class DwellerFormManager {
 
       // Ensure pregnancy fields are properly set based on dweller's actual data
       if (dweller.gender === 1) {
-        this.setFormValue(
-          "dwellerPregnant",
-          dweller.pregnant ? "true" : "false",
-        );
-        this.setFormValue(
-          "dwellerBabyReadyTime",
-          dweller.babyReady ? "true" : "false",
-        );
+        this.setFormValue("dwellerPregnant", dweller.pregnant ? "true" : "false");
+        this.setFormValue("dwellerBabyReadyTime", dweller.babyReady ? "true" : "false");
         this.togglePregnancyFields(true);
       } else {
         this.setFormValue("dwellerPregnant", "false");
@@ -353,9 +286,7 @@ export class DwellerFormManager {
 
   private ensureSpecialSliderBubblesBound(): void {
     const sliders = Array.from(
-      document.querySelectorAll(
-        'input[type="range"].special-slider[data-bubble]',
-      ),
+      document.querySelectorAll('input[type="range"].special-slider[data-bubble]'),
     ) as HTMLInputElement[];
 
     sliders.forEach((slider) => {
@@ -374,10 +305,7 @@ export class DwellerFormManager {
     });
   }
 
-  private updateSpecialSliderBubble(
-    slider: HTMLInputElement,
-    bubble: HTMLElement | null,
-  ): void {
+  private updateSpecialSliderBubble(slider: HTMLInputElement, bubble: HTMLElement | null): void {
     if (!bubble) return;
 
     const min = parseInt(slider.min || "1", 10) || 1;

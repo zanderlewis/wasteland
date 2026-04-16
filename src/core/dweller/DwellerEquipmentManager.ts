@@ -1,5 +1,5 @@
-import type { DwellersItem as Dweller, EquipedOutfit, EquipedWeapon } from '../../types/saveFile';
-import { petBonusMap } from '../../constants/petConstants';
+import type { DwellersItem as Dweller, EquipedOutfit, EquipedWeapon } from "../../types/saveFile";
+import { petBonusMap } from "../../constants/petConstants";
 
 /**
  * Manages dweller equipment (outfits, weapons, pets)
@@ -17,9 +17,9 @@ export class DwellerEquipmentManager {
       id: String(outfitType || outfitId), // Convert to string for actual save format
       type: "Outfit",
       hasBeenAssigned: true,
-      hasRandonWeaponBeenAssigned: false
+      hasRandonWeaponBeenAssigned: false,
     };
-    
+
     dweller.equipedOutfit = outfitData;
   }
 
@@ -35,9 +35,9 @@ export class DwellerEquipmentManager {
       id: String(weaponType || weaponId), // Convert to string for actual save format
       type: "Weapon",
       hasBeenAssigned: true,
-      hasRandonWeaponBeenAssigned: false
+      hasRandonWeaponBeenAssigned: false,
     };
-    
+
     dweller.equipedWeapon = weaponData;
   }
 
@@ -55,10 +55,10 @@ export class DwellerEquipmentManager {
     if (!(dweller as any).equippedPet) {
       (dweller as any).equippedPet = {};
     }
-    
+
     // Get pet bonus data based on pet ID
     const petBonusData = this.getPetBonusData(petId);
-    
+
     (dweller as any).pet.id = petId;
     (dweller as any).pet.type = petType || "Pet";
     (dweller as any).pet.hasBeenAssigned = true;

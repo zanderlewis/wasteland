@@ -1,5 +1,5 @@
 // Quick action operations for SaveEditor
-import { QuickActions } from '../QuickActions';
+import { QuickActions } from "../QuickActions";
 
 /**
  * Mixin for quick action operations

@@ -130,8 +130,7 @@ export interface ConstructMgr {
   roomDeserializeID: number;
 }
 
-export interface CurrentState {
-}
+export interface CurrentState {}
 
 export interface RoomsItem {
   emergencyDone: boolean;
@@ -511,8 +510,7 @@ export interface BottleAndCappyMgrSerializeKey {
   SerializeLocked: boolean;
 }
 
-export interface StandaloneQuestPicker {
-}
+export interface StandaloneQuestPicker {}
 
 export interface CurrentDailiesItem {
   startDate: string;

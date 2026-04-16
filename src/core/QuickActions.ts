@@ -1,25 +1,21 @@
-import type { FalloutShelterSave } from '../types/saveFile';
+import type { FalloutShelterSave } from "../types/saveFile";
 
 type ResourceTypeValue =
-  | 'Caps'
-  | 'Nuka'
-  | 'Food'
-  | 'Energy'
-  | 'Water'
-  | 'StimPack'
-  | 'RadAway'
-  | 'Lunchbox'
-  | 'MrHandy'
-  | 'PetCarrier'
-  | 'CraftedOutfit'
-  | 'CraftedWeapon'
-  | 'NukaColaQuantum'
-  | 'CraftedTheme';
-import { 
-  GAME_LIMITS, 
-  ROOM_UNLOCKS, 
-  RECIPE_UNLOCKS 
-} from '../constants/gameConstants';
+  | "Caps"
+  | "Nuka"
+  | "Food"
+  | "Energy"
+  | "Water"
+  | "StimPack"
+  | "RadAway"
+  | "Lunchbox"
+  | "MrHandy"
+  | "PetCarrier"
+  | "CraftedOutfit"
+  | "CraftedWeapon"
+  | "NukaColaQuantum"
+  | "CraftedTheme";
+import { GAME_LIMITS, ROOM_UNLOCKS, RECIPE_UNLOCKS } from "../constants/gameConstants";
 
 /**
  * Quick action operations for the save editor
@@ -39,23 +35,23 @@ export class QuickActions {
    * Max caps
    */
   maxCaps(): void {
-    if (!this.save) throw new Error('No save loaded');
-    this.setResource('Caps', GAME_LIMITS.CAPS_MAX);
+    if (!this.save) throw new Error("No save loaded");
+    this.setResource("Caps", GAME_LIMITS.CAPS_MAX);
   }
 
   /**
    * Max Nuka Cola Quantum
    */
   maxNukaCola(): void {
-    if (!this.save) throw new Error('No save loaded');
-    this.setResource('NukaColaQuantum', GAME_LIMITS.NUKA_COLA_MAX);
+    if (!this.save) throw new Error("No save loaded");
+    this.setResource("NukaColaQuantum", GAME_LIMITS.NUKA_COLA_MAX);
   }
 
   /**
    * Max lunchboxes
    */
   maxLunchboxes(): void {
-    if (!this.save) throw new Error('No save loaded');
+    if (!this.save) throw new Error("No save loaded");
     this.setLunchboxCount(GAME_LIMITS.LUNCHBOXES_MAX);
   }
 
@@ -63,14 +59,14 @@ export class QuickActions {
    * Unlock all rooms
    */
   unlockAllRooms(): void {
-    if (!this.save) throw new Error('No save loaded');
-    
+    if (!this.save) throw new Error("No save loaded");
+
     // Initialize unlockableMgr if it doesn't exist
     if (!this.save.unlockableMgr) {
       (this.save as any).unlockableMgr = {
         objectivesInProgress: [],
         completed: [],
-        claimed: []
+        claimed: [],
       };
     }
 
@@ -84,13 +80,13 @@ export class QuickActions {
    * Unlock all recipes
    */
   unlockAllRecipes(): void {
-    if (!this.save) throw new Error('No save loaded');
-    
+    if (!this.save) throw new Error("No save loaded");
+
     if (!(this.save.vault as any).unlockedRecipes) {
       (this.save.vault as any).unlockedRecipes = [];
     }
 
-    RECIPE_UNLOCKS.forEach(recipe => {
+    RECIPE_UNLOCKS.forEach((recipe) => {
       if (!(this.save!.vault as any).unlockedRecipes.includes(recipe)) {
         (this.save!.vault as any).unlockedRecipes.push(recipe);
       }
@@ -101,16 +97,16 @@ export class QuickActions {
    * Max all resources
    */
   maxAllResources(): void {
-    if (!this.save) throw new Error('No save loaded');
-    
-    this.setResource('Caps', GAME_LIMITS.CAPS_MAX);
-    this.setResource('Food', GAME_LIMITS.FOOD_MAX);
-    this.setResource('Energy', GAME_LIMITS.ENERGY_MAX);
-    this.setResource('Water', GAME_LIMITS.WATER_MAX);
-    this.setResource('NukaColaQuantum', GAME_LIMITS.NUKA_COLA_MAX);
-    this.setResource('StimPack', GAME_LIMITS.STIMPACKS_MAX);
-    this.setResource('RadAway', GAME_LIMITS.RADAWAY_MAX);
-    
+    if (!this.save) throw new Error("No save loaded");
+
+    this.setResource("Caps", GAME_LIMITS.CAPS_MAX);
+    this.setResource("Food", GAME_LIMITS.FOOD_MAX);
+    this.setResource("Energy", GAME_LIMITS.ENERGY_MAX);
+    this.setResource("Water", GAME_LIMITS.WATER_MAX);
+    this.setResource("NukaColaQuantum", GAME_LIMITS.NUKA_COLA_MAX);
+    this.setResource("StimPack", GAME_LIMITS.STIMPACKS_MAX);
+    this.setResource("RadAway", GAME_LIMITS.RADAWAY_MAX);
+
     this.setLunchboxCount(GAME_LIMITS.LUNCHBOXES_MAX);
     this.setMrHandyCount(GAME_LIMITS.MR_HANDIES_MAX);
     this.setPetCarrierCount(GAME_LIMITS.PET_CARRIERS_MAX);
@@ -120,8 +116,8 @@ export class QuickActions {
    * Unlock everything (rooms, recipes, themes)
    */
   unlockEverything(): void {
-    if (!this.save) throw new Error('No save loaded');
-    
+    if (!this.save) throw new Error("No save loaded");
+
     this.unlockAllRooms();
     this.unlockAllRecipes();
     this.unlockAllThemes();
@@ -131,8 +127,8 @@ export class QuickActions {
    * Remove all rocks from the vault
    */
   removeAllRocks(): void {
-    if (!this.save) throw new Error('No save loaded');
-    
+    if (!this.save) throw new Error("No save loaded");
+
     if (this.save.vault.rocks) {
       this.save.vault.rocks = [];
     }
@@ -145,9 +141,9 @@ export class QuickActions {
    * @returns number of removed items
    */
   capJunk(maxPerItem: number = 30): number {
-    if (!this.save) throw new Error('No save loaded');
+    if (!this.save) throw new Error("No save loaded");
 
-    if (!this.save.vault) throw new Error('Invalid save: missing vault');
+    if (!this.save.vault) throw new Error("Invalid save: missing vault");
     if (!this.save.vault.inventory) {
       (this.save.vault as any).inventory = { items: [] };
     }
@@ -157,8 +153,8 @@ export class QuickActions {
 
     const items = (this.save.vault.inventory as any).items as any[];
     const isJunkType = (type: any): boolean => {
-      const t = String(type || '').toLowerCase();
-      return t === 'junk' || t === 'scrap' || t === 'item';
+      const t = String(type || "").toLowerCase();
+      return t === "junk" || t === "scrap" || t === "item";
     };
 
     const counts = new Map<string, number>();
@@ -168,7 +164,7 @@ export class QuickActions {
       if (!it) return false;
       if (!isJunkType(it.type)) return true;
 
-      const key = String(it.id ?? '');
+      const key = String(it.id ?? "");
       const c = counts.get(key) ?? 0;
       if (c >= maxPerItem) return false;
       counts.set(key, c + 1);
@@ -181,67 +177,84 @@ export class QuickActions {
     return Math.max(0, before - after);
   }
 
-
   // Helper methods that delegate to other managers
   private setResource(resourceType: ResourceTypeValue, amount: number): void {
-    if (!this.save) throw new Error('No save loaded');
+    if (!this.save) throw new Error("No save loaded");
     if (!this.save.vault.storage) {
       (this.save.vault as any).storage = { resources: {}, bonus: {} };
     }
     if (!(this.save.vault.storage as any).resources) {
       (this.save.vault.storage as any).resources = {};
     }
-    
+
     // Map our internal resource names to save file names
-    const saveFileResourceName = resourceType === 'Caps' ? 'Nuka' : resourceType;
-    
+    const saveFileResourceName = resourceType === "Caps" ? "Nuka" : resourceType;
+
     // Get the max value for this resource type
-    const maxValue = resourceType === 'Caps' ? GAME_LIMITS.CAPS_MAX :
-                    resourceType === 'NukaColaQuantum' ? GAME_LIMITS.NUKA_COLA_MAX :
-                    resourceType === 'Food' ? GAME_LIMITS.FOOD_MAX :
-                    resourceType === 'Water' ? GAME_LIMITS.WATER_MAX :
-                    resourceType === 'Energy' ? GAME_LIMITS.ENERGY_MAX :
-                    resourceType === 'RadAway' ? GAME_LIMITS.RADAWAY_MAX :
-                    resourceType === 'StimPack' ? GAME_LIMITS.STIMPACKS_MAX :
-                    GAME_LIMITS.NUKA_COLA_MAX;
-    
-    (this.save.vault.storage.resources as unknown as Record<string, number>)[saveFileResourceName] = Math.max(0, Math.min(maxValue, amount));
+    const maxValue =
+      resourceType === "Caps"
+        ? GAME_LIMITS.CAPS_MAX
+        : resourceType === "NukaColaQuantum"
+          ? GAME_LIMITS.NUKA_COLA_MAX
+          : resourceType === "Food"
+            ? GAME_LIMITS.FOOD_MAX
+            : resourceType === "Water"
+              ? GAME_LIMITS.WATER_MAX
+              : resourceType === "Energy"
+                ? GAME_LIMITS.ENERGY_MAX
+                : resourceType === "RadAway"
+                  ? GAME_LIMITS.RADAWAY_MAX
+                  : resourceType === "StimPack"
+                    ? GAME_LIMITS.STIMPACKS_MAX
+                    : GAME_LIMITS.NUKA_COLA_MAX;
+
+    (this.save.vault.storage.resources as unknown as Record<string, number>)[saveFileResourceName] =
+      Math.max(0, Math.min(maxValue, amount));
   }
 
   private setLunchboxCount(count: number): void {
-    if (!this.save) throw new Error('No save loaded');
-    
+    if (!this.save) throw new Error("No save loaded");
+
     // Initialize LunchBoxesByType if it doesn't exist
     if (!this.save.vault.LunchBoxesByType) {
       (this.save.vault as any).LunchBoxesByType = [];
     }
-    
-    this.updateLunchBoxesByType('lunchboxes', Math.max(0, Math.min(GAME_LIMITS.LUNCHBOXES_MAX, count)));
+
+    this.updateLunchBoxesByType(
+      "lunchboxes",
+      Math.max(0, Math.min(GAME_LIMITS.LUNCHBOXES_MAX, count)),
+    );
   }
 
   private setMrHandyCount(count: number): void {
-    if (!this.save) throw new Error('No save loaded');
-    
+    if (!this.save) throw new Error("No save loaded");
+
     if (!this.save.vault.LunchBoxesByType) {
       (this.save.vault as any).LunchBoxesByType = [];
     }
-    
-    this.updateLunchBoxesByType('mrHandies', Math.max(0, Math.min(GAME_LIMITS.MR_HANDIES_MAX, count)));
+
+    this.updateLunchBoxesByType(
+      "mrHandies",
+      Math.max(0, Math.min(GAME_LIMITS.MR_HANDIES_MAX, count)),
+    );
   }
 
   private setPetCarrierCount(count: number): void {
-    if (!this.save) throw new Error('No save loaded');
-    
+    if (!this.save) throw new Error("No save loaded");
+
     if (!this.save.vault.LunchBoxesByType) {
       (this.save.vault as any).LunchBoxesByType = [];
     }
-    
-    this.updateLunchBoxesByType('petCarriers', Math.max(0, Math.min(GAME_LIMITS.PET_CARRIERS_MAX, count)));
+
+    this.updateLunchBoxesByType(
+      "petCarriers",
+      Math.max(0, Math.min(GAME_LIMITS.PET_CARRIERS_MAX, count)),
+    );
   }
 
   private unlockAllThemes(): void {
-    if (!this.save) throw new Error('No save loaded');
-    
+    if (!this.save) throw new Error("No save loaded");
+
     if (!(this.save.vault as any).unlockedThemes) {
       (this.save.vault as any).unlockedThemes = [];
     }
@@ -278,59 +291,62 @@ export class QuickActions {
     return lunchBoxesByType.filter((type: number) => type === 3).length;
   }
 
-  private updateLunchBoxesByType(type: 'lunchboxes' | 'mrHandies' | 'petCarriers' | 'starterPacks', newCount: number): void {
+  private updateLunchBoxesByType(
+    type: "lunchboxes" | "mrHandies" | "petCarriers" | "starterPacks",
+    newCount: number,
+  ): void {
     if (!this.save) return;
-    
+
     // Get current counts for all types
     const currentLunchboxes = this.getLunchboxCount();
     const currentMrHandies = this.getMrHandyCount();
     const currentPetCarriers = this.getPetCarrierCount();
     const currentStarterPacks = this.getStarterPackCount();
-    
+
     // Update the specific type count
     let lunchboxCount = currentLunchboxes;
     let mrHandyCount = currentMrHandies;
     let petCarrierCount = currentPetCarriers;
     let starterPackCount = currentStarterPacks;
-    
+
     switch (type) {
-      case 'lunchboxes':
+      case "lunchboxes":
         lunchboxCount = newCount;
         break;
-      case 'mrHandies':
+      case "mrHandies":
         mrHandyCount = newCount;
         break;
-      case 'petCarriers':
+      case "petCarriers":
         petCarrierCount = newCount;
         break;
-      case 'starterPacks':
+      case "starterPacks":
         starterPackCount = newCount;
         break;
     }
-    
+
     // Rebuild the LunchBoxesByType array
     const newLunchBoxesByType: number[] = [];
-    
+
     // Add lunchboxes (type 0)
     for (let i = 0; i < lunchboxCount; i++) {
       newLunchBoxesByType.push(0);
     }
-    
+
     // Add Mr. Handies (type 1)
     for (let i = 0; i < mrHandyCount; i++) {
       newLunchBoxesByType.push(1);
     }
-    
+
     // Add Pet Carriers (type 2)
     for (let i = 0; i < petCarrierCount; i++) {
       newLunchBoxesByType.push(2);
     }
-    
+
     // Add Starter Packs (type 3)
     for (let i = 0; i < starterPackCount; i++) {
       newLunchBoxesByType.push(3);
     }
-    
+
     // Update the save
     (this.save.vault as any).LunchBoxesByType = newLunchBoxesByType;
   }

@@ -25,7 +25,7 @@ export default defineConfig(() => ({
     open: true,
   },
   staged: {
-    "*.{js,ts,jsx,tsx}": "eslint --fix",
-    "*.{js,ts,jsx,tsx,json,css,md}": "prettier --write",
+    "*.{js,ts,jsx,tsx}": "vp lint --fix",
+    "*.{js,ts,jsx,tsx,json,css,md}": "vp fmt . --write",
   },
 }));

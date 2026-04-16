@@ -1,10 +1,10 @@
 // Dweller-related operations for SaveEditor
-import type { DwellersItem as Dweller } from '../../types/saveFile';
+import type { DwellersItem as Dweller } from "../../types/saveFile";
 
 type Actor = any;
 
 type SpecialStatType = number;
-import { DwellerManager } from '../DwellerManager';
+import { DwellerManager } from "../DwellerManager";
 
 /**
  * Mixin for dweller-related operations
@@ -86,7 +86,7 @@ export class SaveEditorDwellerMixin {
 
   /**
    * Set dweller happiness
-   * @param dweller - The dweller to modify 
+   * @param dweller - The dweller to modify
    * @param happiness - Happiness value (0-100)
    */
   setDwellerHappiness(dweller: Dweller, happiness: number): void {
@@ -143,7 +143,6 @@ export class SaveEditorDwellerMixin {
   getDwellerOutfitColorHex(dweller: Dweller): string {
     return this.dwellerManager.getDwellerOutfitColorHex(dweller);
   }
-
 
   /**
    * Evict a dweller from the vault

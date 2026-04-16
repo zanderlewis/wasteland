@@ -1,6 +1,6 @@
 export const ROOM_UNLOCKS = [
   "StorageUnlock",
-  "MedbayUnlock", 
+  "MedbayUnlock",
   "SciencelabUnlock",
   "OverseerUnlock",
   "RadioStationUnlock",
@@ -18,5 +18,5 @@ export const ROOM_UNLOCKS = [
   "WaterroomUnlock",
   "HydroponicUnlock",
   "NukacolaUnlock",
-  "DesignFactoryUnlock"
+  "DesignFactoryUnlock",
 ] as const;

@@ -1,12 +1,16 @@
 // Storage-specific UI management
-import { SaveEditor } from '../core/SaveEditor';
-import { WEAPON_LIST } from '../constants/weaponConstants';
-import { OUTFIT_LIST, OUTFIT_SPECIAL_BONUSES, type OutfitSpecial } from '../constants/outfitConstants';
-import { PET_LIST } from '../constants/petConstants';
-import type { ItemsItem } from '../types/saveFile';
-import { toastManager } from './toastManager';
+import { SaveEditor } from "../core/SaveEditor";
+import { WEAPON_LIST } from "../constants/weaponConstants";
+import {
+  OUTFIT_LIST,
+  OUTFIT_SPECIAL_BONUSES,
+  type OutfitSpecial,
+} from "../constants/outfitConstants";
+import { PET_LIST } from "../constants/petConstants";
+import type { ItemsItem } from "../types/saveFile";
+import { toastManager } from "./toastManager";
 
-type StorageCategory = 'Weapon' | 'Outfit' | 'Junk' | 'Pet';
+type StorageCategory = "Weapon" | "Outfit" | "Junk" | "Pet";
 
 type AggregatedRow = {
   id: string;
@@ -17,7 +21,7 @@ type AggregatedRow = {
 
 export class StorageUI {
   private saveEditor: SaveEditor;
-  private activeCategory: StorageCategory = 'Weapon';
+  private activeCategory: StorageCategory = "Weapon";
   private selectedId: string | null = null;
 
   constructor(saveEditor: SaveEditor) {
@@ -26,20 +30,20 @@ export class StorageUI {
 
   bindEvents(): void {
     // Sub-tabs in the title bar
-    const subtabs = document.querySelectorAll('.storage-subtab');
+    const subtabs = document.querySelectorAll(".storage-subtab");
     subtabs.forEach((btn) => {
-      btn.addEventListener('click', (e) => {
+      btn.addEventListener("click", (e) => {
         const el = e.currentTarget as HTMLElement;
-        const type = (el.dataset.type || 'Weapon') as StorageCategory;
+        const type = (el.dataset.type || "Weapon") as StorageCategory;
         this.setActiveCategory(type);
       });
     });
 
-    const updateBtn = document.getElementById('storageUpdateBtn');
-    const newBtn = document.getElementById('storageNewBtn');
+    const updateBtn = document.getElementById("storageUpdateBtn");
+    const newBtn = document.getElementById("storageNewBtn");
 
-    updateBtn?.addEventListener('click', () => this.handleUpdate());
-    newBtn?.addEventListener('click', () => this.clearSelection());
+    updateBtn?.addEventListener("click", () => this.handleUpdate());
+    newBtn?.addEventListener("click", () => this.clearSelection());
   }
 
   loadStorageData(): void {
@@ -52,11 +56,11 @@ export class StorageUI {
     this.selectedId = null;
 
     // Toggle active state on buttons
-    const subtabs = document.querySelectorAll('.storage-subtab');
+    const subtabs = document.querySelectorAll(".storage-subtab");
     subtabs.forEach((btn) => {
-      btn.classList.remove('active');
+      btn.classList.remove("active");
       if ((btn as HTMLElement).dataset.type === category) {
-        btn.classList.add('active');
+        btn.classList.add("active");
       }
     });
 
@@ -66,44 +70,44 @@ export class StorageUI {
 
   private clearSelection(): void {
     this.selectedId = null;
-    const select = document.getElementById('storageEditSelect') as HTMLSelectElement | null;
-    const qty = document.getElementById('storageEditQty') as HTMLInputElement | null;
-    if (select) select.value = '';
-    if (qty) qty.value = '1';
+    const select = document.getElementById("storageEditSelect") as HTMLSelectElement | null;
+    const qty = document.getElementById("storageEditQty") as HTMLInputElement | null;
+    if (select) select.value = "";
+    if (qty) qty.value = "1";
     this.updateEditHint();
     this.renderList();
   }
 
   private updateEditHint(): void {
-    const hint = document.getElementById('storageEditHint');
+    const hint = document.getElementById("storageEditHint");
     if (!hint) return;
-    if (this.selectedId) hint.classList.add('hidden');
-    else hint.classList.remove('hidden');
+    if (this.selectedId) hint.classList.add("hidden");
+    else hint.classList.remove("hidden");
   }
 
   private handleUpdate(): void {
     if (!this.saveEditor.isLoaded()) {
-      this.showMessage('No save file loaded!', 'error');
+      this.showMessage("No save file loaded!", "error");
       return;
     }
 
-    const select = document.getElementById('storageEditSelect') as HTMLSelectElement | null;
-    const qtyEl = document.getElementById('storageEditQty') as HTMLInputElement | null;
+    const select = document.getElementById("storageEditSelect") as HTMLSelectElement | null;
+    const qtyEl = document.getElementById("storageEditQty") as HTMLInputElement | null;
     if (!select || !qtyEl) return;
 
-    const id = (select.value || '').trim();
+    const id = (select.value || "").trim();
     if (!id) {
-      this.showMessage('Please choose an item', 'info');
+      this.showMessage("Please choose an item", "info");
       return;
     }
 
-    const desiredQty = Math.max(0, Math.floor(Number(qtyEl.value || '0') || 0));
+    const desiredQty = Math.max(0, Math.floor(Number(qtyEl.value || "0") || 0));
 
     const ok = this.saveEditor.setStorageItemQuantity(this.activeCategory, id, desiredQty);
     if (!ok) {
       const used = this.saveEditor.getStorageUsed();
       const cap = this.saveEditor.getStorageCapacity();
-      this.showMessage(`Storage capacity exceeded (${used}/${cap}). Action ignored.`, 'error');
+      this.showMessage(`Storage capacity exceeded (${used}/${cap}). Action ignored.`, "error");
       return;
     }
 
@@ -112,26 +116,26 @@ export class StorageUI {
     this.renderList();
 
     if (desiredQty === 0) {
-      this.showMessage('Item removed from storage', 'success');
+      this.showMessage("Item removed from storage", "success");
       this.clearSelection();
       return;
     }
 
-    this.showMessage('Storage updated', 'success');
+    this.showMessage("Storage updated", "success");
   }
 
   private getDisplayNameById(id: string): string {
-    if (this.activeCategory === 'Weapon') return (WEAPON_LIST as any)[id] || id;
-    if (this.activeCategory === 'Outfit') return (OUTFIT_LIST as any)[id] || id;
-    if (this.activeCategory === 'Pet') return (PET_LIST as any)[id] || id;
+    if (this.activeCategory === "Weapon") return (WEAPON_LIST as any)[id] || id;
+    if (this.activeCategory === "Outfit") return (OUTFIT_LIST as any)[id] || id;
+    if (this.activeCategory === "Pet") return (PET_LIST as any)[id] || id;
     return id;
   }
 
   private getAttributesText(id: string): string {
-    if (this.activeCategory !== 'Outfit') return '—';
+    if (this.activeCategory !== "Outfit") return "—";
 
     const sp = (OUTFIT_SPECIAL_BONUSES as Record<string, OutfitSpecial>)[id];
-    if (!sp) return '—';
+    if (!sp) return "—";
 
     const parts: string[] = [];
     if (sp.S) parts.push(`S+${sp.S}`);
@@ -142,31 +146,31 @@ export class StorageUI {
     if (sp.A) parts.push(`A+${sp.A}`);
     if (sp.L) parts.push(`L+${sp.L}`);
 
-    return parts.length ? parts.join(' ') : '—';
+    return parts.length ? parts.join(" ") : "—";
   }
 
   private populateEditSelect(): void {
-    const select = document.getElementById('storageEditSelect') as HTMLSelectElement | null;
+    const select = document.getElementById("storageEditSelect") as HTMLSelectElement | null;
     if (!select) return;
 
-    select.innerHTML = '';
+    select.innerHTML = "";
 
-    const placeholder = document.createElement('option');
-    placeholder.value = '';
-    placeholder.textContent = '-- select item --';
+    const placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.textContent = "-- select item --";
     select.appendChild(placeholder);
 
     let entries: Array<[string, string]> = [];
-    if (this.activeCategory === 'Weapon') {
+    if (this.activeCategory === "Weapon") {
       entries = Object.entries(WEAPON_LIST as Record<string, string>);
-    } else if (this.activeCategory === 'Outfit') {
+    } else if (this.activeCategory === "Outfit") {
       entries = Object.entries(OUTFIT_LIST as Record<string, string>);
-    } else if (this.activeCategory === 'Pet') {
+    } else if (this.activeCategory === "Pet") {
       entries = Object.entries(PET_LIST as Record<string, string>);
     } else {
       // Junk: include what exists in the save first (plus allow custom IDs)
       const existing = this.saveEditor.isLoaded()
-        ? Array.from(new Set(this.saveEditor.getStorageItems('Junk').map((it) => it.id)))
+        ? Array.from(new Set(this.saveEditor.getStorageItems("Junk").map((it) => it.id)))
         : [];
       entries = existing.map((id) => [id, id]);
     }
@@ -174,7 +178,7 @@ export class StorageUI {
     entries
       .sort((a, b) => (a[1] || a[0]).localeCompare(b[1] || b[0]))
       .forEach(([id, label]) => {
-        const opt = document.createElement('option');
+        const opt = document.createElement("option");
         opt.value = id;
         opt.textContent = label;
         select.appendChild(opt);
@@ -187,9 +191,9 @@ export class StorageUI {
 
     // When user selects from dropdown, treat it as selection
     select.onchange = () => {
-      const id = (select.value || '').trim();
+      const id = (select.value || "").trim();
       this.selectedId = id || null;
-      const qtyEl = document.getElementById('storageEditQty') as HTMLInputElement | null;
+      const qtyEl = document.getElementById("storageEditQty") as HTMLInputElement | null;
       if (qtyEl && id) {
         const current = this.saveEditor.getStorageItemCount(this.activeCategory, id);
         qtyEl.value = String(current);
@@ -221,20 +225,21 @@ export class StorageUI {
   }
 
   private renderList(): void {
-    const container = document.getElementById('storageList');
+    const container = document.getElementById("storageList");
     if (!container) return;
 
-    const capText = document.getElementById('storageCapacityText');
+    const capText = document.getElementById("storageCapacityText");
     if (capText && this.saveEditor.isLoaded()) {
       capText.textContent = `${this.saveEditor.getStorageUsed()}/${this.saveEditor.getStorageCapacity()}`;
     } else if (capText) {
-      capText.textContent = '0/0';
+      capText.textContent = "0/0";
     }
 
     this.updateEditHint();
 
     if (!this.saveEditor.isLoaded()) {
-      container.innerHTML = '<div class="p-3 text-green-500/80">Load a save file to view storage.</div>';
+      container.innerHTML =
+        '<div class="p-3 text-green-500/80">Load a save file to view storage.</div>';
       return;
     }
 
@@ -258,7 +263,7 @@ export class StorageUI {
         <tbody>
           ${rows
             .map((r) => {
-              const selected = this.selectedId === r.id ? 'selected' : '';
+              const selected = this.selectedId === r.id ? "selected" : "";
               const name = this.escapeHtml(r.name);
               const attrs = this.escapeHtml(r.attrs);
               const id = this.escapeHtml(r.id);
@@ -270,7 +275,7 @@ export class StorageUI {
                 </tr>
               `;
             })
-            .join('')}
+            .join("")}
         </tbody>
       </table>
     `;
@@ -278,14 +283,14 @@ export class StorageUI {
     container.innerHTML = header;
 
     // Row click selection
-    const rowsEls = container.querySelectorAll('tbody tr[data-id]');
+    const rowsEls = container.querySelectorAll("tbody tr[data-id]");
     rowsEls.forEach((tr) => {
-      tr.addEventListener('click', () => {
-        const id = (tr as HTMLElement).dataset.id || '';
+      tr.addEventListener("click", () => {
+        const id = (tr as HTMLElement).dataset.id || "";
         this.selectedId = id || null;
 
-        const select = document.getElementById('storageEditSelect') as HTMLSelectElement | null;
-        const qtyEl = document.getElementById('storageEditQty') as HTMLInputElement | null;
+        const select = document.getElementById("storageEditSelect") as HTMLSelectElement | null;
+        const qtyEl = document.getElementById("storageEditQty") as HTMLInputElement | null;
 
         if (select) select.value = id;
         if (qtyEl && id) {
@@ -300,20 +305,20 @@ export class StorageUI {
   }
 
   private escapeHtml(str: string): string {
-    return (str || '')
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;');
+    return (str || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
   }
 
-  private showMessage(message: string, type: 'success' | 'error' | 'info'): void {
+  private showMessage(message: string, type: "success" | "error" | "info"): void {
     switch (type) {
-      case 'success':
+      case "success":
         toastManager.showSuccess(message);
         break;
-      case 'error':
+      case "error":
         toastManager.showError(message);
         break;
       default:

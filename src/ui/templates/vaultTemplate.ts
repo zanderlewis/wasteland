@@ -1,5 +1,5 @@
 // Vault management template
-import { GAME_LIMITS } from '../../constants/gameConstants';
+import { GAME_LIMITS } from "../../constants/gameConstants";
 
 export const createVaultSectionTemplate = (): string => `
   <!-- Vault Section -->

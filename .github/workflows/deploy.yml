@@ -23,21 +23,26 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Vite+
+        uses: voidzero-dev/setup-vp@v1
         with:
-          node-version: "20"
-          cache: "npm"
+          node-version: "22"
+          cache: true
 
-      # Build MAIN into site/
-      - name: Build main
+      - name: Install dependencies
+        run: vp install
+
+      - name: Type check
+        run: vp check
+
+      - name: Run tests
+        run: vp test
+
+      - name: Build project
         env:
           VITE_BASE: /wasteland/
         run: |
-          git checkout main
-          npm ci
-          rm -rf dist
-          npm run build
+          vp build
           mkdir -p site
           cp -R dist/* site/
 

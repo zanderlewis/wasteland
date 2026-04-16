@@ -37,12 +37,7 @@ function deepMerge(a: any, b: any): any {
 /**
  * Recursively convert JSON object to TypeScript interfaces
  */
-function jsonToTS(
-  obj: any,
-  name: string,
-  indent = "  ",
-  processed = new Set<string>(),
-): string {
+function jsonToTS(obj: any, name: string, indent = "  ", processed = new Set<string>()): string {
   let ts = "";
   if (Array.isArray(obj)) {
     if (obj.length > 0 && typeof obj[0] === "object" && obj[0] !== null) {
@@ -147,9 +142,7 @@ function generateMergedTypes(
     options.output || "saveTypes.ts",
     `export type FalloutShelterSave = ${options.rootName || "SaveFile"};\n`,
   );
-  console.log(
-    `Merged TypeScript interfaces generated at ${options.output || "saveTypes.ts"}`,
-  );
+  console.log(`Merged TypeScript interfaces generated at ${options.output || "saveTypes.ts"}`);
 }
 
 // Run: npx ts-node generateMergedSaveTypes.ts
@@ -165,6 +158,4 @@ generateMergedTypes(saveFiles, {
 });
 
 console.log("TypeScript interfaces generated successfully.");
-console.log(
-  "Please manually clean up the generated file, as many fields need to be removed.",
-);
+console.log("Please manually clean up the generated file, as many fields need to be removed.");
