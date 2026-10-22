@@ -1,6 +1,11 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@plugin "@tailwindcss/forms";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --color-gray-750: rgb(55 65 81);
+}
 
 @font-face {
   font-family: "FuturaCondensed";
@@ -274,7 +279,7 @@
 }
 
 .modal {
-  @apply fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60;
+  @apply fixed inset-0 z-50 flex items-center justify-center bg-black/60;
 }
 
 .modal-content {
@@ -479,7 +484,7 @@
 }
 
 .toast-close:hover {
-  @apply bg-black bg-opacity-20;
+  @apply bg-black/20;
 }
 
 code {
@@ -515,14 +520,6 @@ pre code {
     .dweller-field {
       width: 100%;
     }
-  }
-
-  .bg-gray-750 {
-    background-color: rgb(55, 65, 81);
-  }
-
-  .border-gray-750 {
-    border-color: rgb(55, 65, 81);
   }
 
   .max-h-\[calc\(100vh-200px\)\] {

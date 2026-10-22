@@ -1,6 +1,8 @@
 import { defineConfig } from "vite-plus";
+import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig(() => ({
+  plugins: [tailwindcss()],
   base: process.env.VITE_BASE ?? "/",
   define: {
     __BUILD_SHA__: JSON.stringify(process.env.VITE_BUILD_SHA ?? ""),
