@@ -282,7 +282,7 @@ export class ToolsUI {
       }
 
       const { encryptSaveFile } = await import("../utils/crypto");
-      const encryptedData = encryptSaveFile(save);
+      const encryptedData = await encryptSaveFile(save);
       const fileName = this.changeFileExtension(this.saveEditor.getFileName(), "sav");
 
       await this.downloadFile(encryptedData, fileName, "application/octet-stream");

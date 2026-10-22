@@ -149,7 +149,7 @@ export class EventManager {
 
     if (fileName.endsWith(".sav")) {
       // Encrypted file
-      const decrypted = decryptSaveFile(content);
+      const decrypted = await decryptSaveFile(content);
       if (!isValidJSON(decrypted)) {
         throw new Error("Decrypted content is not valid JSON");
       }

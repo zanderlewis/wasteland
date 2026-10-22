@@ -1,6 +1,4 @@
-import CryptoJS from "crypto-js";
-
-// Fallout Shelter encryption key and IV (from original code)
+// Fallout Shelter encryption key and IV
 const ENCRYPTION_KEY = [
   2815074099, 1725469378, 4039046167, 874293617, 3063605751, 3133984764, 4097598161, 3620741625,
 ];
@@ -8,14 +6,46 @@ const ENCRYPTION_KEY = [
 const IV_HEX = "7475383967656A693334307438397532";
 
 /**
- * Convert the integer array key to a format usable by CryptoJS
+ * Convert the integer array key to its big-endian byte representation.
  */
-function keyToWordArray(keyArray: number[]): CryptoJS.lib.WordArray {
-  const words: number[] = [];
+function keyToBytes(keyArray: number[]): Uint8Array<ArrayBuffer> {
+  const bytes = new Uint8Array(new ArrayBuffer(keyArray.length * 4));
+  const view = new DataView(bytes.buffer);
+
   for (let i = 0; i < keyArray.length; i++) {
-    words[i] = keyArray[i];
+    view.setUint32(i * 4, keyArray[i], false);
   }
-  return CryptoJS.lib.WordArray.create(words);
+
+  return bytes;
+}
+
+function hexToBytes(hex: string): Uint8Array<ArrayBuffer> {
+  const bytes = new Uint8Array(new ArrayBuffer(hex.length / 2));
+
+  for (let i = 0; i < bytes.length; i++) {
+    bytes[i] = Number.parseInt(hex.slice(i * 2, i * 2 + 2), 16);
+  }
+
+  return bytes;
+}
+
+function bytesToBase64(bytes: Uint8Array): string {
+  let binary = "";
+  for (const byte of bytes) {
+    binary += String.fromCharCode(byte);
+  }
+  return btoa(binary);
+}
+
+function base64ToBytes(base64: string): Uint8Array<ArrayBuffer> {
+  const binary = atob(base64);
+  const bytes = new Uint8Array(new ArrayBuffer(binary.length));
+
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+
+  return bytes;
 }
 
 /**
@@ -23,18 +53,22 @@ function keyToWordArray(keyArray: number[]): CryptoJS.lib.WordArray {
  * @param base64Data - The base64 encoded encrypted save data
  * @returns The decrypted JSON string
  */
-export function decryptSaveFile(base64Data: string): string {
+export async function decryptSaveFile(base64Data: string): Promise<string> {
   try {
-    const key = keyToWordArray(ENCRYPTION_KEY);
-    const iv = CryptoJS.enc.Hex.parse(IV_HEX);
+    const key = await crypto.subtle.importKey(
+      "raw",
+      keyToBytes(ENCRYPTION_KEY),
+      { name: "AES-CBC" },
+      false,
+      ["decrypt"],
+    );
+    const decrypted = await crypto.subtle.decrypt(
+      { name: "AES-CBC", iv: hexToBytes(IV_HEX) },
+      key,
+      base64ToBytes(base64Data),
+    );
 
-    const decrypted = CryptoJS.AES.decrypt(base64Data, key, {
-      iv: iv,
-      mode: CryptoJS.mode.CBC,
-      padding: CryptoJS.pad.Pkcs7,
-    });
-
-    return decrypted.toString(CryptoJS.enc.Utf8);
+    return new TextDecoder().decode(decrypted);
   } catch (error) {
     throw new Error(`Failed to decrypt save file: ${error}`);
   }
@@ -45,20 +79,22 @@ export function decryptSaveFile(base64Data: string): string {
  * @param jsonData - The JSON object to encrypt
  * @returns The base64 encoded encrypted data
  */
-export function encryptSaveFile(jsonData: object): string {
+export async function encryptSaveFile(jsonData: object): Promise<string> {
   try {
-    const key = keyToWordArray(ENCRYPTION_KEY);
-    const iv = CryptoJS.enc.Hex.parse(IV_HEX);
+    const key = await crypto.subtle.importKey(
+      "raw",
+      keyToBytes(ENCRYPTION_KEY),
+      { name: "AES-CBC" },
+      false,
+      ["encrypt"],
+    );
+    const encrypted = await crypto.subtle.encrypt(
+      { name: "AES-CBC", iv: hexToBytes(IV_HEX) },
+      key,
+      new TextEncoder().encode(JSON.stringify(jsonData)),
+    );
 
-    const jsonString = JSON.stringify(jsonData);
-
-    const encrypted = CryptoJS.AES.encrypt(jsonString, key, {
-      iv: iv,
-      mode: CryptoJS.mode.CBC,
-      padding: CryptoJS.pad.Pkcs7,
-    });
-
-    return encrypted.toString();
+    return bytesToBase64(new Uint8Array(encrypted));
   } catch (error) {
     throw new Error(`Failed to encrypt save file: ${error}`);
   }
